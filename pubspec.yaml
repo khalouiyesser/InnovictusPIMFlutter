@@ -16,6 +16,7 @@ dependencies:
 
 
   cupertino_icons: ^1.0.8
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:
@@ -25,3 +26,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/
