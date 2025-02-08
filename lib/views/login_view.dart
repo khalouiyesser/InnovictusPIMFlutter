@@ -103,7 +103,7 @@ class LoginView extends StatelessWidget {
           // Positioned "You don't have an account yet?" text at the bottom
           Positioned(
             bottom: 30, // Distance from the bottom of the screen
-            left: 20, // Align with the left
+            left: 10, // Align with the left
             right: 20, // Align with the right
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -115,13 +115,18 @@ class LoginView extends StatelessWidget {
                     fontSize: 16, // Adjust font size as needed
                   ),
                 ),
-                Text(
-                  "sign up",
+                TextButton(
+                  onPressed: () { 
+
+                    print("you should navigate to  sign up page ");
+                   },
+                  child: Text( "sign up",
+                 
                   style: TextStyle(
                     color: Colors.green, // Or another contrasting color
                     fontSize: 16, // Adjust font size as needed
                   ),
-                ),
+                ),)
               ],
             ),
           ),
