@@ -5,8 +5,7 @@ class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset:
-          false, // Disable resizing of the screen when keyboard appears
+      resizeToAvoidBottomInset: false, // Disable resizing of the screen when keyboard appears
       body: Stack(
         children: [
           Positioned.fill(
@@ -68,33 +67,62 @@ class LoginView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
-
-                  // Login Button
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.8, // 80% width
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(
-                            255, 31, 219, 59), // Green background color
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 15),
-                      ),
-                      child: Text(
-                        "Login",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
+            ),
+          ),
+
+          // Positioned Login Button at the bottom
+          Positioned(
+            bottom: 100, // Distance from the bottom of the screen
+            left: 20, // Align with the left
+            right: 20, // Align with the right
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8, // 80% width
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 31, 219, 59), // Green background color
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                ),
+                child: Text(
+                  "Login",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Positioned "You don't have an account yet?" text at the bottom
+          Positioned(
+            bottom: 30, // Distance from the bottom of the screen
+            left: 20, // Align with the left
+            right: 20, // Align with the right
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "You don't have an account yet? ",
+                  style: TextStyle(
+                    color: Colors.white, // Set text color to white
+                    fontSize: 16, // Adjust font size as needed
+                  ),
+                ),
+                Text(
+                  "sign up",
+                  style: TextStyle(
+                    color: Colors.green, // Or another contrasting color
+                    fontSize: 16, // Adjust font size as needed
+                  ),
+                ),
+              ],
             ),
           ),
 
@@ -110,8 +138,7 @@ class LoginView extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 shadows: [
                   Shadow(
-                    color: const Color.fromARGB(255, 255, 255, 255)
-                        .withOpacity(0), // Green shadow
+                    color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0), // Green shadow
                     offset: Offset(0, 4),
                     blurRadius: 10,
                   ),
