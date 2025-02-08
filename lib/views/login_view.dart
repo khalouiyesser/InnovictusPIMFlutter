@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 
 class LoginView extends StatelessWidget {
   @override
@@ -6,115 +7,98 @@ class LoginView extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset:
           false, // Disable resizing of the screen when keyboard appears
-
       body: Stack(
         children: [
-          // Background Image
           Positioned.fill(
             child: Image.asset(
-              'assets/panel.png', // Your image path
-              fit: BoxFit.cover, // Full screen cover
+              "assets/Pulse.png", // Your background image
+              fit: BoxFit.cover, // Ensures the image covers the entire screen
             ),
           ),
 
-          // Semi-transparent Dark Overlay
-          Positioned.fill(
-            child: Container(
-              color: Colors.black.withOpacity(0.7), // Dark overlay
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min, // To center the form
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Email input field
-                      TextField(
-                        decoration: InputDecoration(
-                          hintText: "Email",
-                          hintStyle: TextStyle(color: Colors.white),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.2),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
+          // Centered form content
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min, // To center the form
+                children: [
+                  // Email input field
+                  TextField(
+                    decoration: InputDecoration(
+                      hintText: "Email",
+                      hintStyle: TextStyle(color: Colors.white),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.2),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide.none,
                       ),
-                      SizedBox(height: 20), // Space between the fields
-                      // Password input field
-                      TextField(
-                        obscureText: true, // To hide the password text
-                        decoration: InputDecoration(
-                          hintText: "Password",
-                          hintStyle: TextStyle(color: Colors.white),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.2),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
-
-                      Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.end, // Aligns text to the right
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              // Add your forgot password functionality here
-                            },
-                            child: Text(
-                              "Forgot Password?",
-                              style: TextStyle(
-                                color: const Color.fromARGB(173, 181, 179, 179),
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                        ,
-                        SizedBox(height: 30), // Space between forgot password and login button
-
-                      // Container for the button to set width
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.8, // 80% width of screen
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Add login functionality here
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green, // Green background color
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 15),
-                          ),
-                          child: Text(
-                            "Login",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-  // Container for the button to set width
-
-                
-
-
-
-                    ],
+                    ),
                   ),
-                ),
+                  SizedBox(height: 20), // Space between fields
+
+                  // Password input field
+                  TextField(
+                    obscureText: true, // To hide the password text
+                    decoration: InputDecoration(
+                      hintText: "Password",
+                      hintStyle: TextStyle(color: Colors.white),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.2),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+
+                  // Forgot Password
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        "Forgot Password?",
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+
+                  // Login Button
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.8, // 80% width
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(
+                            255, 31, 219, 59), // Green background color
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                      ),
+                      child: Text(
+                        "Login",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
 
-// "Login" at the Top Left
+          // "Welcome back" text with subtle green glow effect
           Positioned(
             top: 50, // Adjust as needed
             left: 20, // Adjust as needed
@@ -124,19 +108,35 @@ class LoginView extends StatelessWidget {
                 color: Colors.white,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
+                shadows: [
+                  Shadow(
+                    color: const Color.fromARGB(255, 255, 255, 255)
+                        .withOpacity(0), // Green shadow
+                    offset: Offset(0, 4),
+                    blurRadius: 10,
+                  ),
+                ],
               ),
             ),
           ),
 
+          // "Login" text with green effect
           Positioned(
             top: 80, // Adjust as needed
             left: 20, // Adjust as needed
             child: Text(
-              "login ",
+              "Login",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,
                 fontWeight: FontWeight.normal,
+                shadows: [
+                  Shadow(
+                    color: Colors.green.withOpacity(0.6), // Green shadow
+                    offset: Offset(0, 4),
+                    blurRadius: 10,
+                  ),
+                ],
               ),
             ),
           ),
