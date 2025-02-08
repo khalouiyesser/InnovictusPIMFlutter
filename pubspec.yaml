@@ -1,27 +1,36 @@
 name: piminnovictus
 description: "A new Flutter project."
 
+# Si vous souhaitez publier ce projet sur pub.dev, retirez 'none'
+publish_to: 'none'
 
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+# Version de l'application (par défaut 1.0.0+1)
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.5.4
+  sdk: ">=3.4.0 <4.0.0"
 
-
+# Dépendances principales
 dependencies:
   flutter:
     sdk: flutter
-
-
-
   cupertino_icons: ^1.0.8
+  fl_chart: ^0.66.0  # Remplace par la dernière version disponible
 
+
+# Dépendances pour le développement
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_lints: ^4.0.0
 
+# Configuration Flutter (Material Design, polices et assets)
 flutter:
   uses-material-design: true
+
+  # Déclarer les fichiers assets ici si nécessaires (images, fonts, etc.)
+  assets:
+    - assets/user.jpg
+
+  #   - assets/images/
+  #   - assets/fonts/
