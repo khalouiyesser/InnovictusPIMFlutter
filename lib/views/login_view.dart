@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
+import 'package:piminnovictus/views/register_view.dart';
+
 class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false, // Disable resizing of the screen when keyboard appears
+      resizeToAvoidBottomInset:
+          false, // Disable resizing of the screen when keyboard appears
       body: Stack(
         children: [
           Positioned.fill(
@@ -83,7 +86,8 @@ class LoginView extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 31, 219, 59), // Green background color
+                  backgroundColor: const Color.fromARGB(
+                      255, 31, 219, 59), // Green background color
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -116,17 +120,21 @@ class LoginView extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: () { 
-
+                  onPressed: () {
                     print("you should navigate to  sign up page ");
-                   },
-                  child: Text( "sign up",
-                 
-                  style: TextStyle(
-                    color: Colors.green, // Or another contrasting color
-                    fontSize: 16, // Adjust font size as needed
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => RegisterView()),
+                    );
+                  },
+                  child: Text(
+                    "sign up",
+                    style: TextStyle(
+                      color: Colors.green, // Or another contrasting color
+                      fontSize: 16, // Adjust font size as needed
+                    ),
                   ),
-                ),)
+                )
               ],
             ),
           ),
@@ -143,7 +151,8 @@ class LoginView extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 shadows: [
                   Shadow(
-                    color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0), // Green shadow
+                    color: const Color.fromARGB(255, 255, 255, 255)
+                        .withOpacity(0), // Green shadow
                     offset: Offset(0, 4),
                     blurRadius: 10,
                   ),
