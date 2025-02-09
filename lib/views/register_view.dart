@@ -29,10 +29,32 @@ class _RegisterViewState extends State<RegisterView> {
     super.initState();
 
 
-// Listen to input changes and validate
-    emailController.addListener(() {
-      _validateEmail(emailController.text);
-    });
+        // Listen to input changes and validate
+            emailController.addListener(() {
+              _validateEmail(emailController.text);
+            });
+
+            firstNameController.addListener(() {
+                 _validateFirstName(firstNameController.text);
+                });
+
+                lastNameController.addListener((){
+
+                  _validateLastName(lastNameController.text);
+                }
+                );
+
+                passwordController.addListener((){
+
+                  _validatePassword(passwordController.text);
+                }
+                );
+
+                   ConfirmPasswordController.addListener((){
+
+                  _validataConfirmPassword(ConfirmPasswordController.text);
+                }
+                );
 
 
 
@@ -238,9 +260,30 @@ void _submitForm()
                       fillColor: Colors.white.withOpacity(0.2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide.none,
-                        
-                      ),
+                       )
+
+                        ,
+                        // Border when the field is focused
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(
+                                color: _firstNameError != null ? Colors.red :!firstNameController.text.isEmpty? Colors.green:Colors.red, 
+                                width: 2,
+                              ),
+                            ),
+
+                        // Border when the field is enabled but not focused
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(
+                                color: _firstNameError != null  ? Colors.red :!firstNameController.text.isEmpty? Colors.green:Colors.white, 
+                                width: 1,
+                              ),
+                            ),
+
+
+
+
                     ),
                   ),
                  
@@ -258,9 +301,37 @@ TextField(controller: this.lastNameController,
                       fillColor: Colors.white.withOpacity(0.2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide.none,
                         
                       ),
+
+
+
+
+                                   // Border when the field is focused
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(
+                                color: _lastNameError != null ? Colors.red :!lastNameController.text.isEmpty? Colors.green:Colors.red, 
+                                width: 2,
+                              ),
+                            ),
+
+                        // Border when the field is enabled but not focused
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(
+                                color: _lastNameError != null  ? Colors.red :!lastNameController.text.isEmpty? Colors.green:Colors.white, 
+                                width: 1,
+                              ),
+                            ),
+
+
+
+
+
+
+
+
                     ),
                   
                   ),
@@ -282,9 +353,36 @@ TextField(
                       fillColor: Colors.white.withOpacity(0.2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide.none,
                         
                       ),
+
+
+
+        // Border when the field is focused
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(
+                                color: _emailError != null ? Colors.red :!emailController.text.isEmpty? Colors.green:Colors.red, 
+                                width: 2,
+                              ),
+                            ),
+
+                        // Border when the field is enabled but not focused
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(
+                                color: _emailError != null  ? Colors.red :!emailController.text.isEmpty? Colors.green:Colors.white, 
+                                width: 1,
+                              ),
+                            ),
+
+
+
+
+
+
+
+
                     ),
                   ),
 SizedBox(height: 20,),
@@ -304,8 +402,38 @@ SizedBox(height: 20,),
                       fillColor: Colors.white.withOpacity(0.2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide.none,
                       ),
+
+
+
+
+                               focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(
+                                color: _passwordError != null ? Colors.red :!passwordController.text.isEmpty? Colors.green:Colors.red, 
+                                width: 2,
+                              ),
+                            ),
+
+                        // Border when the field is enabled but not focused
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(
+                                color: _passwordError != null  ? Colors.red :!passwordController.text.isEmpty? Colors.green:Colors.white, 
+                                width: 1,
+                              ),
+                            ),
+
+
+
+
+
+
+
+
+
+
+
                     ),
                   ),
 
@@ -318,15 +446,41 @@ SizedBox(height: 20,),
                     obscureText: true, // To hide the password text
                     decoration: InputDecoration(
                       errorText: this._confirmPasswordError,
-                      errorStyle: TextStyle(color: Colors.red),
+                      errorStyle: TextStyle(color: _confirmPasswordError!=null ? Colors.red : Colors.green),
                       hintText: "Confirm Password",
                       hintStyle: TextStyle(color: Colors.white),
                       filled: true,
                       fillColor: Colors.white.withOpacity(0.2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide.none,
                       ),
+
+
+
+                               focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(
+                                color: _confirmPasswordError != null ? Colors.red :!ConfirmPasswordController.text.isEmpty? Colors.green:Colors.red, 
+                                width: 2,
+                              ),
+                            ),
+
+                        // Border when the field is enabled but not focused
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(
+                                color: _confirmPasswordError != null  ? Colors.red :!ConfirmPasswordController.text.isEmpty? Colors.green:Colors.white, 
+                                width: 1,
+                              ),
+                            ),
+
+
+
+
+
+
+
+
                     ),
                   ),
 
