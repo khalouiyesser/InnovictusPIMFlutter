@@ -32,7 +32,7 @@ class LoginView extends StatelessWidget {
                       TextField(
                         decoration: InputDecoration(
                           hintText: "Email",
-                          hintStyle: TextStyle(color: Colors.white),
+                          hintStyle: const TextStyle(color: Colors.white),
                           filled: true,
                           fillColor: Colors.white.withOpacity(0.2),
                           border: OutlineInputBorder(
@@ -41,7 +41,7 @@ class LoginView extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20), // Space between the fields
+                      const SizedBox(height: 20), // Space between the fields
                       // Password input field
                       TextField(
                         obscureText: true, // To hide the password text
@@ -63,12 +63,13 @@ class LoginView extends StatelessWidget {
                         children: [
                           TextButton(
                             onPressed: () {
+
                               // Add your forgot password functionality here
                             },
-                            child: Text(
+                            child: const Text(
                               "Forgot Password?",
                               style: TextStyle(
-                                color: const Color.fromARGB(173, 181, 179, 179),
+                                color: Color.fromARGB(173, 181, 179, 179),
                                 fontSize: 14,
                               ),
                             ),
@@ -92,7 +93,7 @@ class LoginView extends StatelessWidget {
                             ),
                             padding: EdgeInsets.symmetric(vertical: 15),
                           ),
-                          child: Text(
+                          child: const Text(
                             "Login",
                             style: TextStyle(
                               color: Colors.white,
@@ -102,11 +103,6 @@ class LoginView extends StatelessWidget {
                         ),
                       ),
   // Container for the button to set width
-
-                
-
-
-
                     ],
                   ),
                 ),
@@ -115,7 +111,7 @@ class LoginView extends StatelessWidget {
           ),
 
 // "Login" at the Top Left
-          Positioned(
+          const Positioned(
             top: 50, // Adjust as needed
             left: 20, // Adjust as needed
             child: Text(
@@ -128,7 +124,7 @@ class LoginView extends StatelessWidget {
             ),
           ),
 
-          Positioned(
+          const Positioned(
             top: 80, // Adjust as needed
             left: 20, // Adjust as needed
             child: Text(
