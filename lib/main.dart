@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/views/Visitor/visitor_home.dart';
 
+import 'Views/welcome_view.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -37,8 +39,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return 
     
-       const MaterialApp(
-        home: VisitorPage(),
+       MaterialApp(
+        home: WelcomePage(),
       );
   }
 }
