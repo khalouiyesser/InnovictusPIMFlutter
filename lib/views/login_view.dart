@@ -3,7 +3,57 @@ import 'dart:ui';
 
 import 'package:piminnovictus/views/register_view.dart';
 
-class LoginView extends StatelessWidget {
+class LoginView extends StatefulWidget {
+
+   @override
+ _LoginViewState createState() =>_LoginViewState();
+}
+
+
+
+class _LoginViewState extends State<LoginView> 
+{
+
+
+TextEditingController emailController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
+String? _emailError = null;
+String ?  _passwordError = null;
+
+void _validateEmail(String value)
+{
+  setState(() {
+      if (value.isEmpty) {
+        _emailError = "Email cannot be empty";
+        print("Email cannot be empty");
+      } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
+        _emailError = "Enter a valid email";
+        print("Enter a valid email");
+      } else {
+        _emailError = null;
+      }
+    });
+
+}
+void _validatePassword(String value) {
+    setState(() {
+      
+      if (value.isEmpty) {
+        _passwordError = "Password cannot be empty";
+                print("Password cannot be empty");
+
+      } else if (value.length < 6) {
+        _passwordError = "Password must be at least 6 characters";
+    print("Password must be at least 6 characters");
+
+      } else {
+        _passwordError = null;
+      }
+       });
+    }
+    
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +77,11 @@ class LoginView extends StatelessWidget {
                 children: [
                   // Email input field
                   TextField(
+                    controller: this.emailController,
+                    onChanged: (value) => _validateEmail(value),
                     decoration: InputDecoration(
+                      errorText: _emailError,
+                      errorStyle: TextStyle(color: Colors.red),
                       hintText: "Email",
                       hintStyle: TextStyle(color: Colors.white),
                       filled: true,
@@ -42,8 +96,12 @@ class LoginView extends StatelessWidget {
 
                   // Password input field
                   TextField(
+                    controller: passwordController,
                     obscureText: true, // To hide the password text
+                    onChanged: (value)=>_validatePassword(value),
                     decoration: InputDecoration(
+                      errorText: _passwordError,
+                      errorStyle: TextStyle(color:Colors.red),
                       hintText: "Password",
                       hintStyle: TextStyle(color: Colors.white),
                       filled: true,
@@ -84,7 +142,13 @@ class LoginView extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.8, // 80% width
               height: 50,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                    this._validateEmail(emailController.text);
+                    _validatePassword(passwordController.text);
+                   bool ok =  validateform();                    
+
+
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(
                       255, 31, 219, 59), // Green background color
@@ -185,4 +249,31 @@ class LoginView extends StatelessWidget {
       ),
     );
   }
-}
+  
+  bool validateform() {
+    if(!emailController.text.isEmpty &&!passwordController.text.isEmpty)
+    {
+      if(_emailError==null && _passwordError == null)
+      {
+        print("navigate to the dashboard page ");
+        return true ;
+      }
+
+      
+    }
+    else 
+    {
+      print("conditions not matches");
+      _validateEmail(emailController.text);
+      _validatePassword(passwordController.text);
+      return false;
+
+    }
+
+
+return false ;
+
+  }
+  
+ 
+ }
