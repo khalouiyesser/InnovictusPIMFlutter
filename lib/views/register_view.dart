@@ -47,6 +47,8 @@ class _RegisterViewState extends State<RegisterView> {
                 passwordController.addListener((){
 
                   _validatePassword(passwordController.text);
+                 _validataConfirmPassword(ConfirmPasswordController.text);
+
                 }
                 );
 
@@ -419,7 +421,7 @@ SizedBox(height: 20,),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide: BorderSide(
-                                color: _passwordError != null  ? Colors.red :!passwordController.text.isEmpty? Colors.green:Colors.white, 
+                                color: _confirmPasswordError != null  ? Colors.red :!passwordController.text.isEmpty? Colors.green:Colors.white, 
                                 width: 1,
                               ),
                             ),
