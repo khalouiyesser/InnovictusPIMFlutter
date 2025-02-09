@@ -161,7 +161,7 @@ void _validatePassword(String value) {
                   "Login",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 15,
                   ),
                 ),
               ),
@@ -180,7 +180,7 @@ void _validatePassword(String value) {
                   "You don't have an account yet? ",
                   style: TextStyle(
                     color: Colors.white, // Set text color to white
-                    fontSize: 16, // Adjust font size as needed
+                    fontSize: 14, // Adjust font size as needed
                   ),
                 ),
                 TextButton(
@@ -195,7 +195,7 @@ void _validatePassword(String value) {
                     "sign up",
                     style: TextStyle(
                       color: Colors.green, // Or another contrasting color
-                      fontSize: 16, // Adjust font size as needed
+                      fontSize: 14, // Adjust font size as needed
                     ),
                   ),
                 )
