@@ -7,7 +7,9 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double padding = 16.0;
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    double padding = screenWidth * 0.04; // Proportionnel à la largeur
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A140C),
@@ -31,43 +33,45 @@ class DashboardPage extends StatelessWidget {
                               shape: BoxShape.circle,
                               border: Border.all(
                                 color: const Color(0xFF29E33C),
-                                width: 3,
+                                width: screenWidth * 0.008,
                               ),
                             ),
-                            child: const CircleAvatar(
-                              radius: 24,
+                            child: CircleAvatar(
+                              radius: screenWidth * 0.06,
                               backgroundImage: AssetImage('assets/user.jpg'),
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(right: screenWidth * 0.1),
-                            child: const Column(
+                            padding: EdgeInsets.only(right: screenWidth * 0.05),
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text('Welcome Back!',
                                     style: TextStyle(
-                                        color: Colors.white, fontSize: 16)),
+                                        color: Colors.white,
+                                        fontSize: screenWidth * 0.04)),
                                 Text('Khaled Guedria',
                                     style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 20,
+                                        fontSize: screenWidth * 0.05,
                                         fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ),
                           Row(
                             children: [
-                              _buildIconButton(Icons.search),
-                              const SizedBox(width: 16),
+                              _buildIconButton(Icons.search, screenWidth),
+                              SizedBox(width: screenWidth * 0.04),
                               Stack(
                                 children: [
-                                  _buildIconButton(Icons.notifications),
+                                  _buildIconButton(
+                                      Icons.notifications, screenWidth),
                                   Positioned(
-                                    right: 6,
-                                    top: 6,
+                                    right: screenWidth * 0.015,
+                                    top: screenWidth * 0.015,
                                     child: Container(
-                                      width: 8,
-                                      height: 8,
+                                      width: screenWidth * 0.02,
+                                      height: screenWidth * 0.02,
                                       decoration: const BoxDecoration(
                                         color: Colors.red,
                                         shape: BoxShape.circle,
@@ -80,82 +84,92 @@ class DashboardPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 11),
+                      SizedBox(height: screenHeight * 0.02),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: padding),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('10 Février, 2025',
                                 style: TextStyle(
-                                    color: Colors.white70, fontSize: 14)),
+                                  color: Colors.white70,
+                                  fontSize: screenWidth * 0.035,
+                                )),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      SizedBox(height: screenHeight * 0.01),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: padding),
-                        child: const Row(
+                        child: Row(
                           children: [
-                            Icon(Icons.wb_sunny,
-                                color: Colors.yellow, size: 20),
-                            SizedBox(width: 8),
+                            Icon(
+                              Icons.wb_sunny,
+                              color: Colors.yellow,
+                              size: screenWidth * 0.05,
+                            ),
+                            SizedBox(width: screenWidth * 0.02),
                             Text('23°C',
                                 style: TextStyle(
-                                    color: Colors.white70, fontSize: 14)),
+                                  color: Colors.white70,
+                                  fontSize: screenWidth * 0.035,
+                                )),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: screenHeight * 0.03),
                       Center(
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
                             CustomPaint(
-                              size: const Size(200, 200),
+                              size: Size(screenWidth * 0.5, screenWidth * 0.5),
                               painter: CircularProgressPainter(0.85),
                             ),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const SizedBox(height: 18),
+                                SizedBox(height: screenHeight * 0.02),
                                 const Text('Energy Usages',
                                     style: TextStyle(
                                         color: Colors.white70, fontSize: 16)),
                                 const SizedBox(height: 1),
-                                const Text('85%',
+                                Text('85%',
                                     style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 40,
+                                        fontSize: screenWidth * 0.1,
                                         fontWeight: FontWeight.normal)),
-                                const SizedBox(height: 20),
+                                SizedBox(height: screenHeight * 0.03),
                                 Container(
-                                  width: 30,
-                                  height: 30,
+                                  width: screenWidth * 0.08,
+                                  height: screenWidth * 0.08,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                        color: Colors.green, width: 2),
+                                        color: Colors.green,
+                                        width: screenWidth * 0.01),
                                   ),
-                                  child: const Icon(Icons.bolt,
-                                      color: Colors.green, size: 20),
+                                  child: Icon(Icons.bolt,
+                                      color: Colors.green,
+                                      size: screenWidth * 0.05),
                                 ),
                               ],
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: screenHeight * 0.03),
                       Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10.0),
+                        padding:
+                            EdgeInsets.symmetric(vertical: screenHeight * 0.01),
                         child: GridView.count(
                           childAspectRatio:
                               1.6, // Adjust the aspect ratio as needed
                           crossAxisCount: screenWidth > 600
                               ? 4
                               : 2, // More columns for wider screens
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
+                          crossAxisSpacing: screenWidth * 0.04,
+                          mainAxisSpacing: screenWidth * 0.04,
                           shrinkWrap:
                               true, // Permet au GridView de s'ajuster à son contenu
                           physics:
@@ -172,7 +186,7 @@ class DashboardPage extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: screenHeight * 0.03),
                       _buildElectricityChart(),
                     ],
                   ),
@@ -185,11 +199,11 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _buildIconButton(IconData icon) {
+  Widget _buildIconButton(IconData icon, double screenWidth) {
     return Container(
-      width: 40.0,
-      height: 40.0,
-      padding: const EdgeInsets.all(8),
+      width: screenWidth * 0.1,
+      height: screenWidth * 0.1,
+      padding: EdgeInsets.all(screenWidth * 0.02),
       decoration: BoxDecoration(
         color: Colors.grey.withOpacity(0.5),
         shape: BoxShape.circle,
