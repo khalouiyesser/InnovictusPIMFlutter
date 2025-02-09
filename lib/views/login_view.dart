@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Views/forgot_password_view.dart';
 
 class LoginView extends StatelessWidget {
   @override
@@ -64,6 +65,10 @@ class LoginView extends StatelessWidget {
                           TextButton(
                             onPressed: () {
 
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => ForgotPasswordView()),
+                              );
                               // Add your forgot password functionality here
                             },
                             child: const Text(
