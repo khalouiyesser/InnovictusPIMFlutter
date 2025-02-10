@@ -23,25 +23,25 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   ];
 
   List<FlSpot> monthDataPoints = [
-    const FlSpot(0, 10),
-    const FlSpot(1, 15),
-    const FlSpot(2, 8),
-    const FlSpot(3, 20),
+    const FlSpot(0, 10000),
+    const FlSpot(1, 15000),
+    const FlSpot(2, 80000),
+    const FlSpot(3, 20000),
   ];
 
   List<FlSpot> yearDataPoints = [
-    const FlSpot(0, 25),
-    const FlSpot(1, 30),
-    const FlSpot(2, 28),
-    const FlSpot(3, 35),
-    const FlSpot(4, 29),
-    const FlSpot(5, 12),
-    const FlSpot(6, 10),
-    const FlSpot(7, 25),
-    const FlSpot(8, 30),
-    const FlSpot(9, 28),
-    const FlSpot(10, 35),
-    const FlSpot(11, 40),
+    const FlSpot(0, 25000),
+    const FlSpot(1, 30000),
+    const FlSpot(2, 28000),
+    const FlSpot(3, 35000),
+    const FlSpot(4, 29000),
+    const FlSpot(5, 12000),
+    const FlSpot(6, 10000),
+    const FlSpot(7, 25000),
+    const FlSpot(8, 30000),
+    const FlSpot(9, 28000),
+    const FlSpot(10, 35000),
+    const FlSpot(11, 40000),
   ];
 
   // Set default period to week
@@ -355,7 +355,7 @@ double getMaxY(List<FlSpot> dataPoints) {
   Widget buildLineChart(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.45, // 45% of screen height
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: const Color(0xFF151F1A).withOpacity(0.78),
         //borderRadius: BorderRadius.circular(20),
@@ -402,8 +402,8 @@ double getMaxY(List<FlSpot> dataPoints) {
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
                         return Text(
-                          value.toInt().toString(), // Show the data point value on the left side
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          '${(value / 1000).toStringAsFixed(0)}K', // Divide by 1000 and add "K" // Show the data point value on the left side
+                          style: const TextStyle(color: Colors.white, fontSize: 10),
                         );
                       },
                     ),
