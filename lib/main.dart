@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Views/login_view.dart';
 import 'package:piminnovictus/views/Visitor/visitor_home.dart';
 
 import 'Views/welcome_view.dart';
@@ -40,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return 
     
        MaterialApp(
-        home: WelcomePage(),
+        home: LoginView(),
       );
   }
 }
