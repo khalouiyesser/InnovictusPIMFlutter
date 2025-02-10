@@ -30,7 +30,10 @@ flutter:
 
   # Déclarer les fichiers assets ici si nécessaires (images, fonts, etc.)
   assets:
+    - assets/
     - assets/user.jpg
+    - assets/Dashboard.png
+    - assets/back.png
 
   #   - assets/images/
   #   - assets/fonts/
