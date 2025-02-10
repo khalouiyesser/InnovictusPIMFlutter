@@ -1,4 +1,3 @@
-// background_widget.dart
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
