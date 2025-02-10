@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:piminnovictus/Views/login_view.dart';
-import 'package:piminnovictus/views/login_view.dart';
+
+import 'login_view.dart';
 
 
 
@@ -57,11 +57,11 @@ class WelcomePage extends StatelessWidget {
                   // Handle button press
                   print("Button Pressed!");
                    // ✅ Navigate to LoginView
-                 /*Navigator.pushReplacement(
+                 Navigator.pushReplacement(
                     context,
-                   // MaterialPageRoute(builder: (context) => LoginView()),
+                    MaterialPageRoute(builder: (context) => LoginView()),
                   );
-*/
+
                 },
                 style: ElevatedButton.styleFrom(
                   padding:

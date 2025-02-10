@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:piminnovictus/Views/register_view.dart';
-// import 'package:piminnovictus/Views/Users/forgot_password_view.dart';
 import 'dart:ui';
 
-import 'Users/forgot_password_view.dart';
+import '../Users/forgot_password_view.dart';
+import 'RegisterView.dart';
 
 // import 'package:piminnovictus/views/register_view.dart';
 

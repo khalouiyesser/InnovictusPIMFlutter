@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Services/AuthController.dart';
-import 'package:piminnovictus/Views/login_view.dart';
+import '../AuthViews/login_view.dart';
 import '../background.dart';
 import 'otp.dart';
 
