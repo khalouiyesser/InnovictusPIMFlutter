@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:piminnovictus/views/login_view.dart';
+import 'package:piminnovictus/views/AuthViews/login_view.dart';
 
 class WelcomePage extends StatelessWidget {
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:piminnovictus/views/login_view.dart';
+import 'package:piminnovictus/views/AuthViews/login_view.dart';
 import 'package:piminnovictus/views/plan_subscription.dart';
 
 class RegisterView extends StatefulWidget {

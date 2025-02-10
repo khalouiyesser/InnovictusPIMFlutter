@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-import 'package:piminnovictus/views/register_view.dart';
+import 'package:piminnovictus/views/AuthViews/RegisterView.dart';
 
 class LoginView extends StatefulWidget {
 

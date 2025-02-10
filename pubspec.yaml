@@ -17,10 +17,20 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   provider: ^6.1.2
+  fl_chart: ^0.70.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo01.png"
+  adaptive_icon_background: "#000000"  # Specify a background color
+  adaptive_icon_foreground: "assets/logo01.png"
+  remove_alpha_ios: true
 
   flutter_lints: ^4.0.0
 
