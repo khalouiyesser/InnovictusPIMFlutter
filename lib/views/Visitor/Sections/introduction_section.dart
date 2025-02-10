@@ -1,8 +1,26 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Views/AuthViews/login_view.dart';
+import 'package:piminnovictus/views/Visitor/Sections/packs_section.dart';
+import 'package:piminnovictus/views/Visitor/packs_list.dart';
 
 class IntroductionSection extends StatelessWidget {
-  const IntroductionSection({super.key});
+  final VoidCallback onPacksButtonPressed;
+  
+  const IntroductionSection({
+    super.key,
+    required this.onPacksButtonPressed,
+  });
+ void _handleLoginTap(BuildContext context) {
+    Navigator.of(context).push(
+    PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => LoginView(),
+      transitionDuration: Duration.zero, // No transition animation
+      reverseTransitionDuration: Duration.zero,
+    ),
+  );
 
+  }
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -11,36 +29,114 @@ class IntroductionSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Logo and Title
-          Row(
-            children: [
-              Container(
-                padding:const EdgeInsets.all(3), // For the green border
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: const Color(0xFF2E7D32),
-                    width: 2,
+           Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Logo and Title
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFF2E7D32),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: const CircleAvatar(
+                    radius: 16,
+                    backgroundColor: Colors.transparent,
+                    backgroundImage: AssetImage('assets/logo.png'),
                   ),
                 ),
-                child:const CircleAvatar(
-                  radius: 25,
-                  backgroundColor: Colors.transparent,
-                  backgroundImage: AssetImage('assets/logo.png'),
+                const SizedBox(width: 10),
+                const Text(
+                  'GreenEnergy',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 23,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+              ],
+            ),
+            
+            // Login Icon and Text
+            InkWell(
+              onTap: () => _handleLoginTap(context),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: const SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: Icon(
+                        Icons.login,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  
+                ],
               ),
-              const SizedBox(width: 15),
-             const Text(
-                'GreenEnergyChain',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
+        ),
+        Row(children: [ SizedBox(width: 286),
+          Text(
+                    'Login',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                    ),
+                  ),]),
+                    const SizedBox(height: 30),
 
-          const SizedBox(height: 40),
+
+
+Center(
+      child: InkWell(
+        onTap: onPacksButtonPressed,
+        child: SizedBox(
+          width: 250,
+          height: 50,
+          child: Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(25),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: const Text(
+              "View all packs & offers",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ),
+),
+          const SizedBox(height: 30),
 
           // Title
          const Center(
@@ -48,7 +144,7 @@ class IntroductionSection extends StatelessWidget {
               'The Energy Revolution Starts Now !',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 19,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -111,7 +207,7 @@ class IntroductionSection extends StatelessWidget {
                               fontSize: 16,
                               fontWeight: FontWeight.bold)),
                       TextSpan(
-                          text: '⚡ GreenEnergyChain makes it possible ! ',
+                          text: '⚡ GreenEnergy makes it possible ! ',
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -257,8 +353,7 @@ class IntroductionSection extends StatelessWidget {
               ],
             ),
           ),
-        ],
-      ),
+        ]),
     );
   }
 }

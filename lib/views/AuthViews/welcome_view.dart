@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/views/Visitor/visitor_home.dart';
 
 import 'login_view.dart';
 
@@ -59,7 +60,7 @@ class WelcomePage extends StatelessWidget {
                    // ✅ Navigate to LoginView
                  Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => LoginView()),
+                    MaterialPageRoute(builder: (context) => VisitorPage()),
                   );
 
                 },

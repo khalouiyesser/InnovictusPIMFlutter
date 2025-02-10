@@ -23,7 +23,7 @@ class _MyHomePageState extends State<MyHomePage> {
     
        MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: AdminDashboardPage(),
+        home: WelcomePage(),
       );
   }
 }

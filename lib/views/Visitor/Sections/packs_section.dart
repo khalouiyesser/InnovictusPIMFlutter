@@ -1,7 +1,8 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-import 'card_content.dart';
-import 'flip_card.dart';
+import 'package:piminnovictus/views/Visitor/packs_list.dart';
+import '../card_content.dart';
+import '../flip_card.dart';
 
 class PacksSection extends StatefulWidget {
   const PacksSection({super.key});
@@ -13,10 +14,72 @@ class PacksSection extends StatefulWidget {
 class _PacksSectionState extends State<PacksSection> {
   @override
   Widget build(BuildContext context) {
+    // List of all available cards
+    List<Widget> allCards = [
+      const FlipCard(
+        front: CardContent(image: 'assets/panel.png', title: 'Basic Pack'),
+        back: CardContent(
+          text: 'Unlock energy potential...',
+          buttonText: 'Details',
+          signiUpButtont: 'Get It',
+          pack: {
+      "title": "Basic Pack",
+      "image": "assets/panel.png",
+      "description": "Unlock energy potential...",
+    },
+  ),
+        ),
+    
+      const FlipCard(
+        front: CardContent(image: 'assets/background.jpg', title: 'Advanced Pack'),
+        back: CardContent(text: 'Track energy live.', buttonText: 'Details', signiUpButtont: 'Get It',pack: {
+      "title": "Basic Pack",
+      "image": "assets/panel.png",
+      "description": "Unlock energy potential...",
+    },
+  ),),
+      
+      const FlipCard(
+        front: CardContent(image: 'assets/panel.png', title: 'Basic Pack'),
+        back: CardContent(
+          text: 'Unlock energy potential...',
+          buttonText: 'Details',
+          signiUpButtont: 'Get It',pack: {
+      "title": "Basic Pack",
+      "image": "assets/panel.png",
+      "description": "Unlock energy potential...",
+    },
+  ),
+        ),
+      
+      const FlipCard(
+        front: CardContent(image: 'assets/background.jpg', title: 'Advanced Pack'),
+        back: CardContent(text: 'Track energy live.', buttonText: 'Details', signiUpButtont: 'Get It',pack: {
+      "title": "Basic Pack",
+      "image": "assets/panel.png",
+      "description": "Unlock energy potential...",
+    },
+  ),
+      ),
+      const FlipCard(
+        front: CardContent(image: 'assets/background.jpg', title: 'Advanced Pack'),
+        back: CardContent(text: 'Track energy live.', buttonText: 'Details', signiUpButtont: 'Get It',pack: {
+      "title": "Basic Pack",
+      "image": "assets/panel.png",
+      "description": "Unlock energy potential...",
+    },
+  ),
+      ),
+    ];
+
+    // Determine the number of cards to display
+    int totalCards = allCards.length;
+    int cardsToShow = (totalCards > 4) ? 4 : (totalCards == 3 ? 2 : totalCards);
+
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
-         mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // **Colorize Animated Text**
@@ -24,15 +87,8 @@ class _PacksSectionState extends State<PacksSection> {
             animatedTexts: [
               ColorizeAnimatedText(
                 'Power Up with Our Exclusive Packs',
-                textStyle: TextStyle(
-                  fontSize: 19.0, // Font size is required
-                  fontWeight: FontWeight.bold,
-                ),
-                colors: [
-                  Colors.white,
-                  Colors.green,
-                  Colors.white,
-                ],
+                textStyle: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                colors: [Colors.white, Colors.green, Colors.white],
                 speed: const Duration(milliseconds: 200),
               ),
             ],
@@ -42,52 +98,14 @@ class _PacksSectionState extends State<PacksSection> {
 
           // **Description Section**
           Column(
-             mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(Icons.bar_chart, color: Colors.white, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: const Text(
-                      'Choose the Perfect Plan & Take Control of Your Energy!',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(Icons.apartment, color: Colors.white, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: const Text(
-                      'Flexible, transparent, and built for YOU! Whether you’re an individual, '
-                      'a business, or a large enterprise, GreenEnergyChain offers tailored '
-                      'solutions to maximize your energy efficiency and savings.',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(Icons.rocket_launch, color: Colors.white, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: const Text(
-                      'Ready to take the leap? Tap "Account Creation" and start your energy revolution today!',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                  ),
-                ],
-              ),
+              _buildDescriptionRow(Icons.bar_chart, 'Choose the Perfect Plan & Take Control of Your Energy!'),
+              _buildDescriptionRow(Icons.apartment,
+                  'Flexible, transparent, and built for YOU! Whether you’re an individual, a business, or a large enterprise, GreenEnergyChain offers tailored solutions to maximize your energy efficiency and savings.'),
+              _buildDescriptionRow(Icons.rocket_launch,
+                  'Ready to take the leap? Tap "Account Creation" and start your energy revolution today!'),
             ],
           ),
 
@@ -95,7 +113,7 @@ class _PacksSectionState extends State<PacksSection> {
 
           // **Grid of Flip Cards**
           SizedBox(
-            height: 600, // Adjust height as needed
+            height: 420,
             child: GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -103,20 +121,64 @@ class _PacksSectionState extends State<PacksSection> {
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
               childAspectRatio: 0.8,
-              children: const [
-                FlipCard(
-                  front: CardContent(image: 'assets/panel.png', title: 'Basic Pack'),
-                  back: CardContent(text: 'Unlock energy potential.', buttonText: 'See Details'),
-                ),
-                FlipCard(
-                  front: CardContent(image: 'assets/background.jpg', title: 'Advanced Pack'),
-                  back: CardContent(text: 'Track energy live.', buttonText: 'See Details'),
-                ),
-              ],
+              children: allCards.take(cardsToShow).toList(),
             ),
           ),
+
+          // **Custom Button**
+        Center(
+  child: InkWell(
+   onTap: () {
+  Navigator.of(context).push(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => PacksList(),
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
+        ),
+      );
+},
+
+    child: SizedBox(
+      width: 250,  // Custom Width
+      height: 50,  // Custom Height
+      child: Container(
+        alignment: Alignment.center, // Ensures text is centered
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(25),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.3),
+            width: 1,
+          ),
+        ),
+        child: const Text(
+          " View all packs & offers",
+          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold,),
+        ),
+      ),
+    ),
+  ),
+),
+
         ],
       ),
+    );
+  }
+
+  // Helper method for description rows
+  Widget _buildDescriptionRow(IconData icon, String text) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: Colors.white, size: 20),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+          ),
+        ),
+      ],
     );
   }
 }

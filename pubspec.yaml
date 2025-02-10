@@ -12,9 +12,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+
+
   cupertino_icons: ^1.0.8
   provider: ^6.1.2
   animated_text_kit: ^4.2.2
+  visibility_detector: ^0.4.0+2
+  url_launcher: ^6.3.1
+  url_launcher_platform_interface: ^2.3.2
+  url_launcher_web: ^2.3.3
+
+
   fl_chart: ^0.66.0  # Remplace par la dernière version disponible
   http: ^1.2.2
 
