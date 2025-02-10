@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Views/DashboardClient/Dashboard.dart';
+import 'package:piminnovictus/Views/Users/EditProfile.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,10 +25,10 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    DashboardPage(), // Remplace le texte par la page du Dashboard
-    Center(child: Text('Statistiques', style: TextStyle(fontSize: 24))),
-    Center(child: Text('Profil', style: TextStyle(fontSize: 24))),
+    DashboardPage(), //
     Center(child: Text('Panier', style: TextStyle(fontSize: 24))),
+    Center(child: Text('Statistiques', style: TextStyle(fontSize: 24))),
+    ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -60,15 +61,15 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample> {
               label: '',
             ),
             BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_bag),
+              label: '',
+            ),
+            BottomNavigationBarItem(
               icon: Icon(Icons.bar_chart),
               label: '',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_bag),
               label: '',
             ),
           ],
