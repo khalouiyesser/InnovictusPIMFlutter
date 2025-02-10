@@ -8,15 +8,20 @@ version: 1.0.0+1
 environment:
   sdk: ^3.5.4
 
-
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
   provider: ^6.1.2
   animated_text_kit: ^4.2.2
-  fl_chart: ^0.66.0  # Remplace par la dernière version disponible
+  fl_chart: ^0.66.0
   http: ^1.2.2
+  google_sign_in: ^6.2.2
+  firebase_core: ^2.32.0  # Dernière version compatible
+  firebase_auth: ^4.16.0   # Version compatible avec firebase_core
+
+
+
 
 dev_dependencies:
   flutter_test:

@@ -216,7 +216,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                       if(isPhoneInput && phoneController.text.isNotEmpty && isTunisianNumber(phoneController.text)){ // otp par sms
 
 
-                        con.ForgotPassword(emailController.text);
+                        con.forgotPassword(emailController.text);
                         // Navigator.pushReplacement(
                         //   context,
                         //   MaterialPageRoute(builder: (context) => const OTPPage()),
@@ -228,7 +228,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                         //   MaterialPageRoute(builder: (context) => const OTPPage()),
                         // );
                       }else{
-                        con.ForgotPassword(emailController.text);
+                        con.forgotPassword(emailController.text);
                       }
 
                     },
