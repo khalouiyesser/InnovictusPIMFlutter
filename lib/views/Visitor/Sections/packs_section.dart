@@ -109,11 +109,11 @@ class _PacksSectionState extends State<PacksSection> {
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 50),
 
           // **Grid of Flip Cards**
           SizedBox(
-            height: 420,
+            height: 500,
             child: GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -151,6 +151,7 @@ class _PacksSectionState extends State<PacksSection> {
             width: 1,
           ),
         ),
+
         child: const Text(
           " View all packs & offers",
           style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold,),

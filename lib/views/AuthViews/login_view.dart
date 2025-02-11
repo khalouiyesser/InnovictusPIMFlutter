@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
+import '../DashboardClient/Bottom_bar.dart';
 import '../Users/forgot_password_view.dart';
 import 'RegisterView.dart';
 
@@ -153,7 +154,15 @@ void _validatePassword(String value) {
                 onPressed: () {
                     this._validateEmail(emailController.text);
                     _validatePassword(passwordController.text);
-                   bool ok =  validateform();                    
+                   bool ok =  validateform();
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            BottomNavBarExample(),
+                        transitionDuration: Duration.zero,
+                        reverseTransitionDuration: Duration.zero,
+                      ),
+                    );
 
 
                 },
@@ -213,13 +222,13 @@ void _validatePassword(String value) {
 
           // "Welcome back" text with subtle green glow effect
           Positioned(
-            top: 50, // Adjust as needed
+            top: 80, // Adjust as needed
             left: 20, // Adjust as needed
             child: Text(
               "Welcome back",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 24,
+                fontSize: 30,
                 fontWeight: FontWeight.bold,
                 shadows: [
                   Shadow(
@@ -235,13 +244,13 @@ void _validatePassword(String value) {
 
           // "Login" text with green effect
           Positioned(
-            top: 80, // Adjust as needed
+            top: 120, // Adjust as needed
             left: 20, // Adjust as needed
             child: Text(
               "Login",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 24,
+                fontSize: 27,
                 fontWeight: FontWeight.normal,
                 shadows: [
                   Shadow(

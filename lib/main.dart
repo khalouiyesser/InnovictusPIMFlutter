@@ -1,29 +1,25 @@
 import 'package:flutter/material.dart';
-
-import 'Views/AdminViews/AdminDashboard.dart';
-import 'Views/AuthViews/welcome_view.dart';
+import 'package:piminnovictus/Views/AuthViews/welcome_view.dart';
+import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
+import 'package:piminnovictus/Views/DashboardClient/Dashboard.dart';
+import 'package:piminnovictus/Views/Users/NewPassword.dart';
+import 'package:piminnovictus/Views/Users/otp.dart';
 
 void main() {
-  runApp(const MyHomePage(title: 'hello',));
+  runApp(const MyApp());
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-  //const MyHomePage({super.key});
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return 
-    
-       MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: WelcomePage(),
-      );
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: WelcomePage(), // Affiche le Dashboard directement
+    );
   }
 }

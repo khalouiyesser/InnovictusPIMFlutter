@@ -96,7 +96,7 @@ class IntroductionSection extends StatelessWidget {
             ),
           ],
         ),
-        Row(children: [ SizedBox(width: 286),
+        Row(children: [ SizedBox(width: 309),
           Text(
                     'Login',
                     style: TextStyle(

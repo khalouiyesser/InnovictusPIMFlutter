@@ -66,9 +66,9 @@ class WelcomePage extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      const EdgeInsets.symmetric(horizontal: 117 ,vertical: 15),
                   backgroundColor:
-                      const Color.fromARGB(255, 37, 141, 51), // Button color
+const Color(0xFF29E33C), // Button color
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -78,8 +78,11 @@ class WelcomePage extends StatelessWidget {
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
+              
             ),
+            
           ),
+
         ],
       ),
     );
