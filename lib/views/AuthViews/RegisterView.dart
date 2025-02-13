@@ -142,10 +142,10 @@ class _RegisterViewState extends State<RegisterView> {
           _firstNameError == null &&
           _lastNameError == null) {
         print("we now choose your plan  ");
- Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SubscriptionCarousel()),
-                    );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SubscriptionCarousel()),
+        );
       } else {
         print("donner invalide");
       }
@@ -175,16 +175,16 @@ class _RegisterViewState extends State<RegisterView> {
           )),
 
           Positioned(
-              top: 50,
-              left: 100,
+              top: 80,
+              left: 30,
               child: Center(
-                child: Text("Create Account",
+                child: Text("Create An Account",
                     style: TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: 27,
                         fontWeight: FontWeight.bold)),
               )),
-             
+
           Align(
             alignment: Alignment.center,
             child: Padding(
@@ -204,7 +204,7 @@ class _RegisterViewState extends State<RegisterView> {
                       filled: true,
                       fillColor: Colors.white.withOpacity(0.2),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(24),
                       ),
                       // Border when the field is focused
                       focusedBorder: OutlineInputBorder(
@@ -227,10 +227,13 @@ class _RegisterViewState extends State<RegisterView> {
                               ? Colors.red
                               : !firstNameController.text.isEmpty
                                   ? Colors.green
-                                  : Colors.white,
+                                  : Colors
+                                      .transparent, // Bordure verte ou transparente
                           width: 1,
                         ),
                       ),
+
+                      contentPadding: EdgeInsets.only(left: 20),
                     ),
                   ),
 
@@ -273,10 +276,13 @@ class _RegisterViewState extends State<RegisterView> {
                               ? Colors.red
                               : !lastNameController.text.isEmpty
                                   ? Colors.green
-                                  : Colors.white,
+                                  : Colors
+                                      .transparent, // Bordure verte ou transparente
                           width: 1,
                         ),
                       ),
+
+                      contentPadding: EdgeInsets.only(left: 20),
                     ),
                   ),
                   SizedBox(
@@ -322,10 +328,13 @@ class _RegisterViewState extends State<RegisterView> {
                               ? Colors.red
                               : !emailController.text.isEmpty
                                   ? Colors.green
-                                  : Colors.white,
+                                  : Colors
+                                      .transparent, // Bordure verte ou transparente
                           width: 1,
                         ),
                       ),
+
+                      contentPadding: EdgeInsets.only(left: 20),
                     ),
                   ),
                   SizedBox(
@@ -370,10 +379,13 @@ class _RegisterViewState extends State<RegisterView> {
                               ? Colors.red
                               : !passwordController.text.isEmpty
                                   ? Colors.green
-                                  : Colors.white,
+                                  : Colors
+                                      .transparent, // Bordure verte ou transparente
                           width: 1,
                         ),
                       ),
+
+                      contentPadding: EdgeInsets.only(left: 20),
                     ),
                   ),
 
@@ -420,10 +432,13 @@ class _RegisterViewState extends State<RegisterView> {
                               ? Colors.red
                               : !ConfirmPasswordController.text.isEmpty
                                   ? Colors.green
-                                  : Colors.white,
+                                  : Colors
+                                      .transparent, // Bordure verte ou transparente
                           width: 1,
                         ),
                       ),
+
+                      contentPadding: EdgeInsets.only(left: 20),
                     ),
                   ),
                 ],
@@ -432,7 +447,7 @@ class _RegisterViewState extends State<RegisterView> {
           ),
           // Positioned Login Button at the bottom
           Positioned(
-            bottom: 50, // Distance from the bottom of the screen
+            bottom: 70, // Distance from the bottom of the screen
             left: 20, // Align with the left
             right: 20, // Align with the right
             child: Container(
@@ -454,7 +469,7 @@ class _RegisterViewState extends State<RegisterView> {
                   "Next",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 15,
+                    fontSize: 19,
                   ),
                 ),
               ),
@@ -462,12 +477,12 @@ class _RegisterViewState extends State<RegisterView> {
           ),
 
           Positioned(
-              left: 50,
-              bottom: 7,
+              left: 100,
+              bottom: 5,
               child: Row(
                 children: [
                   Text(
-                    "Or do you have an account ",
+                    " you have an account ",
                     style: TextStyle(color: Colors.white, fontSize: 14),
                   ),
                   TextButton(

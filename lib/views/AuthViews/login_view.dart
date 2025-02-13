@@ -8,55 +8,44 @@ import 'RegisterView.dart';
 // import 'package:piminnovictus/views/register_view.dart';
 
 class LoginView extends StatefulWidget {
-
-   @override
- _LoginViewState createState() =>_LoginViewState();
+  @override
+  _LoginViewState createState() => _LoginViewState();
 }
 
+class _LoginViewState extends State<LoginView> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  String? _emailError = null;
+  String? _passwordError = null;
 
-
-class _LoginViewState extends State<LoginView> 
-{
-
-
-TextEditingController emailController = TextEditingController();
-TextEditingController passwordController = TextEditingController();
-String? _emailError = null;
-String ?  _passwordError = null;
-
-void _validateEmail(String value)
-{
-  setState(() {
+  void _validateEmail(String value) {
+    setState(() {
       if (value.isEmpty) {
         _emailError = "Email cannot be empty";
         print("Email cannot be empty");
-      } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
+      } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+          .hasMatch(value)) {
         _emailError = "Enter a valid email";
         print("Enter a valid email");
       } else {
         _emailError = null;
       }
     });
+  }
 
-}
-void _validatePassword(String value) {
+  void _validatePassword(String value) {
     setState(() {
-      
       if (value.isEmpty) {
         _passwordError = "Password cannot be empty";
-                print("Password cannot be empty");
-
+        print("Password cannot be empty");
       } else if (value.length < 6) {
         _passwordError = "Password must be at least 6 characters";
-    print("Password must be at least 6 characters");
-
+        print("Password must be at least 6 characters");
       } else {
         _passwordError = null;
       }
-       });
-    }
-    
-
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,9 +80,20 @@ void _validatePassword(String value) {
                       filled: true,
                       fillColor: Colors.white.withOpacity(0.2),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide(
+                            color: Color(0xFF29E33C),
+                            width: 2), // Bordure verte au focus
                       ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide(
+                            color: Color(0xFF29E33C),
+                            width: 1), // Bordure verte au focus
+                      ),
+
+                      contentPadding:
+                          EdgeInsets.only(left: 20), // Décale le hint à droite
                     ),
                   ),
                   SizedBox(height: 20), // Space between fields
@@ -102,18 +102,27 @@ void _validatePassword(String value) {
                   TextField(
                     controller: passwordController,
                     obscureText: true, // To hide the password text
-                    onChanged: (value)=>_validatePassword(value),
+                    onChanged: (value) => _validatePassword(value),
                     decoration: InputDecoration(
                       errorText: _passwordError,
-                      errorStyle: TextStyle(color:Colors.red),
+                      errorStyle: TextStyle(color: Colors.red),
                       hintText: "Password",
                       hintStyle: TextStyle(color: Colors.white),
                       filled: true,
                       fillColor: Colors.white.withOpacity(0.2),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(24),
                         borderSide: BorderSide.none,
                       ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide(
+                            color: Color(0xFF29E33C),
+                            width: 1), // Bordure verte au focus
+                      ),
+
+                      contentPadding:
+                          EdgeInsets.only(left: 20), // Décale le hint à droite
                     ),
                   ),
                   SizedBox(height: 10),
@@ -125,13 +134,14 @@ void _validatePassword(String value) {
                       onPressed: () {
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => ForgotPasswordView()),
+                          MaterialPageRoute(
+                              builder: (context) => ForgotPasswordView()),
                         );
                       },
                       child: Text(
                         "Forgot Password?",
                         style: TextStyle(
-                          color: Colors.white70,
+                          color: const Color.fromARGB(255, 255, 255, 255),
                           fontSize: 14,
                         ),
                       ),
@@ -152,19 +162,17 @@ void _validatePassword(String value) {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                    this._validateEmail(emailController.text);
-                    _validatePassword(passwordController.text);
-                   bool ok =  validateform();
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            BottomNavBarExample(),
-                        transitionDuration: Duration.zero,
-                        reverseTransitionDuration: Duration.zero,
-                      ),
-                    );
-
-
+                  this._validateEmail(emailController.text);
+                  _validatePassword(passwordController.text);
+                  bool ok = validateform();
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          BottomNavBarExample(),
+                      transitionDuration: Duration.zero,
+                      reverseTransitionDuration: Duration.zero,
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(
@@ -252,13 +260,6 @@ void _validatePassword(String value) {
                 color: Colors.white,
                 fontSize: 27,
                 fontWeight: FontWeight.normal,
-                shadows: [
-                  Shadow(
-                    color: Colors.green.withOpacity(0.6), // Green shadow
-                    offset: Offset(0, 4),
-                    blurRadius: 10,
-                  ),
-                ],
               ),
             ),
           ),
@@ -266,31 +267,20 @@ void _validatePassword(String value) {
       ),
     );
   }
-  
-  bool validateform() {
-    if(!emailController.text.isEmpty &&!passwordController.text.isEmpty)
-    {
-      if(_emailError==null && _passwordError == null)
-      {
-        print("navigate to the dashboard page ");
-        return true ;
-      }
 
-      
-    }
-    else 
-    {
+  bool validateform() {
+    if (!emailController.text.isEmpty && !passwordController.text.isEmpty) {
+      if (_emailError == null && _passwordError == null) {
+        print("navigate to the dashboard page ");
+        return true;
+      }
+    } else {
       print("conditions not matches");
       _validateEmail(emailController.text);
       _validatePassword(passwordController.text);
       return false;
-
     }
 
-
-return false ;
-
+    return false;
   }
-  
- 
- }
+}

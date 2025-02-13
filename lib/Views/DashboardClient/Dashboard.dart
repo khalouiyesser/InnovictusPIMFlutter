@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Views/DashboardClient/buyEnergie.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:fl_chart/fl_chart.dart';
+
 
 class DashboardPage extends StatelessWidget {
   @override
@@ -60,19 +62,20 @@ class DashboardPage extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              _buildIconButton(Icons.search, screenWidth),
+                              _buildImageButton("assets/wallet.png",
+                                  screenWidth * 0.09, screenWidth * 0.09, context ),
                               SizedBox(width: screenWidth * 0.04),
                               Stack(
                                 children: [
-                                  _buildIconButton(
-                                      Icons.notifications, screenWidth),
+                                      _buildImageButton("assets/settings.png", screenWidth * 0.08, screenWidth * 0.08, context),
+
                                   Positioned(
-                                    right: screenWidth * 0.015,
-                                    top: screenWidth * 0.015,
+                                    right: 0,
+                                    top: 0,
                                     child: Container(
-                                      width: screenWidth * 0.02,
-                                      height: screenWidth * 0.02,
-                                      decoration: const BoxDecoration(
+                                      width: screenWidth * 0.03,
+                                      height: screenWidth * 0.03,
+                                      decoration: BoxDecoration(
                                         color: Colors.red,
                                         shape: BoxShape.circle,
                                       ),
@@ -199,61 +202,79 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _buildIconButton(IconData icon, double screenWidth) {
-    return Container(
-      width: screenWidth * 0.1,
-      height: screenWidth * 0.1,
-      padding: EdgeInsets.all(screenWidth * 0.02),
-      decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.5),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(
-        icon,
-        color: Colors.white,
-        size: 26,
+  Widget _buildImageButton(String assetPath, double width, double height, BuildContext context) {
+    return GestureDetector(
+   onTap: () {
+       if (assetPath == "assets/settings.png") {
+         Navigator.push(
+           context,
+          MaterialPageRoute(builder: (context) => BuyEnergiePage()),
+         );
+       }
+     },      child: Image.asset(
+        assetPath,
+        width: width,
+        height: height,
+        fit: BoxFit.contain,
       ),
     );
   }
+}
 
-  Widget _buildInfoCard(String title, String value, IconData icon) {
-    return Container(
-      height: 100,
-      decoration: BoxDecoration(
-        color: Color.fromARGB(255, 26, 39, 33).withOpacity(0.70),
-        border: Border.all(
-          color: const Color(0xFF29E33C).withOpacity(0.11),
-          width: 1,
+Widget _buildIconButton(IconData icon, double screenWidth) {
+  return Container(
+    width: screenWidth * 0.1,
+    height: screenWidth * 0.1,
+    padding: EdgeInsets.all(screenWidth * 0.02),
+    decoration: BoxDecoration(
+      color: Colors.grey.withOpacity(0.5),
+      shape: BoxShape.circle,
+    ),
+    child: Icon(
+      icon,
+      color: Colors.white,
+      size: 26,
+    ),
+  );
+}
+
+Widget _buildInfoCard(String title, String value, IconData icon) {
+  return Container(
+    height: 100,
+    decoration: BoxDecoration(
+      color: Color.fromARGB(255, 26, 39, 33).withOpacity(0.70),
+      border: Border.all(
+        color: const Color(0xFF29E33C).withOpacity(0.11),
+        width: 1,
+      ),
+      borderRadius: BorderRadius.circular(15),
+    ),
+    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: const Color(0xFF29E33C), size: 23),
+        const SizedBox(height: 8),
+        Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 15,
+          ),
         ),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: const Color(0xFF29E33C), size: 23),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 15,
-            ),
+        const SizedBox(height: 3),
+        Text(
+          value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 19,
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: 3),
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 19,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }
 
 Widget _buildElectricityChart() {
