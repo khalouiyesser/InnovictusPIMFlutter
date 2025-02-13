@@ -1,15 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Views/DashboardClient/energy_settings_sheet.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:fl_chart/fl_chart.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
+  @override
+  _DashboardPageState createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  // Add state variable for energy percentage
+  double _currentEnergyPercentage = 85.0; // Starting with your default value
+
+  Widget _buildIconButton(IconData icon, double screenWidth) {
+    return GestureDetector( // Wrap with GestureDetector
+      onTap: () {
+        if (icon == Icons.search) {
+          EnergySettingsSheet.show(
+            context,
+            initialPercentage: _currentEnergyPercentage,
+            onSave: (newPercentage) {
+              setState(() {
+                _currentEnergyPercentage = newPercentage;
+                // Update the CircularProgressPainter with new percentage
+              });
+            },
+          );
+        }
+      },
+      child: Container(
+        width: screenWidth * 0.1,
+        height: screenWidth * 0.1,
+        padding: EdgeInsets.all(screenWidth * 0.02),
+        decoration: BoxDecoration(
+          color: Colors.grey.withOpacity(0.5),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          icon,
+          color: Colors.white,
+          size: 26,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-
-    double padding = screenWidth * 0.04; // Proportionnel à la largeur
+    double padding = screenWidth * 0.04;
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A140C),
@@ -25,6 +66,7 @@ class DashboardPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Your existing Row with avatar and welcome text...
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -64,8 +106,7 @@ class DashboardPage extends StatelessWidget {
                               SizedBox(width: screenWidth * 0.04),
                               Stack(
                                 children: [
-                                  _buildIconButton(
-                                      Icons.notifications, screenWidth),
+                                  _buildIconButton(Icons.notifications, screenWidth),
                                   Positioned(
                                     right: screenWidth * 0.015,
                                     top: screenWidth * 0.015,
@@ -84,6 +125,30 @@ class DashboardPage extends StatelessWidget {
                           ),
                         ],
                       ),
+                      // Rest of your UI...
+                      SizedBox(height: screenHeight * 0.02),
+                      // Update the CircularProgressPainter to use _currentEnergyPercentage
+                      Center(
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            CustomPaint(
+                              size: Size(screenWidth * 0.5, screenWidth * 0.5),
+                              painter: CircularProgressPainter(_currentEnergyPercentage / 100), // Convert percentage to decimal
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(height: screenHeight * 0.02),
+                                const Text('Energy Usages',
+                                    style: TextStyle(
+                                        color: Colors.white70, fontSize: 16)),
+                                const SizedBox(height: 1),
+                                Text('${_currentEnergyPercentage.toInt()}%', // Update to use current percentage
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: screenWidth * 0.1,
+                                        fontWeight: FontWeight.normal)),
                       SizedBox(height: screenHeight * 0.02),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: padding),
@@ -189,33 +254,18 @@ class DashboardPage extends StatelessWidget {
                       SizedBox(height: screenHeight * 0.03),
                       _buildElectricityChart(),
                     ],
-                  ),
-                ),
+                  ),]
+                        ),
+                      ),]
               ),
             ),
-          ],
+        ),),],
         ),
       ),
     );
   }
 
-  Widget _buildIconButton(IconData icon, double screenWidth) {
-    return Container(
-      width: screenWidth * 0.1,
-      height: screenWidth * 0.1,
-      padding: EdgeInsets.all(screenWidth * 0.02),
-      decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.5),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(
-        icon,
-        color: Colors.white,
-        size: 26,
-      ),
-    );
-  }
-
+ 
   Widget _buildInfoCard(String title, String value, IconData icon) {
     return Container(
       height: 100,
