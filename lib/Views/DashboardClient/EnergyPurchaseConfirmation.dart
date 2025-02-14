@@ -49,14 +49,14 @@ class EnergyPurchaseConfirmationPage extends StatelessWidget {
                 style: TextStyle(color: Colors.white70, fontSize: 16),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 30),
-              LinearProgressIndicator(
+              const SizedBox(height: 30),
+              const LinearProgressIndicator(
                 value: 0.7,
                 backgroundColor: Colors.grey,
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 "Your energy is being delivered...",
                 style: TextStyle(color: Colors.white54, fontSize: 17),
               ),
@@ -72,13 +72,19 @@ class EnergyPurchaseConfirmationPage extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF29E33C),
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  backgroundColor: const Color(0xFF29E33C),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: Text("Back to Home", style: TextStyle(fontSize: 16)),
+                child: const Text(
+                  "Back to Home",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white, 
+                  ),
+                ),
               ),
             ],
           ),

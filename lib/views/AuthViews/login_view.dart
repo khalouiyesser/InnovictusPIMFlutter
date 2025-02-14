@@ -81,9 +81,8 @@ class _LoginViewState extends State<LoginView> {
                       fillColor: Colors.white.withOpacity(0.2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide(
-                            color: Color(0xFF29E33C),
-                            width: 2), // Bordure verte au focus
+                        borderSide: BorderSide.none,
+// Bordure verte au focus
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),

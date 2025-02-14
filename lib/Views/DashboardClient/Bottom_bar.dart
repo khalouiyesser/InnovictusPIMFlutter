@@ -61,11 +61,7 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample> {
               label: '',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_bag),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart),
+              icon: Icon(Icons.shopify),
               label: '',
             ),
             BottomNavigationBarItem(
