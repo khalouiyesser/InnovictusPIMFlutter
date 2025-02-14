@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class EnergySettingsSheet extends StatefulWidget {
@@ -18,6 +17,7 @@ class EnergySettingsSheet extends StatefulWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true, // Permet à la feuille de s'adapter à la taille de l'écran
       builder: (BuildContext context) {
         return EnergySettingsSheet(
           initialPercentage: initialPercentage,
@@ -42,36 +42,53 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Facteurs d'échelle pour les polices et les espacements
+    final double fontSizeTitle = screenWidth * 0.05; 
+    final double fontSizePercentage = screenWidth * 0.06; 
+    final double fontSizeButton = screenWidth * 0.04; 
+    final double paddingHorizontal = screenWidth * 0.05; 
+    final double paddingVertical = screenHeight * 0.02; 
+    final double iconSize = screenWidth * 0.08; 
+    final double buttonHeight = screenHeight * 0.06; 
+    final double borderRadius = screenWidth * 0.1; 
     return Container(
+              width: MediaQuery.of(context).size.width, // 90% of the screen width
+
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 16, 34, 26),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
+        color: const Color(0xFF0A140C),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(borderRadius),
+          topRight: Radius.circular(borderRadius),
         ),
         border: Border.all(
-color: Colors.white.withOpacity(0.11),
+          color: Colors.white.withOpacity(0.11),
           width: 1,
         ),
       ),
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(
+        horizontal: paddingHorizontal,
+        vertical: paddingVertical,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
+          Text(
             'Set Your Energy Sale Percentage',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 18,
+              fontSize: fontSizeTitle,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 30),
+          SizedBox(height: screenHeight * 0.03), // 3% de la hauteur de l'écran
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                icon: const Icon(Icons.remove_circle_outline, color: Colors.white),
+                icon: Icon(Icons.remove_circle_outline, color: Colors.white, size: iconSize),
                 onPressed: () {
                   setState(() {
                     if (_energyPercentage > 0) {
@@ -81,22 +98,25 @@ color: Colors.white.withOpacity(0.11),
                 },
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: EdgeInsets.symmetric(
+                  horizontal: paddingHorizontal,
+                  vertical: paddingVertical,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(borderRadius),
                 ),
                 child: Text(
                   '${_energyPercentage.toInt()}%',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 24,
+                    fontSize: fontSizePercentage,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.add_circle_outline, color: Colors.white),
+                icon: Icon(Icons.add_circle_outline, color: Colors.white, size: iconSize),
                 onPressed: () {
                   setState(() {
                     if (_energyPercentage < 100) {
@@ -107,29 +127,29 @@ color: Colors.white.withOpacity(0.11),
               ),
             ],
           ),
-          const SizedBox(height: 30),
+          SizedBox(height: screenHeight * 0.03), // 3% de la hauteur de l'écran
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF29E33C),
-              minimumSize: const Size(double.infinity, 50),
+              minimumSize: Size(double.infinity, buttonHeight),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(borderRadius),
               ),
             ),
             onPressed: () {
               widget.onSave(_energyPercentage);
               Navigator.pop(context);
             },
-            child: const Text(
+            child: Text(
               'Save',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: fontSizeButton,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: screenHeight * 0.02), // 2% de la hauteur de l'écran
         ],
       ),
     );
