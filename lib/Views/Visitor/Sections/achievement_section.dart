@@ -13,83 +13,70 @@ class _AchievementSectionState extends State<AchievementSection> {
   bool _isCounting = false;
 
   void _handleVisibilityChange(VisibilityInfo visibilityInfo) {
-  if (visibilityInfo.visibleFraction > 0.8 && !_isCounting) {
-    setState(() {
-      _isVisible = true; // Directly set true without resetting
-      _isCounting = true; // Prevent re-triggering
-    });
+    if (visibilityInfo.visibleFraction > 0.8 && !_isCounting) {
+      setState(() {
+        _isVisible = true;
+        _isCounting = true;
+      });
 
-    // Allow animation to complete before allowing restart
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          _isCounting = false; // Re-enable counting when visible again
-        });
-      }
-    });
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) {
+          setState(() {
+            _isCounting = false;
+          });
+        }
+      });
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
     return VisibilityDetector(
       key: const Key("achievement_section"),
       onVisibilityChanged: _handleVisibilityChange,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            const Text(
-              "Our GreenEnergyChain Community and Achievements",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          int crossAxisCount = constraints.maxWidth > 800 ? 4 : 2;
+
+          return Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: constraints.maxWidth > 600 ? 40 : 20,
+              vertical: 20,
             ),
-            const SizedBox(height: 20),
-            GridView.count(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 20,
-              childAspectRatio: 3 / 2,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
               children: [
-                AchievementCard(
-                  key: UniqueKey(), // Ensures animation restarts correctly
-                  count: 520,
-                  label: "Regular Users",
-                  isVisible: _isVisible,
+                const Text(
+                  "Our GreenEnergyChain Community and Achievements",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-                AchievementCard(
-                  key: UniqueKey(),
-                  count: 120,
-                  label: "Enterprise Users",
-                  isVisible: _isVisible,
-                ),
-                AchievementCard(
-                  key: UniqueKey(),
-                  count: 100,
-                  label: "Carbon Footprint Certified",
-                  isVisible: _isVisible,
-                ),
-                AchievementCard(
-                  key: UniqueKey(),
-                  count: 10000,
-                  label: "Installed Solar Panels",
-                  isVisible: _isVisible,
+                const SizedBox(height: 20),
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 20,
+                  childAspectRatio: 3 / 2,
+                  children: [
+                    AchievementCard(count: 520, label: "Regular Users", isVisible: _isVisible),
+                    AchievementCard(count: 120, label: "Enterprise Users", isVisible: _isVisible),
+                    AchievementCard(count: 100, label: "Carbon Footprint Certified", isVisible: _isVisible),
+                    AchievementCard(count: 10000, label: "Installed Solar Panels", isVisible: _isVisible),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -109,36 +96,43 @@ class AchievementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        TweenAnimationBuilder<int>(
-          key: UniqueKey(), // Ensures animation restarts correctly
-          duration: const Duration(seconds: 5),
-          tween: isVisible
-              ? IntTween(begin: 0, end: count)
-              : IntTween(begin: count, end: count),
-          builder: (context, value, child) {
-            return Text(
-              "+$value",
-              style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: constraints.maxWidth > 150 ? 10 : 5),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TweenAnimationBuilder<int>(
+                key: UniqueKey(),
+                duration: const Duration(seconds: 5),
+                tween: isVisible
+                    ? IntTween(begin: 0, end: count)
+                    : IntTween(begin: count, end: count),
+                builder: (context, value, child) {
+                  return Text(
+                    "+$value",
+                    style: TextStyle(
+                      fontSize: constraints.maxWidth > 150 ? 25 : 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
-        const SizedBox(height: 5),
-        Text(
-          label,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.white,
+              const SizedBox(height: 5),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: constraints.maxWidth > 150 ? 16 : 14,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 }
