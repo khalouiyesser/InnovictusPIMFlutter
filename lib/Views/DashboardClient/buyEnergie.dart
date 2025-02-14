@@ -1,172 +1,319 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
+import 'package:piminnovictus/Views/DashboardClient/EnergyPurchaseConfirmation.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
+class BuyEnergiePage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: StepForm(),
-    );
-  }
+  _BuyEnergiePageState createState() => _BuyEnergiePageState();
 }
 
-class StepForm extends StatefulWidget {
-  @override
-  _StepFormState createState() => _StepFormState();
-}
-
-class _StepFormState extends State<StepForm> {
+class _BuyEnergiePageState extends State<BuyEnergiePage> {
   int _currentStep = 0;
-  TextEditingController _quantityController = TextEditingController();
-  TextEditingController _codeController = TextEditingController();
+  double _quantity = 20;
+  double _coin = 0.0;
+  List<String> _codeDigits = List.filled(4, "");
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Card(
-          color: Colors.black,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text("Get Started on 3 Steps",
-                    style: TextStyle(color: Colors.white, fontSize: 18)),
-                SizedBox(height: 20),
-                _buildProgressIndicator(),
-                SizedBox(height: 30),
-                _buildStepContent(),
-                SizedBox(height: 30),
-                _buildNextButton(),
-              ],
-            ),
+      backgroundColor: const Color(0xFF0A140C),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          // Ajout du ScrollView
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back,
+                        color: Colors.white, size: 28),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
+              _buildEnergyIndicator(),
+              const SizedBox(height: 20),
+              _buildStepProgress(),
+              const SizedBox(height: 20),
+              _buildStepContent(),
+              const SizedBox(height: 30),
+              _buildNavigationButtons(),
+              const SizedBox(
+                  height:
+                      20), // Pour éviter que les boutons soient collés en bas
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildProgressIndicator() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(3, (index) {
-        return Row(
+  Widget _buildEnergyIndicator() {
+    return Column(
+      children: [
+        const Text(
+          "Power your home with clean energy!",
+          style: TextStyle(
+              color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 30),
+        Stack(
+          alignment: Alignment.center,
           children: [
-            CircleAvatar(
-              radius: 10,
-              backgroundColor:
-                  _currentStep >= index ? Colors.green : Colors.grey,
+            CustomPaint(
+              size: Size(150, 150),
+              painter: CircularProgressPainter(0.7),
             ),
-            if (index < 2) ...[
-              SizedBox(width: 10),
-              Container(
-                width: 40,
-                height: 2,
-                color: _currentStep > index ? Colors.green : Colors.grey,
-              ),
-              SizedBox(width: 10),
-            ],
+            const Column(
+              children: [
+                Text("Total Energy",
+                    style: TextStyle(color: Colors.white, fontSize: 14)),
+                Text("70%",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold)),
+              ],
+            ),
           ],
-        );
-      }),
+        ),
+        SizedBox(height: 50),
+      ],
+    );
+  }
+
+  Widget _buildStepProgress() {
+    List<IconData> icons = [
+      Icons.signal_cellular_alt,
+      Icons.lock,
+      Icons.check_circle
+    ];
+    return Column(
+      children: [
+        const Text("Get Started in 3 Steps",
+            style: TextStyle(color: Colors.white)),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(icons.length, (index) {
+            bool isActive = index == _currentStep;
+            return Row(
+              children: [
+                if (index != 0)
+                  Container(
+                      width: 100,
+                      height: 2,
+                      color:
+                          isActive ? const Color(0xFF29E33C) : Colors.white70),
+                CircleAvatar(
+                  backgroundColor:
+                      isActive ? const Color(0xFF29E33C) : Colors.white70,
+                  radius: 18,
+                  child: Icon(icons[index], color: Colors.white),
+                ),
+              ],
+            );
+          }),
+        ),
+      ],
     );
   }
 
   Widget _buildStepContent() {
-    switch (_currentStep) {
-      case 0:
-        return _buildQuantityField();
-      case 1:
-        return _buildCodeField();
-      case 2:
-        return _buildInformation();
-      default:
-        return Container();
-    }
+    return Card(
+      color: Colors.grey[900],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      margin: const EdgeInsets.symmetric(horizontal: 27),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            if (_currentStep == 0) _buildQuantitySelector(),
+            if (_currentStep == 1) _buildCodeInput(),
+            if (_currentStep == 2) _buildConfirmation(),
+          ],
+        ),
+      ),
+    );
   }
 
-  Widget _buildQuantityField() {
+  Widget _buildQuantitySelector() {
     return Column(
       children: [
-        Text("Quantité", style: TextStyle(color: Colors.white)),
-        SizedBox(height: 10),
-        TextField(
-          controller: _quantityController,
-          style: TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.grey[800],
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-            hintText: "Entrer la quantité",
-            hintStyle: TextStyle(color: Colors.white70),
+        const Text("Enter Energy Quantity",
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold)),
+        const SizedBox(height: 20),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+              color: Colors.grey[800], borderRadius: BorderRadius.circular(16)),
+          child: TextField(
+            style: const TextStyle(color: Colors.white),
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+                border: InputBorder.none,
+                hintText: "Enter quantity en KW ",
+                hintStyle: TextStyle(color: Colors.white54)),
+            onChanged: (value) {
+              setState(() {
+                _quantity = double.tryParse(value) ?? 0;
+                _coin = _quantity * 2.5;
+              });
+            },
           ),
-          keyboardType: TextInputType.number,
         ),
+        const SizedBox(height: 15),
+        Text("Equivalent in Coins: $_coin",
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold)),
       ],
     );
   }
 
-  Widget _buildCodeField() {
+  Widget _buildCodeInput() {
     return Column(
       children: [
-        Text("Enter your code", style: TextStyle(color: Colors.white)),
+        const Text("Enter your Code", style: TextStyle(color: Colors.white)),
         SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(
-            4,
-            (index) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: SizedBox(
-                width: 50,
-                height: 50,
-                child: TextField(
-                  style: TextStyle(color: Colors.white),
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.grey[800],
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
-                  keyboardType: TextInputType.number,
-                  maxLength: 1,
-                ),
-              ),
-            ),
-          ),
+          children: List.generate(4, (index) => _buildCodeBox(index)),
         ),
       ],
     );
   }
 
-  Widget _buildInformation() {
-    return Text("Information",
-        style: TextStyle(color: Colors.white, fontSize: 18));
+  Widget _buildCodeBox(int index) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 5),
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+          color: Colors.grey[700], borderRadius: BorderRadius.circular(8)),
+      child: TextField(
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        keyboardType: TextInputType.number,
+        maxLength: 1,
+        decoration: InputDecoration(counterText: "", border: InputBorder.none),
+        onChanged: (value) {
+          setState(() {
+            _codeDigits[index] = value;
+          });
+        },
+      ),
+    );
   }
 
-  Widget _buildNextButton() {
-    return ElevatedButton(
-      onPressed: () {
-        if (_currentStep < 2) {
-          setState(() {
-            _currentStep++;
-          });
-        }
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.green,
-        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-      ),
-      child: Text(_currentStep == 2 ? "Confirm" : "Next"),
+  Widget _buildConfirmation() {
+    return const Column(
+      children: [
+        Text(
+            "Your payment with coins has been successfully processed. Thank you for choosing clean solar energy !",
+            style: TextStyle(
+                color: Color.fromARGB(255, 255, 255, 255),
+                fontSize: 18,
+                fontWeight: FontWeight.bold)),
+        SizedBox(height: 10),
+        Text(" Check your email for the details!",
+            style: TextStyle(color: Color(0xFF29E33C))),
+      ],
     );
+  }
+
+  Widget _buildNavigationButtons() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 30),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Opacity(
+            opacity: _currentStep == 0 ? 0 : 1.0,
+            child: ElevatedButton(
+              onPressed: _currentStep > 0
+                  ? () => setState(() => _currentStep--)
+                  : null,
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15)),
+              child: const Text("Back",
+                  style: TextStyle(color: Colors.white, fontSize: 16)),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                if (_currentStep < 2) {
+                  _currentStep++;
+                } else {
+                  // Naviguer vers la page de confirmation
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => EnergyPurchaseConfirmationPage(
+                            energyAmount: _quantity)),
+                  );
+                }
+              });
+            },
+            style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF29E33C),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 15)),
+            child: const Text("Next",
+                style: TextStyle(color: Colors.white, fontSize: 16)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Classe pour dessiner l'indicateur circulaire
+class CircularProgressPainter extends CustomPainter {
+  final double percentage;
+
+  CircularProgressPainter(this.percentage);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint backgroundPaint = Paint()
+      ..color = Colors.grey.withOpacity(0.3)
+      ..strokeWidth = 10
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    Paint progressPaint = Paint()
+      ..shader = LinearGradient(
+        colors: [Colors.green.shade300, Colors.green.shade800],
+      ).createShader(
+          Rect.fromCircle(center: Offset(0, 0), radius: size.width / 2))
+      ..strokeWidth = 10
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    Offset center = Offset(size.width / 2, size.height / 2);
+    double radius = size.width / 2 - 5;
+
+    canvas.drawCircle(center, radius, backgroundPaint);
+
+    double startAngle = -pi / 2;
+    double sweepAngle = 2 * pi * percentage;
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), startAngle,
+        sweepAngle, false, progressPaint);
+  }
+
+  @override
+  bool shouldRepaint(CircularProgressPainter oldDelegate) {
+    return oldDelegate.percentage != percentage;
   }
 }

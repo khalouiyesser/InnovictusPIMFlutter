@@ -28,7 +28,7 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample> {
     DashboardPage(), //
     Center(child: Text('Panier', style: TextStyle(fontSize: 24))),
     Center(child: Text('Statistiques', style: TextStyle(fontSize: 24))),
-    ProfilePage(),
+    EditProfile(),
   ];
 
   void _onItemTapped(int index) {
