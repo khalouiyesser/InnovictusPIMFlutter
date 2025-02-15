@@ -64,7 +64,12 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 crossAxisAlignment: CrossAxisAlignment.center, // Centre horizontalement
                 mainAxisSize: MainAxisSize.min, // Ajuste la taille au contenu
                 children: [
-                  const Text(
+                                  const SizedBox(height: 1),
+
+                  const Align(
+                     alignment: Alignment.centerLeft, // Aligner le texte à gauche4
+                     child : Text(
+
                     "Forgot Password?",
                     style: TextStyle(
                       fontSize: 24,
@@ -73,11 +78,12 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                     ),
                     textAlign: TextAlign.center,
                   ),
+                  
+                  ),
 
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 100),
                   // const SizedBox(height: 40),
 
-                  const SizedBox(height: 40),
 
                   isPhoneInput
                       ? TextField(
@@ -205,10 +211,12 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
 
 
 
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 80),
 
                   buildActionButton(
+                    
                     text: "Continue",
+                    
                     backgroundColor: Color(0xFF29E33C),
                     textColor: Colors.white,
                     onTap: () {
@@ -298,7 +306,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         padding: const EdgeInsets.symmetric(vertical: 15),
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(24),
           border: borderColor != null ? Border.all(color: borderColor, width: 2) : null,
         ),
         child: Center(
