@@ -27,7 +27,6 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample> {
   final List<Widget> _pages = [
     DashboardPage(), //
     Center(child: Text('Panier', style: TextStyle(fontSize: 24))),
-    Center(child: Text('Statistiques', style: TextStyle(fontSize: 24))),
     EditProfile(),
   ];
 

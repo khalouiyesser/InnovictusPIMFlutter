@@ -1,34 +1,16 @@
-import 'package:piminnovictus/Models/config/Theme/theme_prefernces.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class DarkThemePreference {
-  static const String _key = "isDarkTheme";
+class ThemePreferences {
+  static const String key = "isDarkMode";
 
-  /// Enregistre la préférence pour le thème sombre
-  static Future<void> setDarkTheme(bool value) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool(_key, value);
-    } catch (e) {
-      print("Erreur en enregistrant le thème : $e");
-    }
+  Future<void> setTheme(bool isDarkMode) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(key, isDarkMode);
   }
 
-  /// Récupère la préférence pour le thème sombre
-  static Future<bool> getTheme() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      return prefs.getBool(_key) ?? false;
-    } catch (e) {
-      print("Erreur en récupérant le thème : $e");
-      return false;
-    }
+  Future<bool> getTheme() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(key) ?? false;
   }
 }
 
-class SharedPreferences {
-  static getInstance() {}
-
-  setBool(String key, bool isDarkMode) {}
-
-  getBool(String key) {}
-}
