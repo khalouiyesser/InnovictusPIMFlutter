@@ -5,10 +5,12 @@ class FlipCard extends StatefulWidget {
   final Widget front;
   final Widget back;
 
+
   const FlipCard({
     super.key,
     required this.front,
     required this.back,
+
   });
 
   @override

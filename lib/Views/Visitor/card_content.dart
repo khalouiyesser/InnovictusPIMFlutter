@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/packs.dart';
 import 'package:piminnovictus/Views/AuthViews/RegisterView.dart';
 import 'package:piminnovictus/views/Visitor/pack_details.dart';
 
@@ -8,8 +9,12 @@ class CardContent extends StatelessWidget {
   final String? text;
   final String? buttonText;
   final String? signiUpButtont;
-  final Map<String, String>? pack;
+    final String? selectButtont;
 
+final VoidCallback? onSelectPressed;
+    final bool isSelected; 
+
+final Pack pack;
   const CardContent({
     super.key,
     this.image,
@@ -17,18 +22,17 @@ class CardContent extends StatelessWidget {
     this.text,
     this.buttonText,
     this.signiUpButtont,
-    this.pack,
+        this.selectButtont,
+
+        this.onSelectPressed, // Add this parameter
+        this.isSelected = false, 
+
+required this.pack,
   });
 
   @override
   Widget build(BuildContext context) {
-    final packData = pack ??
-        {
-          "title": title ?? "",
-          "image": image ?? "",
-          "description": text ?? "",
-        };
-
+    
     return LayoutBuilder(
       builder: (context, constraints) {
         final cardWidth = constraints.maxWidth;
@@ -56,8 +60,8 @@ class CardContent extends StatelessWidget {
             color: Colors.white.withOpacity(0.1),
             borderRadius: BorderRadius.circular(15),
             border: Border.all(
-              color: Colors.white.withOpacity(0.3),
-              width: 1,
+              color: isSelected ? const Color(0xFF29E33C) : Colors.white.withOpacity(0.3),
+      width: isSelected ? 3 : 1,
             ),
           ),
           child: Column(
@@ -95,12 +99,14 @@ class CardContent extends StatelessWidget {
               ],
               if (text != null)
                 Expanded(
-                  child: Text(
-                    text!,
-                    style: textStyle,
-                    maxLines: maxLines,
-                    overflow: TextOverflow
-                        .ellipsis, // Automatically adds "..." when text overflows
+                  child: Center(
+                    child: Text(
+                      text!,
+                      style: textStyle,
+                      maxLines: maxLines,
+                      overflow: TextOverflow
+                          .ellipsis, // Automatically adds "..." when text overflows
+                    ),
                   ),
                 ),
               if (buttonText != null && signiUpButtont != null) ...[
@@ -129,7 +135,7 @@ class CardContent extends StatelessWidget {
                               PageRouteBuilder(
                                 pageBuilder:
                                     (context, animation, secondaryAnimation) =>
-                                        PackDetails(pack: packData),
+PackDetails(pack: pack),
                                 transitionDuration: Duration.zero,
                                 reverseTransitionDuration: Duration.zero,
                               ),
@@ -164,7 +170,7 @@ class CardContent extends StatelessWidget {
                             PageRouteBuilder(
                               pageBuilder:
                                   (context, animation, secondaryAnimation) =>
-                                      RegisterView(),
+                                      RegisterView(packId: pack.id),
                               transitionDuration: Duration.zero,
                               reverseTransitionDuration: Duration.zero,
                             ),
@@ -189,6 +195,35 @@ class CardContent extends StatelessWidget {
                       ),
                     ),
                   ],
+                 
+                ),
+              ]else if (selectButtont != null) ...[
+                // New select button for subscription view
+                SizedBox(height: cardHeight * 0.01),
+                Center(
+                  child: SizedBox(
+                    width: cardWidth * 0.35,
+                    height: cardHeight * 0.12,
+                    child: OutlinedButton(
+                      onPressed: onSelectPressed,
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(
+                            color: Color(0xFF29E33C), width: 2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: EdgeInsets.zero,
+                      ),
+                      child: Text(
+                        selectButtont!,
+                        style: TextStyle(
+                          color: const Color(0xFF29E33C),
+                          fontSize: cardWidth * 0.08,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ],

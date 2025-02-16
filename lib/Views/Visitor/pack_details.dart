@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/packs.dart';
 import 'package:piminnovictus/Views/AuthViews/RegisterView.dart';
 
 class PackDetails extends StatelessWidget {
-  final Map<String, String> pack;
-
-  const PackDetails({Key? key, required this.pack}) : super(key: key);
-
+ final Pack pack; 
+const PackDetails({
+    Key? key, 
+    required this.pack
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,7 +16,7 @@ class PackDetails extends StatelessWidget {
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(
-          "${pack["title"]} Details",
+          "${pack.title} Details",
           style: TextStyle(
             color: Colors.white,
             fontSize: 20, // Fixed size for app bar title
@@ -44,7 +46,7 @@ class PackDetails extends StatelessWidget {
               children: [
                 // 🌟 Title
                 Text(
-                  pack["title"]!,
+                  pack.title,
                   style: TextStyle(
                     fontSize: titleFontSize,
                     fontWeight: FontWeight.bold,
@@ -58,7 +60,7 @@ class PackDetails extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: Image.asset(
-                      pack["image"]!,
+                      pack.image,
                       height: imageHeight,
                       width: imageWidth,
                       fit: BoxFit.cover,
@@ -71,7 +73,7 @@ class PackDetails extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: basePadding * 0.5),
                   child: Text(
-                    pack["description"]!,
+                    pack.description,
                     style: TextStyle(
                       fontSize: descriptionFontSize,
                       color: Colors.white,
@@ -93,11 +95,13 @@ class PackDetails extends StatelessWidget {
                       borderColor: Color(0xFF29E33C),
                       fontSize: buttonFontSize, // Responsive font size
                       onTap: () {
+                                  print('PackDetails - Passing pack ID: ${pack.id}');
+
                         Navigator.of(context).push(
                           PageRouteBuilder(
+                            
                             pageBuilder: (context, animation, secondaryAnimation) =>
-                                RegisterView(),
-                            transitionDuration: Duration.zero,
+ RegisterView(packId: pack.id),                            transitionDuration: Duration.zero,
                             reverseTransitionDuration: Duration.zero,
                           ),
                         );
@@ -112,7 +116,7 @@ class PackDetails extends StatelessWidget {
                   padding: EdgeInsets.only(bottom: basePadding * 0.5),
                   child: Center(
                     child: Text(
-                      "Everything about ${pack["title"]} !",
+                      "Everything about ${pack.title} !",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: titleFontSize * 0.8,
@@ -133,16 +137,16 @@ class PackDetails extends StatelessWidget {
                     padding: EdgeInsets.all(basePadding),
                     child: Column(
                       children: [
-                        _buildTableRow("💰 Prix :", "999€", descriptionFontSize),
-                        _buildDivider(),
-                        _buildTableRow("🔆 Panneaux Solaires :", "6 panneaux", descriptionFontSize),
-                        _buildDivider(),
-                        _buildTableRow("⚡ Énergie Gagnée :", "5 kWh/jour", descriptionFontSize),
-                        _buildDivider(),
-                        _buildTableRow("🌍 Fossile Évitée :", "10 kg CO₂/jour", descriptionFontSize),
-                        _buildDivider(),
-                        _buildTableRow("✅ Certification :", "Empreinte carbone réduite", descriptionFontSize),
-                      ],
+                        _buildTableRow("💰 Prix :", pack.price, descriptionFontSize),
+        _buildDivider(),
+        _buildTableRow("🔆 Panneaux Solaires :", pack.panelsCount, descriptionFontSize),
+        _buildDivider(),
+        _buildTableRow("⚡ Énergie Gagnée :", pack.energyGain, descriptionFontSize),
+        _buildDivider(),
+        _buildTableRow("🌍 Fossile Évitée :", pack.co2Saved, descriptionFontSize),
+        _buildDivider(),
+        _buildTableRow("✅ Certification :", pack.certification, descriptionFontSize),
+      ],
                     ),
                   ),
                 ),
