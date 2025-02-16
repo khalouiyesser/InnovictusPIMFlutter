@@ -1,88 +1,340 @@
-import 'package:flutter/material.dart';
-import 'dart:ui';
+// import 'package:flutter/material.dart';
+// import 'dart:ui';
+//
+// import '../../Services/AuthController.dart';
+// import '../Users/forgot_password_view.dart';
+// import 'RegisterView.dart';
+//
+// // import 'package:piminnovictus/views/register_view.dart';
+//
+// class LoginView extends StatefulWidget {
+//   @override
+//   _LoginViewState createState() => _LoginViewState();
+// }
+//
+// class _LoginViewState extends State<LoginView> {
+//   final AuthController con = AuthController();
+//   TextEditingController emailController = TextEditingController();
+//   TextEditingController passwordController = TextEditingController();
+//   String? _emailError;
+//   String? _passwordError;
+//
+//   void _validateEmail(String value) {
+//     setState(() {
+//       if (value.isEmpty) {
+//         _emailError = "Email cannot be empty";
+//       } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$").hasMatch(value)) {
+//         _emailError = "Enter a valid email";
+//       } else {
+//         _emailError = null;
+//       }
+//     });
+//   }
+//
+//   void _validatePassword(String value) {
+//     setState(() {
+//       if (value.isEmpty) {
+//         _passwordError = "Password cannot be empty";
+//       } else if (value.length < 6) {
+//         _passwordError = "Password must be at least 6 characters";
+//       } else {
+//         _passwordError = null;
+//       }
+//     });
+//   }
+//
+//   bool validateForm() {
+//     _validateEmail(emailController.text);
+//     _validatePassword(passwordController.text);
+//     return _emailError == null && _passwordError == null;
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       resizeToAvoidBottomInset: false,
+//       body: Stack(
+//         children: [
+//           Positioned.fill(
+//             child: Image.asset(
+//               "assets/Pulse.png",
+//               fit: BoxFit.cover,
+//             ),
+//           ),
+//           Center(
+//             child: Padding(
+//               padding: const EdgeInsets.symmetric(horizontal: 20.0),
+//               child: Column(
+//                 mainAxisSize: MainAxisSize.min, // To center the form
+//                 children: [
+//                   TextField(
+//                     controller: emailController,
+//                     onChanged: _validateEmail,
+//                     decoration: InputDecoration(
+//                       errorText: _emailError,
+//                       errorStyle: TextStyle(color: Colors.red),
+//                       hintText: "Email",
+//                       hintStyle: TextStyle(color: Colors.white),
+//                       filled: true,
+//                       fillColor: Colors.white.withOpacity(0.2),
+//                       border: OutlineInputBorder(
+//                         borderRadius: BorderRadius.circular(20),
+//                         borderSide: BorderSide.none,
+//                       ),
+//                     ),
+//                   ),
+//                   SizedBox(height: 20),
+//                   TextField(
+//                     controller: passwordController,
+//                     obscureText: true, // To hide the password text
+//                     onChanged: (value)=>_validatePassword(value),
+//                     decoration: InputDecoration(
+//                       errorText: _passwordError,
+//                       errorStyle: TextStyle(color:Colors.red),
+//                       hintText: "Password",
+//                       hintStyle: TextStyle(color: Colors.white),
+//                       filled: true,
+//                       fillColor: Colors.white.withOpacity(0.2),
+//                       border: OutlineInputBorder(
+//                         borderRadius: BorderRadius.circular(20),
+//                         borderSide: BorderSide.none,
+//                       ),
+//                     ),
+//                   ),
+//                   SizedBox(height: 10),
+//                   Align(
+//                     alignment: Alignment.centerRight,
+//                     child: TextButton(
+//                       onPressed: () {
+//                         Navigator.pushReplacement(
+//                           context,
+//                           MaterialPageRoute(builder: (context) => ForgotPasswordView()),
+//                         );
+//                       },
+//                       child: Text(
+//                         "Forgot Password?",
+//                         style: TextStyle(color: Colors.white70, fontSize: 14),
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//
+//           // Positioned Login Button at the bottom
+//           Positioned(
+//             bottom: 100, // Distance from the bottom of the screen
+//             left: 20, // Align with the left
+//             right: 20, // Align with the right
+//             child: Container(
+//               width: MediaQuery.of(context).size.width * 0.8, // 80% width
+//               height: 50,
+//               child: ElevatedButton(
+//                 onPressed: () {
+//                     this._validateEmail(emailController.text);
+//                     _validatePassword(passwordController.text);
+//                    bool ok =  validateform();
+//
+//
+//                 },
+//                 style: ElevatedButton.styleFrom(
+//                   backgroundColor: const Color.fromARGB(
+//                       255, 31, 219, 59), // Green background color
+//                   shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.circular(20),
+//                   ),
+//                   padding: EdgeInsets.symmetric(vertical: 15),
+//                 ),
+//                 child: Text(
+//                   "Login",
+//                   style: TextStyle(
+//                     color: Colors.white,
+//                     fontSize: 15,
+//                   ),
+//                   SizedBox(height: 10),
+//                   OutlinedButton(
+//                     onPressed: () {
+//                       con.signInWithGoogle();
+//                     },
+//                     style: OutlinedButton.styleFrom(
+//                       side: BorderSide(color: Colors.white),
+//                       shape: RoundedRectangleBorder(
+//                         borderRadius: BorderRadius.circular(20),
+//                       ),
+//                       padding: EdgeInsets.symmetric(vertical: 15),
+//                     ),
+//                     child: Row(
+//                       mainAxisSize: MainAxisSize.min,
+//                       children: [
+//                         Image.asset("assets/google_logo.png", height: 24),
+//                         SizedBox(width: 10),
+//                         Text("Sign in with Google", style: TextStyle(color: Colors.white)),
+//                       ],
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//           Positioned(
+//             bottom: 30,
+//             left: 10,
+//             right: 20,
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Text(
+//                   "Don't have an account? ",
+//                   style: TextStyle(color: Colors.white, fontSize: 14),
+//                 ),
+//                 TextButton(
+//                   onPressed: () {
+//                     Navigator.push(
+//                       context,
+//                       MaterialPageRoute(builder: (context) => RegisterView()),
+//                     );
+//                   },
+//                   child: Text(
+//                     "Sign up",
+//                     style: TextStyle(color: Colors.green, fontSize: 14),
+//                   ),
+//                 )
+//               ],
+//             ),
+//           ),
+//
+//           // "Welcome back" text with subtle green glow effect
+//           Positioned(
+//             top: 50, // Adjust as needed
+//             left: 20, // Adjust as needed
+//             child: Text(
+//               "Welcome back",
+//               style: TextStyle(
+//                 color: Colors.white,
+//                 fontSize: 24,
+//                 fontWeight: FontWeight.bold,
+//                 shadows: [
+//                   Shadow(
+//                     color: const Color.fromARGB(255, 255, 255, 255)
+//                         .withOpacity(0), // Green shadow
+//                     offset: Offset(0, 4),
+//                     blurRadius: 10,
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//
+//           // "Login" text with green effect
+//           Positioned(
+//             top: 80, // Adjust as needed
+//             left: 20, // Adjust as needed
+//             child: Text(
+//               "Login",
+//               style: TextStyle(
+//                 color: Colors.white,
+//                 fontSize: 24,
+//                 fontWeight: FontWeight.normal,
+//                 shadows: [
+//                   Shadow(
+//                     color: Colors.green.withOpacity(0.6), // Green shadow
+//                     offset: Offset(0, 4),
+//                     blurRadius: 10,
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//   bool validateform() {
+//     if (!emailController.text.isEmpty && !passwordController.text.isEmpty) {
+//       if (_emailError == null && _passwordError == null) {
+//         print("navigate to the dashboard page ");
+//         return true;
+//       }
+//     } else {
+//       print("conditions not matches");
+//       _validateEmail(emailController.text);
+//       _validatePassword(passwordController.text);
+//       return false;
+//     }
+//
+//     return false;
+//   }
+// }
 
-import '../DashboardClient/Bottom_bar.dart';
+import 'package:flutter/material.dart';
+import '../../Services/AuthController.dart';
 import '../Users/forgot_password_view.dart';
 import 'RegisterView.dart';
 
-// import 'package:piminnovictus/views/register_view.dart';
-
 class LoginView extends StatefulWidget {
-
-   @override
- _LoginViewState createState() =>_LoginViewState();
+  @override
+  _LoginViewState createState() => _LoginViewState();
 }
 
+class _LoginViewState extends State<LoginView> {
+  final AuthController con = AuthController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  String? _emailError;
+  String? _passwordError;
 
-
-class _LoginViewState extends State<LoginView> 
-{
-
-
-TextEditingController emailController = TextEditingController();
-TextEditingController passwordController = TextEditingController();
-String? _emailError = null;
-String ?  _passwordError = null;
-
-void _validateEmail(String value)
-{
-  setState(() {
+  void _validateEmail(String value) {
+    setState(() {
       if (value.isEmpty) {
         _emailError = "Email cannot be empty";
-        print("Email cannot be empty");
-      } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
+      } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}").hasMatch(value)) {
         _emailError = "Enter a valid email";
-        print("Enter a valid email");
       } else {
         _emailError = null;
       }
     });
+  }
 
-}
-void _validatePassword(String value) {
+  void _validatePassword(String value) {
     setState(() {
-      
       if (value.isEmpty) {
         _passwordError = "Password cannot be empty";
-                print("Password cannot be empty");
-
       } else if (value.length < 6) {
         _passwordError = "Password must be at least 6 characters";
-    print("Password must be at least 6 characters");
-
       } else {
         _passwordError = null;
       }
-       });
-    }
-    
+    });
+  }
 
+  bool validateForm() {
+    _validateEmail(emailController.text);
+    _validatePassword(passwordController.text);
+    return _emailError == null && _passwordError == null;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset:
-          false, // Disable resizing of the screen when keyboard appears
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           Positioned.fill(
             child: Image.asset(
-              "assets/Pulse.png", // Your background image
-              fit: BoxFit.cover, // Ensures the image covers the entire screen
+              "assets/Pulse.png",
+              fit: BoxFit.cover,
             ),
           ),
-
-          // Centered form content
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
-                mainAxisSize: MainAxisSize.min, // To center the form
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Email input field
                   TextField(
-                    controller: this.emailController,
-                    onChanged: (value) => _validateEmail(value),
+                    controller: emailController,
+                    onChanged: _validateEmail,
                     decoration: InputDecoration(
                       errorText: _emailError,
                       errorStyle: TextStyle(color: Colors.red),
@@ -96,16 +348,14 @@ void _validatePassword(String value) {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20), // Space between fields
-
-                  // Password input field
+                  SizedBox(height: 20),
                   TextField(
                     controller: passwordController,
-                    obscureText: true, // To hide the password text
-                    onChanged: (value)=>_validatePassword(value),
+                    obscureText: true,
+                    onChanged: _validatePassword,
                     decoration: InputDecoration(
                       errorText: _passwordError,
-                      errorStyle: TextStyle(color:Colors.red),
+                      errorStyle: TextStyle(color: Colors.red),
                       hintText: "Password",
                       hintStyle: TextStyle(color: Colors.white),
                       filled: true,
@@ -117,8 +367,6 @@ void _validatePassword(String value) {
                     ),
                   ),
                   SizedBox(height: 10),
-
-                  // Forgot Password
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
@@ -130,10 +378,7 @@ void _validatePassword(String value) {
                       },
                       child: Text(
                         "Forgot Password?",
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.white70, fontSize: 14),
                       ),
                     ),
                   ),
@@ -141,34 +386,23 @@ void _validatePassword(String value) {
               ),
             ),
           ),
-
-          // Positioned Login Button at the bottom
           Positioned(
-            bottom: 100, // Distance from the bottom of the screen
-            left: 20, // Align with the left
-            right: 20, // Align with the right
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.8, // 80% width
+            bottom: 100,
+            left: 20,
+            right: 20,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                    this._validateEmail(emailController.text);
-                    _validatePassword(passwordController.text);
-                   bool ok =  validateform();
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            BottomNavBarExample(),
-                        transitionDuration: Duration.zero,
-                        reverseTransitionDuration: Duration.zero,
-                      ),
-                    );
-
-
+                  if (validateForm()) {
+                    print("Navigate to the dashboard page");
+                  } else {
+                    print("Conditions not met");
+                  }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(
-                      255, 31, 219, 59), // Green background color
+                  backgroundColor: Color.fromARGB(255, 31, 219, 59),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -184,113 +418,34 @@ void _validatePassword(String value) {
               ),
             ),
           ),
-
-          // Positioned "You don't have an account yet?" text at the bottom
           Positioned(
-            bottom: 30, // Distance from the bottom of the screen
-            left: 10, // Align with the left
-            right: 20, // Align with the right
+            bottom: 30,
+            left: 10,
+            right: 20,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "You don't have an account yet? ",
-                  style: TextStyle(
-                    color: Colors.white, // Set text color to white
-                    fontSize: 14, // Adjust font size as needed
-                  ),
+                  "Don't have an account? ",
+                  style: TextStyle(color: Colors.white, fontSize: 14),
                 ),
                 TextButton(
                   onPressed: () {
-                    print("you should navigate to  sign up page ");
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => RegisterView()),
                     );
                   },
                   child: Text(
-                    "sign up",
-                    style: TextStyle(
-                      color: Colors.green, // Or another contrasting color
-                      fontSize: 14, // Adjust font size as needed
-                    ),
+                    "Sign up",
+                    style: TextStyle(color: Colors.green, fontSize: 14),
                   ),
                 )
               ],
-            ),
-          ),
-
-          // "Welcome back" text with subtle green glow effect
-          Positioned(
-            top: 80, // Adjust as needed
-            left: 20, // Adjust as needed
-            child: Text(
-              "Welcome back",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                shadows: [
-                  Shadow(
-                    color: const Color.fromARGB(255, 255, 255, 255)
-                        .withOpacity(0), // Green shadow
-                    offset: Offset(0, 4),
-                    blurRadius: 10,
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // "Login" text with green effect
-          Positioned(
-            top: 120, // Adjust as needed
-            left: 20, // Adjust as needed
-            child: Text(
-              "Login",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 27,
-                fontWeight: FontWeight.normal,
-                shadows: [
-                  Shadow(
-                    color: Colors.green.withOpacity(0.6), // Green shadow
-                    offset: Offset(0, 4),
-                    blurRadius: 10,
-                  ),
-                ],
-              ),
             ),
           ),
         ],
       ),
     );
   }
-  
-  bool validateform() {
-    if(!emailController.text.isEmpty &&!passwordController.text.isEmpty)
-    {
-      if(_emailError==null && _passwordError == null)
-      {
-        print("navigate to the dashboard page ");
-        return true ;
-      }
-
-      
-    }
-    else 
-    {
-      print("conditions not matches");
-      _validateEmail(emailController.text);
-      _validatePassword(passwordController.text);
-      return false;
-
-    }
-
-
-return false ;
-
-  }
-  
- 
- }
+}
