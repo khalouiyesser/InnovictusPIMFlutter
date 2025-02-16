@@ -94,6 +94,11 @@ class ThemeProvider extends ChangeNotifier {
   ThemeMode get themeMode => _isDarkMode ? ThemeMode.dark : ThemeMode.light;
   bool get isDarkMode => _isDarkMode;
 
+  //get currentTheme => null;
+  ThemeData get currentTheme => _isDarkMode
+      ? MyThemes.darkTheme
+      : MyThemes.lightTheme; // ✅ Retourne le bon thème
+
   // Future pour attendre l'initialisation des SharedPreferences
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
@@ -135,6 +140,8 @@ class MyThemes {
       titleTextStyle: TextStyle(color: blackText, fontSize: 18),
     ),
     iconTheme: const IconThemeData(color: blackColor),
+    //iconTheme: const IconThemeData(color: primaryColor), // ✅ Icônes en vert
+
     cardColor: cardColor,
     colorScheme: const ColorScheme.light(
       primary: primaryColorLight,
@@ -145,6 +152,7 @@ class MyThemes {
     buttonTheme: const ButtonThemeData(
       buttonColor: primaryColor,
     ),
+    useMaterial3: true, // Important si tu utilises Material 3
   );
 
   // 🌑 Thème sombre
@@ -163,10 +171,17 @@ class MyThemes {
       primary: primaryColor,
       secondary: primaryColor,
       surface: Color(0xFF151F1A),
-      onPrimary: whiteColor,
+      //onPrimary: whiteColor,
+      onPrimary: whiteColor, // ✅ Texte blanc dans le mode sombre
+      onSurface: whiteColor, // ✅ Texte blanc sur les surfaces sombres
+    ),
+    textTheme: const TextTheme(
+      titleMedium: TextStyle(color: whiteColor), // ✅ Texte des titres en blanc
+      bodyLarge: TextStyle(color: whiteColor), // ✅ Texte normal en blanc
     ),
     buttonTheme: const ButtonThemeData(
       buttonColor: primaryColor,
     ),
+    useMaterial3: true, // Important si tu utilises Material 3
   );
 }
