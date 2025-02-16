@@ -479,13 +479,22 @@ import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Views/DashboardClient/Wallet.dart';
 import 'package:piminnovictus/Views/DashboardClient/buyEnergie.dart';
+import 'package:piminnovictus/Views/DashboardClient/energy_settings_sheet.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:provider/provider.dart';
 import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:fl_chart/fl_chart.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
+
+  @override
+  _DashboardPageState createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  // Déclaration de la variable _currentEnergyPercentage
+  double _currentEnergyPercentage = 50.0; // Exemple de valeur initiale
 
   @override
   Widget build(BuildContext context) {
@@ -502,14 +511,13 @@ class DashboardPage extends StatelessWidget {
     // Vous pouvez choisir ici la couleur de fond pour le cercle (ici on utilise la teinte du hint ou un gris)
     final Color progressBackgroundColor = theme.hintColor;
 
-    var bodyText2;
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
       body: SafeArea(
         child: Stack(
           children: [
-            // Vous pouvez adapter BlurredRadialBackground pour qu'il soit également thématisé
+            // Fond d'écran (background)
             BlurredRadialBackground(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -579,7 +587,7 @@ class DashboardPage extends StatelessWidget {
                                       height: screenWidth * 0.03,
                                       decoration: const BoxDecoration(
                                         color: Colors
-                                            .red, // Vous pouvez aussi le thématiser
+                                            .red, // Vous pouvez le thématiser
                                         shape: BoxShape.circle,
                                       ),
                                     ),
@@ -726,15 +734,21 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-// Bouton image (exemple pour accéder à BuyEnergiePage ou WalletPage)
+  // Bouton image pour accéder à WalletPage ou afficher EnergySettingsSheet en pop-up
   Widget _buildImageButton(
       String assetPath, double width, double height, BuildContext context) {
     return GestureDetector(
       onTap: () {
         if (assetPath == "assets/settings.png") {
-          Navigator.push(
+          // Ouvrir EnergySettingsSheet en pop-up
+          EnergySettingsSheet.show(
             context,
-            MaterialPageRoute(builder: (context) => BuyEnergiePage()),
+            initialPercentage: _currentEnergyPercentage,
+            onSave: (newPercentage) {
+              setState(() {
+                _currentEnergyPercentage = newPercentage;
+              });
+            },
           );
         } else if (assetPath == "assets/wallet.png") {
           Navigator.push(
@@ -811,7 +825,7 @@ class DashboardPage extends StatelessWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).brightness == Brightness.dark
                 ? Colors.black.withOpacity(0.1) // Mode sombre
-                : Color(0xFFDDECE3).withOpacity(0.7), // Mode clair
+                : const Color(0xFFDDECE3).withOpacity(0.7), // Mode clair
             border: Border.all(
               color: theme.colorScheme.primary.withOpacity(0.11) ??
                   MyThemes.primaryColor.withOpacity(0.11),
@@ -964,8 +978,9 @@ class CircularProgressPainter extends CustomPainter {
         colors: [progressColor, Colors.white70],
       ).createShader(
         Rect.fromCircle(
-            center: Offset(size.width / 2, size.height / 2),
-            radius: size.width / 2),
+          center: Offset(size.width / 2, size.height / 2),
+          radius: size.width / 2,
+        ),
       )
       ..style = PaintingStyle.stroke
       ..strokeWidth = 14

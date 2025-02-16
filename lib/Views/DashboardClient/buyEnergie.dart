@@ -388,17 +388,6 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.arrow_back,
-                            color: theme.colorScheme.primary,
-                            size: 28,
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ),
                     ),
                     _buildEnergyIndicator(theme),
                     const SizedBox(height: 20),

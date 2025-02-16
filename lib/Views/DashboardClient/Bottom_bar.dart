@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Views/DashboardClient/Dashboard.dart';
+import 'package:piminnovictus/Views/DashboardClient/buyEnergie.dart';
 import 'package:piminnovictus/Views/Users/EditProfile.dart';
 import 'package:provider/provider.dart';
 
@@ -28,7 +29,7 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample> {
 
   final List<Widget> _pages = [
     DashboardPage(), //
-    Center(child: Text('Panier', style: TextStyle(fontSize: 24))),
+    BuyEnergiePage(),
     EditProfile(),
   ];
 
