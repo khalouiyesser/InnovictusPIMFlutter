@@ -183,8 +183,8 @@ class EditProfile extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: Theme.of(context).iconTheme.color,
                                 shape: BoxShape.circle,
-                                border:
-                                    Border.all(color: Colors.white, width: 2),
+                                border: Border.all(
+                                    color: Color(0xFF29E33C), width: 2),
                               ),
                               child: const Icon(Icons.check,
                                   color: Colors.white, size: 14),
@@ -298,11 +298,17 @@ class EditProfile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-        padding: const EdgeInsets.all(16),
+        height: 60, // ✅ Hauteur fixée pour uniformiser les tailles
+
+        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(17),
+          border: Border.all(
+            color: Color(0xFF29E33C), // Couleur verte
+            width: 0, // Épaisseur de la bordure
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

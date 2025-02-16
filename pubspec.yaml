@@ -23,6 +23,8 @@ dependencies:
   http: ^1.3.0  # ✅ Corrigé l'erreur d'espacement
 
   fl_chart: ^0.66.0  # Remplace par la dernière version disponible
+  table_calendar: ^3.0.8
+
 
 dev_dependencies:
   flutter_test:

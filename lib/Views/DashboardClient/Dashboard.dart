@@ -477,6 +477,7 @@ class CircularProgressPainter extends CustomPainter {
 
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
+import 'package:piminnovictus/Views/DashboardClient/Wallet.dart';
 import 'package:piminnovictus/Views/DashboardClient/buyEnergie.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:provider/provider.dart';
@@ -725,7 +726,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  // Bouton image (exemple pour accéder à BuyEnergiePage)
+// Bouton image (exemple pour accéder à BuyEnergiePage ou WalletPage)
   Widget _buildImageButton(
       String assetPath, double width, double height, BuildContext context) {
     return GestureDetector(
@@ -734,6 +735,11 @@ class DashboardPage extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => BuyEnergiePage()),
+          );
+        } else if (assetPath == "assets/wallet.png") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => WalletPage()),
           );
         }
       },

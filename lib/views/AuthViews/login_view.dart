@@ -153,7 +153,7 @@ class _LoginViewState extends State<LoginView> {
 
           // Positioned Login Button at the bottom
           Positioned(
-            bottom: 100, // Distance from the bottom of the screen
+            bottom: 150, // Distance from the bottom of the screen
             left: 20, // Align with the left
             right: 20, // Align with the right
             child: Container(
@@ -191,10 +191,46 @@ class _LoginViewState extends State<LoginView> {
               ),
             ),
           ),
-
-          // Positioned "You don't have an account yet?" text at the bottom
           Positioned(
-            bottom: 30, // Distance from the bottom of the screen
+            bottom: 80,
+            left: 20,
+            right: 20,
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: 50,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  print("Login with Google");
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF2C2E2F).withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(
+                      color: Color(0xFF29E33C), // Couleur verte
+                      width: 1, // Épaisseur de la bordure
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                ),
+                icon: Image.asset(
+                  'assets/google.png',
+                  height: 24,
+                ),
+                label: Text(
+                  "Login with Google",
+                  style: TextStyle(
+                    color: const Color.fromARGB(221, 255, 255, 255),
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            bottom: 10, // Distance from the bottom of the screen
             left: 10, // Align with the left
             right: 20, // Align with the right
             child: Row(
