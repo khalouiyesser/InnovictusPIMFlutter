@@ -13,6 +13,30 @@ class AuthController {
 
   AuthController() : api = Const().url;
 
+
+  /// Fonction pour l'oubli de mot de passe
+  Future<Map<String, dynamic>> loginSimple(String email,String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$api/auth/login"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'email': email,'password':password}),
+      );
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        print(response.body);
+        return json.decode(response.body);
+      } else {
+        throw Exception('Échec de l\'envoi de l\'OTP: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Erreur lors de l\'envoi de l\'OTP: $e');
+    }
+  }
+
+
+
+
   /// Fonction pour l'oubli de mot de passe
   Future<Map<String, dynamic>> forgotPassword(String email) async {
     try {
@@ -34,7 +58,7 @@ class AuthController {
   }
 
   /// Connexion avec Google
-  Future<UserCredential?> signInWithGoogle() async {
+  Future<UserCredential?> signUpWithGoogle() async {
     try {
       // Démarrer le processus de connexion Google
       final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();

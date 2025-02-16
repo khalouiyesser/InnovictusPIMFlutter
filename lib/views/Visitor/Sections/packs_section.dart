@@ -1,5 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/packs.dart';
 import 'package:piminnovictus/views/Visitor/packs_list.dart';
 import '../card_content.dart';
 import '../flip_card.dart';
@@ -23,64 +24,66 @@ class _PacksSectionState extends State<PacksSection> {
         final buttonHeight = screenWidth * 0.12;
 
         // List of all available cards
-        List<Widget> allCards = [
-          const FlipCard(
-            front: CardContent(image: 'assets/panel.png', title: 'Basic Pack'),
-            back: CardContent(
-              text:
-                  'Unlock energy potential Unlock energy potentialhhhhhhhhhhhhhhhhhhhhhhhhh hhhhhhhhhhhhhhhhh Unlock energy potential Unlock energy potential Unlock energy potential Unlock energy potentialUnlock energy potential Unlock energy potentialUnlock energy potentialUnlock energy potential v Unlock energy potentialUnlock energy potential ...',
-              buttonText: 'Details',
-              signiUpButtont: 'Get It',
-              pack: {
-                "title": "Basic Pack",
-                "image": "assets/panel.png",
-                "description":
-                    "Unlock energy potential Unlock energy potential Unlock energy potential Unlock energy potential Unlock energy potential Unlock energy potentialUnlock energy potential Unlock energy potentialUnlock energy potentialUnlock energy potential v Unlock energy potentialUnlock energy potential ...",
-              },
-            ),
+          final List<Pack> packs = [
+          Pack(
+            id: '1',
+            title: 'Basic Pack',
+            image: 'assets/panel.png',
+            description: 'Unlock energy potential Unlock energy potential...',
+            price: '999',
+            panelsCount: '4',
+            energyGain: '400kW',
+            co2Saved: '200kg',
+            certification: 'ISO Certified'
           ),
-          const FlipCard(
-            front: CardContent(
-                image: 'assets/background.jpg', title: 'Advanced Pack'),
-            back: CardContent(
-              text: 'Track energy live.',
-              buttonText: 'Details',
-              signiUpButtont: 'Get It',
-              pack: {
-                "title": "Advanced Pack",
-                "image": "assets/background.jpg",
-                "description": "Track energy live.",
-              },
-            ),
+          Pack(
+            id: '2',
+            title: 'Advanced Pack',
+            image: 'assets/background.jpg',
+            description: 'Track energy live.',
+            price: '1999',
+            panelsCount: '8',
+            energyGain: '800kW',
+            co2Saved: '400kg',
+            certification: 'ISO Certified'
           ),
-          const FlipCard(
-            front: CardContent(image: 'assets/panel.png', title: 'Basic Pack'),
-            back: CardContent(
-              text: 'Unlock energy potential...',
-              buttonText: 'Details',
-              signiUpButtont: 'Get It',
-              pack: {
-                "title": "Basic Pack",
-                "image": "assets/panel.png",
-                "description": "Unlock energy potential...",
-              },
-            ),
+ Pack(
+            id: '3',
+            title: 'Advanced Pack1',
+            image: 'assets/background.jpg',
+            description: 'Track energy live.',
+            price: '1999',
+            panelsCount: '8',
+            energyGain: '800kW',
+            co2Saved: '400kg',
+            certification: 'ISO Certified'
+          ),      
+           Pack(
+            id: '4',
+            title: 'Advanced Pack',
+            image: 'assets/background.jpg',
+            description: 'Track energy live.',
+            price: '1999',
+            panelsCount: '8',
+            energyGain: '800kW',
+            co2Saved: '400kg',
+            certification: 'ISO Certified'
+          ),  ];
+
+        // Create flip cards using Pack objects
+        List<Widget> allCards = packs.map((pack) => FlipCard(
+          front: CardContent(
+            image: pack.image,
+            title: pack.title,
+            pack: pack,
           ),
-          const FlipCard(
-            front: CardContent(
-                image: 'assets/background.jpg', title: 'Advanced Pack'),
-            back: CardContent(
-              text: 'Track energy live.',
-              buttonText: 'Details',
-              signiUpButtont: 'Get It',
-              pack: {
-                "title": "Advanced Pack",
-                "image": "assets/background.jpg",
-                "description": "Track energy live.",
-              },
-            ),
+          back: CardContent(
+            text: pack.description,
+            buttonText: 'Details',
+            signiUpButtont: 'Get It',
+            pack: pack,
           ),
-        ];
+        )).toList();
 
         // Determine the number of cards to display
         int totalCards = allCards.length;

@@ -1,258 +1,562 @@
+// import 'package:flutter/material.dart';
+// import 'package:piminnovictus/Models/packs.dart';
+// import 'package:piminnovictus/Views/Visitor/card_content.dart';
+// import 'package:piminnovictus/Views/Visitor/flip_card.dart';
+//
+// class SubscriptionCarousel extends StatefulWidget {
+//   final String? preselectedPackId;
+//
+//   const SubscriptionCarousel({Key? key, this.preselectedPackId}) : super(key: key);
+//
+//   @override
+//   State<SubscriptionCarousel> createState() => _SubscriptionCarouselState();
+// }
+//
+// class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
+//   final List<Pack> packs = [
+//     Pack(
+//       id: '1',
+//       title: 'Basic Pack',
+//       image: 'assets/panel.png',
+//       description: 'Unlock energy potential...',
+//       price: '999',
+//       panelsCount: '4',
+//       energyGain: '400kW',
+//       co2Saved: '200kg',
+//       certification: 'ISO Certified',
+//     ),
+//     Pack(
+//       id: '2',
+//       title: 'Advanced Pack',
+//       image: 'assets/background.jpg',
+//       description: 'Track energy live.',
+//       price: '1999',
+//       panelsCount: '8',
+//       energyGain: '800kW',
+//       co2Saved: '400kg',
+//       certification: 'ISO Certified',
+//     ),
+//     Pack(
+//       id: '3',
+//       title: 'Advanced Pack',
+//       image: 'assets/background.jpg',
+//       description: 'Track energy live.',
+//       price: '1999',
+//       panelsCount: '8',
+//       energyGain: '800kW',
+//       co2Saved: '400kg',
+//       certification: 'ISO Certified',
+//     ),
+//     Pack(
+//       id: '4',
+//       title: 'Advanced Pack',
+//       image: 'assets/background.jpg',
+//       description: 'Track energy live.',
+//       price: '1999',
+//       panelsCount: '8',
+//       energyGain: '800kW',
+//       co2Saved: '400kg',
+//       certification: 'ISO Certified',
+//     ),
+//   ];
+//
+//   String? _selectedPackId;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _selectedPackId = widget.preselectedPackId;
+//   }
+//
+//   void _selectPack(String packId) {
+//     setState(() {
+//       _selectedPackId = _selectedPackId == packId ? null : packId;
+//     });
+//   }
+//
+//   void _proceedToPayment() {
+//     if (_selectedPackId != null) {
+//       print('Proceeding to payment with pack ID: $_selectedPackId');
+//     } else {
+//       showDialog(
+//         context: context,
+//         builder: (BuildContext context) {
+//           return AlertDialog(
+//             backgroundColor: const Color.fromARGB(255, 8, 16, 9),
+//             title: const Text(
+//               'No Pack Selected',
+//               style: TextStyle(color: Colors.white),
+//             ),
+//             content: const Text(
+//               'You must select a pack before proceeding to payment.',
+//               style: TextStyle(color: Colors.white),
+//             ),
+//             actions: <Widget>[
+//               TextButton(
+//                 style: TextButton.styleFrom(
+//                   backgroundColor: Color.fromARGB(255, 31, 219, 59),
+//                 ),
+//                 child: const Text(
+//                   'OK',
+//                   style: TextStyle(color: Colors.white),
+//                 ),
+//                 onPressed: () {
+//                   Navigator.of(context).pop();
+//                 },
+//               ),
+//             ],
+//           );
+//         },
+//       );
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenSize = MediaQuery.of(context).size;
+//     final screenHeight = screenSize.height;
+//     final screenWidth = screenSize.width;
+//
+//     return Scaffold(
+//       body: SingleChildScrollView(
+//         child: Stack(
+//           children: [
+//             // Background image
+//             Positioned.fill(
+//               child: Image.asset(
+//                 "assets/Pulse.png",
+//                 fit: BoxFit.cover,
+//               ),
+//             ),
+//
+//             // Safe area wrapper for content
+//             SafeArea(
+//               child: Column(
+//                 children: [
+//                   // Header section with fixed padding
+//                   Padding(
+//                     padding: EdgeInsets.fromLTRB(
+//                       screenWidth * 0.05,
+//                       screenHeight * 0.05,
+//                       screenWidth * 0.05,
+//                       0,
+//                     ),
+//                     child: Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         // Title
+//                         Text(
+//                           "Select the pack you want to buy",
+//                           style: TextStyle(
+//                             color: Colors.white,
+//                             fontSize: screenWidth * 0.06,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//
+//                         SizedBox(height: screenHeight * 0.03),
+//
+//                         // Instructions with icons
+//                         _buildInstructionRow(
+//                           icon: Icons.flip,
+//                           text: 'Flip a pack card to see more details',
+//                           screenWidth: screenWidth,
+//                         ),
+//                         SizedBox(height: 8),
+//                         _buildInstructionRow(
+//                           icon: Icons.touch_app,
+//                           text: 'Click the "Select" button to choose a pack',
+//                           screenWidth: screenWidth,
+//                         ),
+//                         SizedBox(height: 8),
+//                         _buildInstructionRow(
+//                           icon: Icons.check_circle_outline,
+//                           text: 'Selected pack will have a green border',
+//                           screenWidth: screenWidth,
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//
+//                   SizedBox(height: screenHeight * 0.03),
+//
+//                   // GridView with 2 cards per line
+//                   Padding(
+//                     padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+//                     child: GridView.builder(
+//                       shrinkWrap: true,
+//                       physics: NeverScrollableScrollPhysics(),
+//                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+//                         crossAxisCount: 2,
+//                         crossAxisSpacing: screenWidth * 0.04,
+//                         mainAxisSpacing: screenHeight * 0.02,
+//                         childAspectRatio: 0.75,
+//                       ),
+//                       itemCount: packs.length,
+//                       itemBuilder: (context, index) {
+//                         final pack = packs[index];
+//                         return GestureDetector(
+//                           onTap: () => _selectPack(pack.id),
+//                           child: FlipCard(
+//                             front: CardContent(
+//                               image: pack.image,
+//                               title: pack.title,
+//                               text: pack.price,
+//                               pack: pack,
+//                               isSelected: _selectedPackId == pack.id,
+//                             ),
+//                             back: CardContent(
+//                               text: pack.description,
+//                               selectButtont: 'Select',
+//                               pack: pack,
+//                               isSelected: _selectedPackId == pack.id,
+//                               onSelectPressed: () => _selectPack(pack.id),
+//                             ),
+//                           ),
+//                         );
+//                       },
+//                     ),
+//                   ),
+//                 SizedBox(height: screenHeight * 0.05),
+//
+//                   // Bottom button with responsive padding
+//                   Padding(
+//                     padding: EdgeInsets.fromLTRB(
+//                       screenWidth * 0.05,
+//                       screenHeight * 0.03,
+//                       screenWidth * 0.05,
+//                       screenHeight * 0.05,
+//                     ),
+//                     child: SizedBox(
+//                       width: double.infinity,
+//                       height: screenHeight * 0.05,
+//                       child: ElevatedButton(
+//                         onPressed: _proceedToPayment,
+//                         style: ElevatedButton.styleFrom(
+//                           backgroundColor: const Color.fromARGB(255, 31, 219, 59),
+//                           shape: RoundedRectangleBorder(
+//                             borderRadius: BorderRadius.circular(20),
+//                           ),
+//                         ),
+//                         child: Text(
+//                           "Proceed to Payment",
+//                           style: TextStyle(
+//                             color: Colors.white,
+//                             fontSize: screenWidth * 0.045,
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+//
+//   Widget _buildInstructionRow({
+//     required IconData icon,
+//     required String text,
+//     required double screenWidth,
+//   }) {
+//     return Row(
+//       children: [
+//         Icon(icon, color: Colors.white, size: screenWidth * 0.05),
+//         SizedBox(width: 8),
+//         Expanded(
+//           child: Text(
+//             text,
+//             style: TextStyle(
+//               fontSize: screenWidth * 0.04,
+//               color: Colors.white,
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/packs.dart';
+import 'package:piminnovictus/Views/Visitor/card_content.dart';
+import 'package:piminnovictus/Views/Visitor/flip_card.dart';
 
 class SubscriptionCarousel extends StatefulWidget {
-  const SubscriptionCarousel({Key? key}) : super(key: key);
+  final String? preselectedPackId;
+
+  const SubscriptionCarousel({Key? key, this.preselectedPackId}) : super(key: key);
 
   @override
   State<SubscriptionCarousel> createState() => _SubscriptionCarouselState();
 }
 
 class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
-  late PageController _pageController;
-  int _currentPage = 1;
-
-  final List<SubscriptionPlan> plans = [
-    SubscriptionPlan(
-      title: 'pack  service',
-      price: '400 TND',
-      features: ['Realtime Monotoring', 'Energy Transfert feature', 'Sell&Buy Energy'],
-      color: const Color.fromARGB(255, 44, 75, 47),
+  final List<Pack> packs = [
+    Pack(
+      id: '1',
+      title: 'Basic Pack',
+      image: 'assets/panel.png',
+      description: 'Unlock energy potential...',
+      price: '999',
+      panelsCount: '4',
+      energyGain: '400kW',
+      co2Saved: '200kg',
+      certification: 'ISO Certified',
     ),
-    SubscriptionPlan(
-      title: 'pack 16 pannel',
-      price: '\6000 TND',
-      features: ['All Basic Features', 'Feature 4', 'Feature 5', 'Feature 6'],
-      color: const Color.fromARGB(255, 71, 81, 229),
+    Pack(
+      id: '2',
+      title: 'Advanced Pack',
+      image: 'assets/background.jpg',
+      description: 'Track energy live.',
+      price: '1999',
+      panelsCount: '8',
+      energyGain: '800kW',
+      co2Saved: '400kg',
+      certification: 'ISO Certified',
     ),
-    SubscriptionPlan(
-      title: 'pack pro',
-      price: '\7500 TND',
-      features: ['All Premium Features', 'Feature 7', 'Feature 8', 'Feature 9'],
-      color: Colors.green,
+    Pack(
+      id: '3',
+      title: 'Advanced Pack',
+      image: 'assets/background.jpg',
+      description: 'Track energy live.',
+      price: '1999',
+      panelsCount: '8',
+      energyGain: '800kW',
+      co2Saved: '400kg',
+      certification: 'ISO Certified',
+    ),
+    Pack(
+      id: '4',
+      title: 'Advanced Pack',
+      image: 'assets/background.jpg',
+      description: 'Track energy live.',
+      price: '1999',
+      panelsCount: '8',
+      energyGain: '800kW',
+      co2Saved: '400kg',
+      certification: 'ISO Certified',
     ),
   ];
+
+  String? _selectedPackId;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(
-      initialPage: 1,
-      viewportFraction: 0.75,
-    );
+    _selectedPackId = widget.preselectedPackId;
   }
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
+  void _selectPack(String packId) {
+    setState(() {
+      _selectedPackId = _selectedPackId == packId ? null : packId;
+    });
+  }
+
+  void _proceedToPayment() {
+    if (_selectedPackId != null) {
+      print('Proceeding to payment with pack ID: $_selectedPackId');
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: const Color.fromARGB(255, 8, 16, 9),
+            title: const Text(
+              'No Pack Selected',
+              style: TextStyle(color: Colors.white),
+            ),
+            content: const Text(
+              'You must select a pack before proceeding to payment.',
+              style: TextStyle(color: Colors.white),
+            ),
+            actions: <Widget>[
+              TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 31, 219, 59),
+                ),
+                child: const Text(
+                  'OK',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final screenHeight = screenSize.height;
+    final screenWidth = screenSize.width;
+
     return Scaffold(
-      body: Stack(
-        children: [
-          // Background Image
-          Positioned.fill(
-            child: Image.asset(
-              "assets/Pulse.png",
-              fit: BoxFit.cover,
+      body: SingleChildScrollView(
+        child: Stack(
+          children: [
+            // Background image
+            Positioned.fill(
+              child: Image.asset(
+                "assets/Pulse.png",
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          
-          // Content
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 500,
-                  child: PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _currentPage = index;
-                      });
-                    },
-                    itemCount: plans.length,
-                    itemBuilder: (context, index) {
-                      return AnimatedBuilder(
-                        animation: _pageController,
-                        builder: (context, child) {
-                          double value = 1.0;
-                          if (_pageController.position.haveDimensions) {
-                            value = _pageController.page! - index;
-                            value = (1 - (value.abs() * 0.5)).clamp(0.0, 1.0);
-                          }
-                          return Transform(
-                            transform: Matrix4.identity()
-                              ..setEntry(3, 2, 0.001),
-                            alignment: Alignment.center,
-                            child: child,
-                          );
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 5,
-                            vertical: 20,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              // Colored Header Section
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(vertical: 15),
-                                decoration: BoxDecoration(
-                                  color: plans[index].color,
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(20),
-                                    topRight: Radius.circular(20),
-                                  ),
-                                ),
-                                child:Column(children: [ 
-                                  Text(
-                                  plans[index].title,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                  Center(
 
-                                    child: Image.asset(
-                                                    "assets/pannelplan.png",
-                                                    height: 70,
-                                                  )),
-                                        
-                             
-
-                                ])
-                              ),
-                              // Card Content
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Text(
-                                        plans[index].price,
-                                        style: const TextStyle(
-                                          fontSize: 36,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      Column(
-                                        children:
-                                        
-                                         plans[index].features.map((feature) => Padding(
-                                          padding: const EdgeInsets.symmetric(vertical: 5),
-                                          child: Row(
-        children: [
-            Container(
-                margin: const EdgeInsets.only(right: 10),
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                    Icons.check,
-                    color: Colors.green,
-                    size: 16,
-                ),
-            ),
-            Expanded(
-                child: Text(
-                    feature,
-                    style: const TextStyle(fontSize: 16),
-                ),
-            ),])
-                                        )).toList(),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          // Add subscription logic here
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: plans[index].color,
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 40,
-                                            vertical: 15,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(30),
-                                          ),
-                                        ),
-                                        child: const Text(
-                                          'Subscribe',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
+            // Safe area wrapper for content
+            SafeArea(
+              child: Column(
+                children: [
+                  // Header section with fixed padding
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      screenWidth * 0.05,
+                      screenHeight * 0.05,
+                      screenWidth * 0.05,
+                      0,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Title
+                        Text(
+                          "Select the pack you want to buy",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: screenWidth * 0.06,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      );
-                    },
+
+                        SizedBox(height: screenHeight * 0.03),
+
+                        // Instructions with icons
+                        _buildInstructionRow(
+                          icon: Icons.flip,
+                          text: 'Flip a pack card to see more details',
+                          screenWidth: screenWidth,
+                        ),
+                        SizedBox(height: 8),
+                        _buildInstructionRow(
+                          icon: Icons.touch_app,
+                          text: 'Click the "Select" button to choose a pack',
+                          screenWidth: screenWidth,
+                        ),
+                        SizedBox(height: 8),
+                        _buildInstructionRow(
+                          icon: Icons.check_circle_outline,
+                          text: 'Selected pack will have a green border',
+                          screenWidth: screenWidth,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    plans.length,
-                    (index) => Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _currentPage == index
-                            ? Colors.white
-                            : Colors.white.withOpacity(0.3),
+
+                  SizedBox(height: screenHeight * 0.03),
+
+                  // GridView with 2 cards per line
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: screenWidth * 0.04,
+                        mainAxisSpacing: screenHeight * 0.02,
+                        childAspectRatio: 0.75,
+                      ),
+                      itemCount: packs.length,
+                      itemBuilder: (context, index) {
+                        final pack = packs[index];
+                        return GestureDetector(
+                          onTap: () => _selectPack(pack.id),
+                          child: FlipCard(
+                            front: CardContent(
+                              image: pack.image,
+                              title: pack.title,
+                              text: pack.price,
+                              pack: pack,
+                              isSelected: _selectedPackId == pack.id,
+                            ),
+                            back: CardContent(
+                              text: pack.description,
+                              selectButtont: 'Select',
+                              pack: pack,
+                              isSelected: _selectedPackId == pack.id,
+                              onSelectPressed: () => _selectPack(pack.id),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(height: screenHeight * 0.05),
+
+                  // Bottom button with responsive padding
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      screenWidth * 0.05,
+                      screenHeight * 0.03,
+                      screenWidth * 0.05,
+                      screenHeight * 0.05,
+                    ),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: screenHeight * 0.05,
+                      child: ElevatedButton(
+                        onPressed: _proceedToPayment,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 31, 219, 59),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        child: Text(
+                          "Proceed to Payment",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: screenWidth * 0.045,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
-}
 
-class SubscriptionPlan {
-  final String title;
-  final String price;
-  final List<String> features;
-  final Color color;
-
-  SubscriptionPlan({
-    required this.title,
-    required this.price,
-    required this.features,
-    required this.color,
-  });
+  Widget _buildInstructionRow({
+    required IconData icon,
+    required String text,
+    required double screenWidth,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.white, size: screenWidth * 0.05),
+        SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: screenWidth * 0.04,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
