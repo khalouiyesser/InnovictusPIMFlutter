@@ -285,7 +285,7 @@ class _ChartSection extends StatelessWidget {
                       },
                     ),
                   ),
-                   bottomTitles: AxisTitles(
+                  bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 20,
@@ -311,9 +311,9 @@ class _ChartSection extends StatelessWidget {
                     ),
                   ),
                   topTitles:
-                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   rightTitles:
-                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
                 borderData: FlBorderData(show: false),
                 lineBarsData: [
@@ -510,11 +510,11 @@ class _CalendarWithTrackingState extends State<CalendarWithTracking> {
 
   // Construit la cellule d'un jour, avec la date et le cercle de tracking
   Widget _buildDayCell(
-    DateTime day,
-    bool isSelected,
-    double trackingLevel, {
-    bool isToday = false,
-  }) {
+      DateTime day,
+      bool isSelected,
+      double trackingLevel, {
+        bool isToday = false,
+      }) {
     final dateString = day.day.toString();
     // Ne pas afficher le cercle si la date est après aujourd'hui
     if (day.isAfter(DateTime.now())) {
@@ -554,7 +554,7 @@ class _CalendarWithTrackingState extends State<CalendarWithTracking> {
                 color: isSelected
                     ? Colors.white
                     : theme.textTheme.bodyMedium?.color
-                        ?.withOpacity(0.7), // 🔹 Correction ici
+                    ?.withOpacity(0.7), // 🔹 Correction ici
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),

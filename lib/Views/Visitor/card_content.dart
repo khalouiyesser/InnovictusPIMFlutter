@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/packs.dart';
-import 'package:piminnovictus/Views/AuthViews/RegisterView.dart';
-import 'package:piminnovictus/views/Visitor/pack_details.dart';
+
+import '../AuthViews/RegisterView.dart';
+import 'pack_details.dart';
+
 
 class CardContent extends StatelessWidget {
   final String? image;
@@ -135,7 +137,7 @@ required this.pack,
                               PageRouteBuilder(
                                 pageBuilder:
                                     (context, animation, secondaryAnimation) =>
-PackDetails(pack: pack),
+                                        PackDetails(pack: pack),
                                 transitionDuration: Duration.zero,
                                 reverseTransitionDuration: Duration.zero,
                               ),

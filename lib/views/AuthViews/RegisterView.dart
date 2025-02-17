@@ -1,18 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Services/AuthController.dart';
 import 'package:piminnovictus/Views/AuthViews/privacy_policy.dart';
 import 'package:piminnovictus/Views/AuthViews/terms_and_conditions.dart';
+import '../plan_subscription.dart';
 import 'login_view.dart';
-import 'package:piminnovictus/views/plan_subscription.dart';
 
 class RegisterView extends StatefulWidget {
   final String? packId;
-
   const RegisterView({Key? key, this.packId}) : super(key: key);
-
   @override
   _RegisterViewState createState() => _RegisterViewState();
+
+
+
 }
 
 class _RegisterViewState extends State<RegisterView> {
@@ -30,6 +32,8 @@ class _RegisterViewState extends State<RegisterView> {
   String? _confirmPasswordError;
   String? _firstNameError;
   String? _lastNameError;
+
+  AuthController auth = AuthController();
 
   @override
   void initState() {
@@ -139,8 +143,67 @@ class _RegisterViewState extends State<RegisterView> {
     }
   }
 
-  
- 
+  void _showTermsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color.fromARGB(255, 8, 16, 9),
+          title: Text(
+            'Terms & Conditions',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: Text(
+            'Your terms and conditions text here...',
+            style: TextStyle(color: Colors.white),
+          ),
+          actions: [
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 31, 219, 59),
+              ),
+              child: Text(
+                'Close',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showPrivacyDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color.fromARGB(255, 8, 16, 9),
+          title: Text(
+            'Privacy Policy',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: Text(
+            'Your privacy policy text here...',
+            style: TextStyle(color: Colors.white),
+          ),
+          actions: [
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 31, 219, 59),
+              ),
+              child: Text(
+                'Close',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -243,39 +306,39 @@ class _RegisterViewState extends State<RegisterView> {
                                 style: TextStyle(color: Colors.white, fontSize: screenWidth * 0.035),
                                 children: [
                                   TextSpan(text: 'I accept '),
-                                 TextSpan(
-  text: 'terms & conditions',
-  style: TextStyle(
-    color: Colors.white,
-    decoration: TextDecoration.underline,
-  ),
-  recognizer: TapGestureRecognizer()
-    ..onTap = () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const TermsAndConditionsScreen(),
-        ),
-      );
-    },
-),
+                                  TextSpan(
+                                    text: 'terms & conditions',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const TermsAndConditionsScreen(),
+                                          ),
+                                        );
+                                      },
+                                  ),
                                   TextSpan(text: ' and '),
                                   TextSpan(
-  text: 'privacy policy',
-  style: TextStyle(
-    color: Colors.white,
-    decoration: TextDecoration.underline,
-  ),
-  recognizer: TapGestureRecognizer()
-    ..onTap = () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const PrivacyPolicyScreen(),
-        ),
-      );
-    },
-),
+                                    text: 'privacy policy',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const PrivacyPolicyScreen(),
+                                          ),
+                                        );
+                                      },
+                                  ),
 
                                 ],
                               ),
@@ -293,9 +356,10 @@ class _RegisterViewState extends State<RegisterView> {
                             height: screenHeight * 0.03,
                           ),
                           label: Text(
-                            'Sign in with Google',
+                            'Sign up with Google',
                             style: TextStyle(
-                              color: Color.fromARGB(255, 31, 219, 59),
+                              // color: Color.fromARGB(255, 31, 219, 59),
+                              color: Colors.white,
                               fontSize: screenWidth * 0.04,
                             ),
                           ),
@@ -310,7 +374,11 @@ class _RegisterViewState extends State<RegisterView> {
                             backgroundColor: Colors.transparent,
                           ),
                           onPressed: () {
-                            print('Google sign-in pressed');
+
+                            auth.signUpWithGoogle();
+                            // print('Google sign-in pressed');
+
+
                           },
                         ),
                       ),

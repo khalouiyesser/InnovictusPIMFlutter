@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Views/DashboardClient/Dashboard.dart';
-import 'package:piminnovictus/Views/DashboardClient/buyEnergie.dart';
 import 'package:piminnovictus/Views/Users/EditProfile.dart';
 import 'package:provider/provider.dart';
+
+import 'buyEnergie.dart';
 
 void main() {
   runApp(MyApp());

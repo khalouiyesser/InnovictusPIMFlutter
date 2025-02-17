@@ -13,15 +13,15 @@ class EnergySettingsSheet extends StatefulWidget {
   }) : super(key: key);
 
   static void show(
-    BuildContext context, {
-    double initialPercentage = 0.0,
-    required Function(double) onSave,
-  }) {
+      BuildContext context, {
+        double initialPercentage = 0.0,
+        required Function(double) onSave,
+      }) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled:
-          true, // Permet à la feuille de s'adapter à la taille de l'écran
+      true, // Permet à la feuille de s'adapter à la taille de l'écran
       builder: (BuildContext context) {
         return EnergySettingsSheet(
           initialPercentage: initialPercentage,
@@ -68,13 +68,13 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
       decoration: BoxDecoration(
         gradient: Theme.of(context).brightness == Brightness.light
             ? LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF93DAB2).withOpacity(0.9),
-                  Colors.white.withOpacity(0.9),
-                ],
-              )
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF93DAB2).withOpacity(0.9),
+            Colors.white.withOpacity(0.9),
+          ],
+        )
             : null,
         color: Theme.of(context).brightness == Brightness.dark
             ? const Color(0xFF0D0F0D)
@@ -109,7 +109,7 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
             children: [
               IconButton(
                 icon: Icon(
-                  Icons.add_circle_outline,
+                  Icons.remove_circle_outline,
                   color: Theme.of(context).brightness == Brightness.light
                       ? Colors.black
                       : Colors.white,

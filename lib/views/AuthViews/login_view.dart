@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
+import '../../Services/AuthController.dart';
 import '../DashboardClient/Bottom_bar.dart';
 import '../Users/forgot_password_view.dart';
 import 'RegisterView.dart';
@@ -8,61 +9,53 @@ import 'RegisterView.dart';
 // import 'package:piminnovictus/views/register_view.dart';
 
 class LoginView extends StatefulWidget {
-
-   @override
- _LoginViewState createState() =>_LoginViewState();
+  @override
+  _LoginViewState createState() => _LoginViewState();
 }
 
+class _LoginViewState extends State<LoginView> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  String? _emailError = null;
+  String? _passwordError = null;
+
+  AuthController auth = AuthController();
 
 
-class _LoginViewState extends State<LoginView> 
-{
-
-
-TextEditingController emailController = TextEditingController();
-TextEditingController passwordController = TextEditingController();
-String? _emailError = null;
-String ?  _passwordError = null;
-
-void _validateEmail(String value)
-{
-  setState(() {
+  void _validateEmail(String value) {
+    setState(() {
       if (value.isEmpty) {
         _emailError = "Email cannot be empty";
         print("Email cannot be empty");
-      } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
+      } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+          .hasMatch(value)) {
         _emailError = "Enter a valid email";
         print("Enter a valid email");
       } else {
         _emailError = null;
       }
     });
+  }
 
-}
-void _validatePassword(String value) {
+  void _validatePassword(String value) {
     setState(() {
-      
       if (value.isEmpty) {
         _passwordError = "Password cannot be empty";
-                print("Password cannot be empty");
-
+        print("Password cannot be empty");
       } else if (value.length < 6) {
         _passwordError = "Password must be at least 6 characters";
-    print("Password must be at least 6 characters");
-
+        print("Password must be at least 6 characters");
       } else {
         _passwordError = null;
       }
-       });
-    }
-    
-
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset:
-          false, // Disable resizing of the screen when keyboard appears
+      false, // Disable resizing of the screen when keyboard appears
       body: Stack(
         children: [
           Positioned.fill(
@@ -91,9 +84,19 @@ void _validatePassword(String value) {
                       filled: true,
                       fillColor: Colors.white.withOpacity(0.2),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(24),
                         borderSide: BorderSide.none,
+// Bordure verte au focus
                       ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide(
+                            color: Color(0xFF29E33C),
+                            width: 1), // Bordure verte au focus
+                      ),
+
+                      contentPadding:
+                      EdgeInsets.only(left: 20), // Décale le hint à droite
                     ),
                   ),
                   SizedBox(height: 20), // Space between fields
@@ -102,18 +105,27 @@ void _validatePassword(String value) {
                   TextField(
                     controller: passwordController,
                     obscureText: true, // To hide the password text
-                    onChanged: (value)=>_validatePassword(value),
+                    onChanged: (value) => _validatePassword(value),
                     decoration: InputDecoration(
                       errorText: _passwordError,
-                      errorStyle: TextStyle(color:Colors.red),
+                      errorStyle: TextStyle(color: Colors.red),
                       hintText: "Password",
                       hintStyle: TextStyle(color: Colors.white),
                       filled: true,
                       fillColor: Colors.white.withOpacity(0.2),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(24),
                         borderSide: BorderSide.none,
                       ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide(
+                            color: Color(0xFF29E33C),
+                            width: 1), // Bordure verte au focus
+                      ),
+
+                      contentPadding:
+                      EdgeInsets.only(left: 20), // Décale le hint à droite
                     ),
                   ),
                   SizedBox(height: 10),
@@ -125,13 +137,14 @@ void _validatePassword(String value) {
                       onPressed: () {
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => ForgotPasswordView()),
+                          MaterialPageRoute(
+                              builder: (context) => ForgotPasswordView()),
                         );
                       },
                       child: Text(
                         "Forgot Password?",
                         style: TextStyle(
-                          color: Colors.white70,
+                          color: const Color.fromARGB(255, 255, 255, 255),
                           fontSize: 14,
                         ),
                       ),
@@ -144,25 +157,41 @@ void _validatePassword(String value) {
 
           // Positioned Login Button at the bottom
           Positioned(
-            bottom: 100, // Distance from the bottom of the screen
+            bottom: 150, // Distance from the bottom of the screen
             left: 20, // Align with the left
             right: 20, // Align with the right
             child: Container(
               width: MediaQuery.of(context).size.width * 0.8, // 80% width
               height: 50,
               child: ElevatedButton(
-                onPressed: () {
-                    this._validateEmail(emailController.text);
-                    _validatePassword(passwordController.text);
-                   bool ok =  validateform();
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            BottomNavBarExample(),
-                        transitionDuration: Duration.zero,
-                        reverseTransitionDuration: Duration.zero,
-                      ),
+                onPressed: () async {
+                  this._validateEmail(emailController.text);
+                  _validatePassword(passwordController.text);
+                  bool ok = validateform();
+                  if (!ok) return; // Empêche de continuer si le formulaire est invalide
+
+                  try {
+                    Map<String, dynamic> response = await auth.loginSimple(emailController.text, passwordController.text);
+
+                    if (response.isNotEmpty) { // Vérifie si le login a réussi
+                      Navigator.of(context).pushReplacement(
+                        PageRouteBuilder(
+                          pageBuilder: (context, animation, secondaryAnimation) =>
+                              BottomNavBarExample(),
+                          transitionDuration: Duration.zero,
+                          reverseTransitionDuration: Duration.zero,
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Échec de la connexion : ${response['message'] ?? 'Vérifiez vos identifiants'}")),
+                      );
+                    }
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Echec de connexion")),
                     );
+                  }
 
 
                 },
@@ -184,10 +213,47 @@ void _validatePassword(String value) {
               ),
             ),
           ),
-
-          // Positioned "You don't have an account yet?" text at the bottom
           Positioned(
-            bottom: 30, // Distance from the bottom of the screen
+            bottom: 80,
+            left: 20,
+            right: 20,
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: 50,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // print("Login with Google");
+                  auth.signUpWithGoogle();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF2C2E2F).withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(
+                      color: Color(0xFF29E33C), // Couleur verte
+                      width: 1, // Épaisseur de la bordure
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                ),
+                icon: Image.asset(
+                  'assets/google.png',
+                  height: 24,
+                ),
+                label: Text(
+                  "Login with Google",
+                  style: TextStyle(
+                    color: const Color.fromARGB(221, 255, 255, 255),
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            bottom: 10, // Distance from the bottom of the screen
             left: 10, // Align with the left
             right: 20, // Align with the right
             child: Row(
@@ -252,13 +318,6 @@ void _validatePassword(String value) {
                 color: Colors.white,
                 fontSize: 27,
                 fontWeight: FontWeight.normal,
-                shadows: [
-                  Shadow(
-                    color: Colors.green.withOpacity(0.6), // Green shadow
-                    offset: Offset(0, 4),
-                    blurRadius: 10,
-                  ),
-                ],
               ),
             ),
           ),
@@ -266,31 +325,20 @@ void _validatePassword(String value) {
       ),
     );
   }
-  
-  bool validateform() {
-    if(!emailController.text.isEmpty &&!passwordController.text.isEmpty)
-    {
-      if(_emailError==null && _passwordError == null)
-      {
-        print("navigate to the dashboard page ");
-        return true ;
-      }
 
-      
-    }
-    else 
-    {
+  bool validateform() {
+    if (!emailController.text.isEmpty && !passwordController.text.isEmpty) {
+      if (_emailError == null && _passwordError == null) {
+        print("navigate to the dashboard page ");
+        return true;
+      }
+    } else {
       print("conditions not matches");
       _validateEmail(emailController.text);
       _validatePassword(passwordController.text);
       return false;
-
     }
 
-
-return false ;
-
+    return false;
   }
-  
- 
- }
+}

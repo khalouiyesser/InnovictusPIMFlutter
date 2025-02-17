@@ -59,7 +59,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                             Text(
                               """Privacy Policy for GreenEnergyChain (Tunisia)
 
-Effective Date: 01-02-2025
+Effective Date: [Insert Date]
 
 GreenEnergyChain is committed to protecting your privacy. This Privacy Policy outlines how we collect, use, and safeguard your personal information when you use our platform.
 
