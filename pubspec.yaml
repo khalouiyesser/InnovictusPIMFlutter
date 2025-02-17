@@ -14,9 +14,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
-
-
+  shared_preferences: ^2.3.3 
   cupertino_icons: ^1.0.8
   provider: ^6.1.2
   animated_text_kit: ^4.2.2
@@ -27,7 +28,8 @@ dependencies:
   http : ^1.3.0
 
   fl_chart: ^0.66.0  # Remplace par la dernière version disponible
-
+  table_calendar: ^3.0.8
+ 
 
 # Dépendances pour le développement
 dev_dependencies:

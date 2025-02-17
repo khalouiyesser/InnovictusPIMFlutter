@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Views/AuthViews/privacy_policy.dart';
+import 'package:piminnovictus/Views/AuthViews/terms_and_conditions.dart';
 import 'login_view.dart';
 import 'package:piminnovictus/views/plan_subscription.dart';
 
@@ -137,67 +139,8 @@ class _RegisterViewState extends State<RegisterView> {
     }
   }
 
-  void _showTermsDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: const Color.fromARGB(255, 8, 16, 9),
-          title: Text(
-            'Terms & Conditions',
-            style: TextStyle(color: Colors.white),
-          ),
-          content: Text(
-            'Your terms and conditions text here...',
-            style: TextStyle(color: Colors.white),
-          ),
-          actions: [
-            TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 31, 219, 59),
-              ),
-              child: Text(
-                'Close',
-                style: TextStyle(color: Colors.white),
-              ),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showPrivacyDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: const Color.fromARGB(255, 8, 16, 9),
-          title: Text(
-            'Privacy Policy',
-            style: TextStyle(color: Colors.white),
-          ),
-          content: Text(
-            'Your privacy policy text here...',
-            style: TextStyle(color: Colors.white),
-          ),
-          actions: [
-            TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 31, 219, 59),
-              ),
-              child: Text(
-                'Close',
-                style: TextStyle(color: Colors.white),
-              ),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -300,14 +243,40 @@ class _RegisterViewState extends State<RegisterView> {
                                 style: TextStyle(color: Colors.white, fontSize: screenWidth * 0.035),
                                 children: [
                                   TextSpan(text: 'I accept '),
+                                 TextSpan(
+  text: 'terms & conditions',
+  style: TextStyle(
+    color: Colors.white,
+    decoration: TextDecoration.underline,
+  ),
+  recognizer: TapGestureRecognizer()
+    ..onTap = () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const TermsAndConditionsScreen(),
+        ),
+      );
+    },
+),
+                                  TextSpan(text: ' and '),
                                   TextSpan(
-                                    text: 'terms & conditions',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                    recognizer: TapGestureRecognizer()..onTap = _showTermsDialog,
-                                  ),
+  text: 'privacy policy',
+  style: TextStyle(
+    color: Colors.white,
+    decoration: TextDecoration.underline,
+  ),
+  recognizer: TapGestureRecognizer()
+    ..onTap = () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const PrivacyPolicyScreen(),
+        ),
+      );
+    },
+),
+
                                 ],
                               ),
                             ),
