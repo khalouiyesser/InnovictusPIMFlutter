@@ -362,7 +362,7 @@ class PackDetails extends StatelessWidget {
                     padding: EdgeInsets.all(basePadding),
                     child: Column(
                       children: [
-                        _buildTableRow("💰 Prix :", pack.price, descriptionFontSize),
+                        _buildTableRow("💰 Prix :", pack.price.toString(), descriptionFontSize),
                         _buildDivider(),
                         _buildTableRow("🔆 Panneaux Solaires :", pack.panelsCount, descriptionFontSize),
                         _buildDivider(),

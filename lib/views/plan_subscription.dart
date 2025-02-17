@@ -280,9 +280,11 @@
 //   }
 // }
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:piminnovictus/Models/packs.dart';
 import 'package:piminnovictus/Views/Visitor/card_content.dart';
 import 'package:piminnovictus/Views/Visitor/flip_card.dart';
+import 'package:piminnovictus/Views/stripe.dart';
 
 class SubscriptionCarousel extends StatefulWidget {
   final String? preselectedPackId;
@@ -300,7 +302,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       title: 'Basic Pack',
       image: 'assets/panel.png',
       description: 'Unlock energy potential...',
-      price: '999',
+      price: 999,
       panelsCount: '4',
       energyGain: '400kW',
       co2Saved: '200kg',
@@ -311,7 +313,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       title: 'Advanced Pack',
       image: 'assets/background.jpg',
       description: 'Track energy live.',
-      price: '1999',
+      price: 1999,
       panelsCount: '8',
       energyGain: '800kW',
       co2Saved: '400kg',
@@ -322,7 +324,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       title: 'Advanced Pack',
       image: 'assets/background.jpg',
       description: 'Track energy live.',
-      price: '1999',
+      price: 1999,
       panelsCount: '8',
       energyGain: '800kW',
       co2Saved: '400kg',
@@ -333,7 +335,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       title: 'Advanced Pack',
       image: 'assets/background.jpg',
       description: 'Track energy live.',
-      price: '1999',
+      price: 1999,
       panelsCount: '8',
       energyGain: '800kW',
       co2Saved: '400kg',
@@ -351,13 +353,20 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
 
   void _selectPack(String packId) {
     setState(() {
-      _selectedPackId = _selectedPackId == packId ? null : packId;
+      _selectedPackId = _selectedPackId == packs ? null : packId;
     });
   }
 
   void _proceedToPayment() {
     if (_selectedPackId != null) {
-      print('Proceeding to payment with pack ID: $_selectedPackId');
+      final selectedPack = packs.firstWhere((pack) => pack.id == _selectedPackId);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PaymentView(pack: selectedPack),
+        ),
+      );
     } else {
       showDialog(
         context: context,
@@ -482,7 +491,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
                             front: CardContent(
                               image: pack.image,
                               title: pack.title,
-                              text: pack.price,
+                              text: pack.price.toString(),
                               pack: pack,
                               isSelected: _selectedPackId == pack.id,
                             ),

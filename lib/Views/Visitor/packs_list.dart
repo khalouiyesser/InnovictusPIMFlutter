@@ -21,7 +21,7 @@ class _PacksListState extends State<PacksList> {
         image: "assets/panel.png",
         description:
         "• Unlock energy potential\n• Maximize savings\n• Smart monitoring",
-        price: "999€",
+        price: 999,
         panelsCount: "6",
         energyGain: "5 kWh/jour",
         co2Saved: "10 kg CO₂/jour",
@@ -32,7 +32,7 @@ class _PacksListState extends State<PacksList> {
         image: "assets/background.jpg",
         description:
         "• Track energy live\n• Real-time analytics\n• Battery storage included",
-        price: "1499€",
+        price: 1499,
         panelsCount: "8",
         energyGain: "7 kWh/jour",
         co2Saved: "15 kg CO₂/jour",
@@ -42,7 +42,7 @@ class _PacksListState extends State<PacksList> {
         image: "assets/background.jpg",
         description:
         "• Smart automation\n• Higher efficiency\n• 24/7 customer support",
-        price: "1999€",
+        price: 1999,
         panelsCount: "10",
         energyGain: "10 kWh/jour",
         co2Saved: "20 kg CO₂/jour",

@@ -176,7 +176,26 @@ class AuthController {
       return null;
     }
   }
+   Future<String?> createPaymentIntent(int amount, String currency) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$api/auth/payment"),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'amount': amount, 'currency': currency}),
+      );
 
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['client_secret']; // Récupère le client_secret
+      } else {
+        print('Erreur Stripe: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Erreur de connexion: $e');
+      return null;
+    }
+  }
 
 
 }

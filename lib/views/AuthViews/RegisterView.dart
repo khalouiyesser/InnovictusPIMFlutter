@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Services/AuthController.dart';
+import 'package:piminnovictus/Views/AuthViews/privacy_policy.dart';
+import 'package:piminnovictus/Views/AuthViews/terms_and_conditions.dart';
 import '../plan_subscription.dart';
 import 'login_view.dart';
 
@@ -310,8 +312,34 @@ class _RegisterViewState extends State<RegisterView> {
                                       color: Colors.white,
                                       decoration: TextDecoration.underline,
                                     ),
-                                    recognizer: TapGestureRecognizer()..onTap = _showTermsDialog,
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const TermsAndConditionsScreen(),
+                                          ),
+                                        );
+                                      },
                                   ),
+                                  TextSpan(text: ' and '),
+                                  TextSpan(
+                                    text: 'privacy policy',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const PrivacyPolicyScreen(),
+                                          ),
+                                        );
+                                      },
+                                  ),
+
                                 ],
                               ),
                             ),

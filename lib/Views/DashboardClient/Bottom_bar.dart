@@ -4,6 +4,8 @@ import 'package:piminnovictus/Views/DashboardClient/Dashboard.dart';
 import 'package:piminnovictus/Views/Users/EditProfile.dart';
 import 'package:provider/provider.dart';
 
+import 'buyEnergie.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -28,7 +30,7 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample> {
 
   final List<Widget> _pages = [
     DashboardPage(), //
-    Center(child: Text('Panier', style: TextStyle(fontSize: 24))),
+    BuyEnergiePage(),
     EditProfile(),
   ];
 

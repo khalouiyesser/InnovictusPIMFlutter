@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 class EnergySettingsSheet extends StatefulWidget {
   final double initialPercentage;
@@ -10,14 +12,16 @@ class EnergySettingsSheet extends StatefulWidget {
     required this.onSave,
   }) : super(key: key);
 
-  static void show(BuildContext context, {
-    double initialPercentage = 0.0,
-    required Function(double) onSave,
-  }) {
+  static void show(
+      BuildContext context, {
+        double initialPercentage = 0.0,
+        required Function(double) onSave,
+      }) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      isScrollControlled: true, // Permet à la feuille de s'adapter à la taille de l'écran
+      isScrollControlled:
+      true, // Permet à la feuille de s'adapter à la taille de l'écran
       builder: (BuildContext context) {
         return EnergySettingsSheet(
           initialPercentage: initialPercentage,
@@ -42,23 +46,39 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     // Facteurs d'échelle pour les polices et les espacements
-    final double fontSizeTitle = screenWidth * 0.05; 
-    final double fontSizePercentage = screenWidth * 0.06; 
-    final double fontSizeButton = screenWidth * 0.04; 
-    final double paddingHorizontal = screenWidth * 0.05; 
-    final double paddingVertical = screenHeight * 0.02; 
-    final double iconSize = screenWidth * 0.08; 
-    final double buttonHeight = screenHeight * 0.06; 
-    final double borderRadius = screenWidth * 0.1; 
+    final double fontSizeTitle = screenWidth * 0.05;
+    final double fontSizePercentage = screenWidth * 0.06;
+    final double fontSizeButton = screenWidth * 0.04;
+    final double paddingHorizontal = screenWidth * 0.05;
+    final double paddingVertical = screenHeight * 0.02;
+    final double iconSize = screenWidth * 0.08;
+    final double buttonHeight = screenHeight * 0.06;
+    final double borderRadius = screenWidth * 0.1;
     return Container(
-              width: MediaQuery.of(context).size.width, // 90% of the screen width
+      width: MediaQuery.of(context).size.width, // 90% of the screen width
 
       decoration: BoxDecoration(
-        color: const Color(0xFF0A140C),
+        gradient: Theme.of(context).brightness == Brightness.light
+            ? LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF93DAB2).withOpacity(0.9),
+            Colors.white.withOpacity(0.9),
+          ],
+        )
+            : null,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF0D0F0D)
+            : null,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(borderRadius),
           topRight: Radius.circular(borderRadius),
@@ -68,6 +88,7 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
           width: 1,
         ),
       ),
+
       padding: EdgeInsets.symmetric(
         horizontal: paddingHorizontal,
         vertical: paddingVertical,
@@ -77,22 +98,27 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
         children: [
           Text(
             'Set Your Energy Sale Percentage',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: fontSizeTitle,
-              fontWeight: FontWeight.bold,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontSize: screenWidth * 0.05,
             ),
           ),
+
           SizedBox(height: screenHeight * 0.03), // 3% de la hauteur de l'écran
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                icon: Icon(Icons.remove_circle_outline, color: Colors.white, size: iconSize),
+                icon: Icon(
+                  Icons.remove_circle_outline,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.black
+                      : Colors.white,
+                  size: iconSize,
+                ),
                 onPressed: () {
                   setState(() {
-                    if (_energyPercentage > 0) {
-                      _energyPercentage -= 5;
+                    if (_energyPercentage < 100) {
+                      _energyPercentage += 5;
                     }
                   });
                 },
@@ -109,14 +135,20 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
                 child: Text(
                   '${_energyPercentage.toInt()}%',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
                     fontSize: fontSizePercentage,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.add_circle_outline, color: Colors.white, size: iconSize),
+                icon: Icon(
+                  Icons.add_circle_outline,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.black
+                      : Colors.white,
+                  size: iconSize,
+                ),
                 onPressed: () {
                   setState(() {
                     if (_energyPercentage < 100) {
