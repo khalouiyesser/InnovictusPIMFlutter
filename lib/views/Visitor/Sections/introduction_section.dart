@@ -1,8 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Views/AuthViews/login_view.dart';
 import 'package:piminnovictus/Views/Visitor/Sections/packs_section.dart';
 import 'package:piminnovictus/Views/Visitor/packs_list.dart';
+import 'package:provider/provider.dart';
 
 class IntroductionSection extends StatelessWidget {
   final VoidCallback onPacksButtonPressed;
@@ -78,44 +80,11 @@ class IntroductionSection extends StatelessWidget {
                           ),
 
                           // Login Icon Only
-                          InkWell(
-                            onTap: () => _handleLoginTap(context),
-                            child: Container(
-                              padding: EdgeInsets.all(screenWidth * 0.01),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.3),
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: Icon(
-                                Icons.login,
-                                color: Colors.white,
-                                size: logoSize * 2, // Match the logo size
-                              ),
-                            ),
-                          ),
-                        ],
+_buildLanguageDropdown(context)                        ],
                       ),
 
                       // Row 2: Login Text aligned with the icon
-                      Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                                left: screenWidth *
-                                    0.8), // Déplace le texte vers la droite
-                            child: Text(
-                              'Login',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: screenWidth * 0.035,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    
                     ],
                   ),
                 ]),
@@ -214,7 +183,41 @@ class IntroductionSection extends StatelessWidget {
       },
     );
   }
-
+Widget _buildLanguageDropdown(BuildContext context) {
+  return Consumer<LanguageProvider>(
+    builder: (context, languageProvider, child) {
+      return PopupMenuButton<String>(
+        icon: Row(
+          children: [
+            Text(
+              languageProvider.locale.languageCode == 'en' ? 'En' : 'Fr',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+            SizedBox(width: 4),
+            Icon(Icons.arrow_drop_down, color: Colors.white),
+          ],
+        ),
+        onSelected: (String value) {
+          // Update the language when a new option is selected
+          languageProvider.setLocale(Locale(value));
+        },
+        itemBuilder: (BuildContext context) => [
+          PopupMenuItem(
+            value: 'en',
+            child: Text('English'),
+          ),
+          PopupMenuItem(
+            value: 'fr',
+            child: Text('French'),
+          ),
+        ],
+      );
+    },
+  );
+}
   List<TextSpan> _buildResponsiveTextSpans(double fontSize) {
     return [
       TextSpan(

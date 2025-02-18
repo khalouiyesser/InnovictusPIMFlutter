@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart'; // Add this import
 import 'package:piminnovictus/Models/config/language/translations.dart';
@@ -9,8 +10,8 @@ import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase (if needed)
-  // await Firebase.initializeApp();
+  // Initialize Firebase 
+   await Firebase.initializeApp();
 
   // Initialize ThemeProvider and LanguageProvider
   final themeProvider = ThemeProvider();

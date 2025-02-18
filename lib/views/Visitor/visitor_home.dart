@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:piminnovictus/Views/AuthViews/login_view.dart';
 import 'package:piminnovictus/views/Visitor/Sections/achievement_section.dart';
 import 'package:piminnovictus/Views/Visitor/Sections/introduction_section.dart';
 import 'package:piminnovictus/Views/Visitor/Sections/packs_section.dart';
@@ -51,6 +53,7 @@ class VisitorPage extends StatefulWidget {
 class _VisitorPageState extends State<VisitorPage> {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _packsKey = GlobalKey();
+  bool _isVisible = true;
 
   void scrollToPacksSection() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -70,7 +73,21 @@ class _VisitorPageState extends State<VisitorPage> {
       }
     });
   }
-
+ void _onScroll() {
+    if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+      if (_isVisible) {
+        setState(() {
+          _isVisible = false;
+        });
+      }
+    } else if (_scrollController.position.userScrollDirection == ScrollDirection.forward) {
+      if (!_isVisible) {
+        setState(() {
+          _isVisible = true;
+        });
+      }
+    }
+  }
   @override
   void dispose() {
     _scrollController.dispose();
@@ -112,7 +129,34 @@ class _VisitorPageState extends State<VisitorPage> {
             );
           },
         ),
+        floatingActionButton: AnimatedOpacity(
+  duration: const Duration(milliseconds: 300),
+  opacity: _isVisible ? 1.0 : 0.0,
+  child: SizedBox(
+    width: MediaQuery.of(context).size.width * 0.5,
+    height: MediaQuery.of(context).size.height * 0.065,
+    child: FloatingActionButton.extended(
+      onPressed: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginView()), // Navigate to LoginView
+        );
+      },
+      backgroundColor: const Color(0xFF29E33C), // Green background
+      label: const Text(
+        'Skip',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
       ),
+      
+    ),
+    
+  ),
+),floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat, // Always at bottom center
+     ),
     );
   }
 }
