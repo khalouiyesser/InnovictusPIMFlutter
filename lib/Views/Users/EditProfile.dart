@@ -1,5 +1,7 @@
 import 'dart:ui'; // Pour le BackdropFilter
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Views/AuthViews/privacy_policy.dart';
+import 'package:piminnovictus/Views/AuthViews/terms_and_conditions.dart';
 import 'package:provider/provider.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 
@@ -694,7 +696,17 @@ Widget _buildTermssCard(BuildContext context) {
           if (isTermsExpanded) ...[
   const SizedBox(height: 16),
   // Terms & Conditions card
-  Container(
+ // Terms & Conditions card
+GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const TermsAndConditionsScreen(),
+      ),
+    );
+  },
+  child: Container(
     margin: const EdgeInsets.symmetric(vertical: 4),
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
@@ -730,9 +742,19 @@ Widget _buildTermssCard(BuildContext context) {
       ],
     ),
   ),
+),
   
   // Privacy Policy card
-  Container(
+  GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const PrivacyPolicyScreen(),
+      ),
+    );
+  },
+  child:Container(
     margin: const EdgeInsets.symmetric(vertical: 4),
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
@@ -767,7 +789,8 @@ Widget _buildTermssCard(BuildContext context) {
         ),
       ],
     ),
-  ),
+  ),),
+
 ],],
         ),
       ),
