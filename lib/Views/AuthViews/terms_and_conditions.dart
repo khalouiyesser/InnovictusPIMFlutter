@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
+import 'package:piminnovictus/Providers/language_provider.dart';
+import 'package:provider/provider.dart';
 
 
 class TermsAndConditionsScreen extends StatelessWidget {
@@ -7,7 +10,9 @@ class TermsAndConditionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Stack(
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        return  Stack(
         children: [
           // Background Image
           Positioned.fill(
@@ -20,7 +25,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
           Scaffold(
             extendBodyBehindAppBar: true, // This allows the body to extend behind the AppBar
             appBar: AppBar(
-              title: const Text('Terms & Conditions'),
+                title: Text(AppLocalizations.of(context).translate('termsTitle')),
               backgroundColor: Colors.transparent, // Make AppBar transparent
               elevation: 0, // Remove AppBar shadow
               flexibleSpace: Container( // Add background to AppBar
@@ -45,35 +50,23 @@ class TermsAndConditionsScreen extends StatelessWidget {
                         child: SingleChildScrollView(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children:  [
                               Text(
-                                "Terms and Conditions",
-                                style: TextStyle(
+  AppLocalizations.of(context).translate('termsAndConditions'),
+                                style: const TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                 ),
                               ),
-                              Divider(
+                             const  Divider(
                                 color: Color.fromARGB(90, 255, 255, 255),
                                 thickness: 2,
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               Text(
-                                "Welcome to GreenEnergyChain, a blockchain-based platform dedicated to the management and trading of renewable energy. By accessing or using our platform, you agree to comply with and be bound by the following Terms and Conditions. Please read them carefully before using our services.\n\n"
-                                    "1. Acceptance of Terms\n"
-                                    "By using GreenEnergyChain, you agree to these Terms and Conditions, our Privacy Policy, and all applicable laws and regulations in Tunisia. If you do not agree with any part of these terms, you must not use our platform.\n\n"
-                                    "2. Description of Services\n"
-                                    "GreenEnergyChain provides a decentralized marketplace for the trading of renewable energy using blockchain technology.\n\n"
-                                    "3. User Accounts\n"
-                                    "- Registration: To use our services, you must create an account.\n"
-                                    "- Security: You are responsible for maintaining account security.\n"
-                                    "- Eligibility: You must be at least 18 years old.\n\n"
-                                    "4. Privacy and Data Security\n"
-                                    "Your privacy is important to us. Please refer to our Privacy Policy.\n\n"
-                                    "5. Contact Information\n"
-                                    "For questions or concerns, please contact support@greenenergychain.com",
-                                style: TextStyle(
+                                 AppLocalizations.of(context).translate('termsContent'),
+   style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.white,
                                   height: 1.5,
@@ -96,22 +89,25 @@ class TermsAndConditionsScreen extends StatelessWidget {
                               ),
                             ),
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text(
-                              "I Understand",
+                            child:  Text(
+  AppLocalizations.of(context).translate('understand'),
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
+                                                              ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-
-          ),]);
+          ],
+        );
+      },
+    );
   }
 }
