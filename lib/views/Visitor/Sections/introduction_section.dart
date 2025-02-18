@@ -41,53 +41,7 @@ class IntroductionSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(children: [
-                  Column(
-                    children: [
-                      // Row 1: Logo + Login Icon
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Logo and Title
-                          Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(screenWidth * 0.01),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: const Color(0xFF29E33C),
-                                    width: 1.5,
-                                  ),
-                                ),
-                                child: CircleAvatar(
-                                  radius: logoSize,
-                                  backgroundColor: Colors.transparent,
-                                  backgroundImage:
-                                      const AssetImage('assets/logo.png'),
-                                ),
-                              ),
-                              SizedBox(width: screenWidth * 0.02),
-                              Text(
-                                'GreenEnergy',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: titleFontSize,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          // Login Icon Only
-_buildLanguageDropdown(context)                        ],
-                      ),
-
-                      // Row 2: Login Text aligned with the icon
-                    
-                    ],
-                  ),
-                ]),
+                
                 SizedBox(height: screenWidth * 0.06),
 
                 Center(
