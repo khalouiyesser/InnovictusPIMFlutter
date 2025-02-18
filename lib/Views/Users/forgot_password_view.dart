@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Services/AuthController.dart';
 import '../AuthViews/login_view.dart';
-import '../background.dart';
 import 'otp.dart';
+
 
 class ForgotPasswordView extends StatefulWidget {
   const ForgotPasswordView({Key? key}) : super(key: key);
@@ -224,11 +224,11 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                         text: "Continue",
                         backgroundColor: Color(0xFF29E33C),
                         textColor: const Color.fromARGB(255, 251, 251, 251),
-                        onTap: () {
+                        onTap: () async {
                           if (isPhoneInput &&
                               phoneController.text.isNotEmpty &&
                               isTunisianNumber(phoneController.text)) {
-                            con.ForgotPassword(emailController.text);
+                            con.forgotPassword(emailController.text);
                             // Navigator.pushReplacement(
                             //   context,
                             //   MaterialPageRoute(builder: (context) => const OTPPage()),
@@ -241,8 +241,37 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                             //   context,
                             //   MaterialPageRoute(builder: (context) => const OTPPage()),
                             // );
-                          } else {
-                            con.ForgotPassword(emailController.text);
+                          } else if (isEmailInput && emailController.text.isNotEmpty && isEmail(emailController.text)){
+                            try {
+                              Map<String, dynamic> response = await con.forgotPassword(emailController.text);
+
+                              if (response.containsKey('resetToken') && response.containsKey('code')) {
+                                String resetToken = response['resetToken'];
+                                int code = response['code'];
+
+                                print("Email: ${emailController.text}");
+                                print("ResetToken: $resetToken");
+                                print("Code: $code");
+
+                                await Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) => OTPPage(
+                                      email: emailController.text,
+                                      resetToken: resetToken,
+                                      code: code,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Erreur : ${response['message'] ?? 'Données manquantes'}")),
+                                );
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Erreur de connexion : $e")),
+                              );
+                            }
                           }
                         },
                       ),

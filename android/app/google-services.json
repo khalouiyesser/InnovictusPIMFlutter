@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "213262949474",
+    "project_id": "green-energy-ffb62",
+    "storage_bucket": "green-energy-ffb62.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:213262949474:android:805e0ec3720ff3a19b053b",
+        "android_client_info": {
+          "package_name": "tn.esprit.piminnovictus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "213262949474-n621113ftol42lpfuv4dbppc0m9prm68.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1VrXXtfX2Ce5GuFMSBOs8xL04ggjzc8c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "213262949474-n621113ftol42lpfuv4dbppc0m9prm68.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

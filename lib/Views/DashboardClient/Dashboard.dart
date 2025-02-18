@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Views/DashboardClient/Wallet.dart';
-import 'package:piminnovictus/Views/DashboardClient/buyEnergie.dart';
 import 'package:piminnovictus/Views/DashboardClient/energy_settings_sheet.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:provider/provider.dart';

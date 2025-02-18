@@ -13,4 +13,3 @@ class ThemePreferences {
     return prefs.getBool(key) ?? false;
   }
 }
-

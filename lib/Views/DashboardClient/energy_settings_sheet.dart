@@ -88,7 +88,6 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
           width: 1,
         ),
       ),
-
       padding: EdgeInsets.symmetric(
         horizontal: paddingHorizontal,
         vertical: paddingVertical,
@@ -123,14 +122,9 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
                   });
                 },
               ),
-              Container(
+              Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: paddingHorizontal,
-                  vertical: paddingVertical,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(borderRadius),
                 ),
                 child: Text(
                   '${_energyPercentage.toInt()}%',

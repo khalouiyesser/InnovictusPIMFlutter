@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Views/DashboardClient/Dashboard.dart';
-import 'package:piminnovictus/Views/DashboardClient/buyEnergie.dart';
+import 'package:piminnovictus/Views/DashboardClient/Wallet.dart';
 import 'package:piminnovictus/Views/Users/EditProfile.dart';
 import 'package:provider/provider.dart';
+
+import 'buyEnergie.dart';
 
 void main() {
   runApp(MyApp());
@@ -28,7 +30,8 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    DashboardPage(), //
+    DashboardPage(),
+    WalletPage(),
     BuyEnergiePage(),
     EditProfile(),
   ];
@@ -68,6 +71,14 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample> {
           items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_repair_service),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wrong_location_sharp),
               label: '',
             ),
             BottomNavigationBarItem(
