@@ -423,7 +423,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
           alignment: Alignment.center,
           children: [
             CustomPaint(
-              size: Size(150, 150),
+              size: Size(200, 200),
               painter: CircularProgressPainter(0.7),
             ),
             Column(
@@ -436,7 +436,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
                   ),
                 ),
                 Text(
-                  "70%",
+                  "300KW",
                   style: theme.textTheme.headlineLarge?.copyWith(
                     fontSize: screenWidth * 0.1,
                     fontWeight: FontWeight.normal,
