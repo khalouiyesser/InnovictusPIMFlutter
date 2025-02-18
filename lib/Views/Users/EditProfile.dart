@@ -1,5 +1,7 @@
 import 'dart:ui'; // Pour le BackdropFilter
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
+import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Views/AuthViews/privacy_policy.dart';
 import 'package:piminnovictus/Views/AuthViews/terms_and_conditions.dart';
 import 'package:provider/provider.dart';
@@ -99,7 +101,7 @@ class _EditProfileState extends State<EditProfile> {
                       _buildMenuItem(
                         context,
                         icon: Icons.logout,
-                        title: 'Logout',
+  title: AppLocalizations.of(context).translate('logout'),
                         onTap: () {
                           // Logique de déconnexion ici
                         },
@@ -229,7 +231,7 @@ class _EditProfileState extends State<EditProfile> {
                         color: Theme.of(context).iconTheme.color),
                     const SizedBox(width: 10),
                     Text(
-                      'Profile Informations',
+  AppLocalizations.of(context).translate('profileInformation'),
                       style: TextStyle(
                         fontSize: 16,
                         color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -273,8 +275,7 @@ class _EditProfileState extends State<EditProfile> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Personal Informations',
-                            style: TextStyle(
+AppLocalizations.of(context).translate('personalInformation'),                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color:
@@ -293,7 +294,8 @@ class _EditProfileState extends State<EditProfile> {
                         const SizedBox(height: 15),
                         TextField(
                           decoration: InputDecoration(
-                            hintText: "Username",
+                            hintText: AppLocalizations.of(context).translate('username'),
+
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(width: 0.5),
@@ -303,7 +305,7 @@ class _EditProfileState extends State<EditProfile> {
                         const SizedBox(height: 15),
                         TextField(
                           decoration: InputDecoration(
-                            hintText: "Email",
+                            hintText: AppLocalizations.of(context).translate('email'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(width: 0.5),
@@ -312,14 +314,14 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                         const SizedBox(height: 15),
                         TextField(
-                          decoration: InputDecoration(
-                            hintText: "Phone",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(width: 0.5),
-                            ),
-                          ),
-                        ),
+  decoration: InputDecoration(
+    hintText: AppLocalizations.of(context).translate('phone'),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(width: 0.5),
+    ),
+  ),
+),
                       ],
                     ],
                   ),
@@ -352,7 +354,8 @@ class _EditProfileState extends State<EditProfile> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Password',
+                              AppLocalizations.of(context).translate('password'),
+
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -373,7 +376,7 @@ class _EditProfileState extends State<EditProfile> {
                         TextField(
                           obscureText: true,
                           decoration: InputDecoration(
-                            hintText: "Current Password",
+                            hintText:AppLocalizations.of(context).translate('currentPassword'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(width: 0.5),
@@ -384,7 +387,7 @@ class _EditProfileState extends State<EditProfile> {
                         TextField(
                           obscureText: true,
                           decoration: InputDecoration(
-                            hintText: "New Password",
+                            hintText:AppLocalizations.of(context).translate('newPassword'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(width: 0.5),
@@ -395,7 +398,7 @@ class _EditProfileState extends State<EditProfile> {
                         TextField(
                           obscureText: true,
                           decoration: InputDecoration(
-                            hintText: "Confirm Password",
+                            hintText: AppLocalizations.of(context).translate('confirmPassword'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(width: 0.5),
@@ -424,8 +427,8 @@ class _EditProfileState extends State<EditProfile> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 30, vertical: 12),
                   ),
-                  child: const Text(
-                    "Save",
+                  child:  Text(
+  AppLocalizations.of(context).translate('save'),
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -437,17 +440,18 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 Widget _buildPreferencesCard(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          isPreferencesExpanded = !isPreferencesExpanded;
-          // Reset sub-cards expansion when closing
-          if (!isPreferencesExpanded) {
-            isDarkModeExpanded = false;
-            isLanguageExpanded = false;
-          }
-        });
-      },
+    onTap: () {
+      setState(() {
+        isPreferencesExpanded = !isPreferencesExpanded;
+        if (!isPreferencesExpanded) {
+          isDarkModeExpanded = false;
+          isLanguageExpanded = false;
+        }
+      });
+    },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
         padding: const EdgeInsets.all(16),
@@ -472,8 +476,7 @@ Widget _buildPreferencesCard(BuildContext context) {
                         color: Theme.of(context).iconTheme.color),
                     const SizedBox(width: 10),
                     Text(
-                      'Preferences',
-                      style: TextStyle(
+AppLocalizations.of(context).translate('preferences'),                      style: TextStyle(
                         fontSize: 16,
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                       ),
@@ -514,7 +517,7 @@ padding: const EdgeInsets.symmetric(horizontal: 12),
                   color: Theme.of(context).iconTheme.color),
               const SizedBox(width: 10),
               Text(
-                'Dark Mode',
+  AppLocalizations.of(context).translate('darkMode'),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -541,98 +544,89 @@ activeColor: Theme.of(context).iconTheme.color,
 ),
 SizedBox(height: 16),
 // Language Selection card
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isLanguageExpanded = !isLanguageExpanded;
-                  });
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 4),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color(0xFF29E33C),
-                      width: 1,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.language,
-                                  color: Theme.of(context).iconTheme.color),
-                              const SizedBox(width: 10),
-                              Text(
-                                'Language',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).textTheme.bodyMedium?.color,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Icon(
-                            isLanguageExpanded
-                                ? Icons.expand_more
-                                : Icons.chevron_right,
-                            color: Colors.grey,
-                          ),
-                        ],
-                      ),
-                     if (isLanguageExpanded) ...[
-  const SizedBox(height: 15),
-  // English Option
-  Padding(
-    padding: const EdgeInsets.only(left: 20), // Add left padding
-    child: ListTile(
-      title: Text('English',
-        style: TextStyle(
-          color: Theme.of(context).textTheme.bodyMedium?.color,
-        ),
-      ),
-      onTap: () {
-        setState(() {
-          selectedLanguage = 'en';
-        });
-      },
-      trailing: selectedLanguage == 'en' 
-        ? Icon(Icons.check, color: Theme.of(context).iconTheme.color)
-        : null,
-    ),
-  ),
-  // French Option
-  Padding(
-    padding: const EdgeInsets.only(left: 20), // Add left padding
-    child: ListTile(
-      title: Text('French',
-        style: TextStyle(
-          color: Theme.of(context).textTheme.bodyMedium?.color,
-        ),
-      ),
-      onTap: () {
-        setState(() {
-          selectedLanguage = 'fr';
-        });
-      },
-      trailing: selectedLanguage == 'fr'
-        ? Icon(Icons.check, color: Theme.of(context).iconTheme.color)
-        : null,
-    ),
-  ),
-],
-                    ],
+           GestureDetector(
+              onTap: () {
+                setState(() {
+                  isLanguageExpanded = !isLanguageExpanded;
+                });
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 4),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: const Color(0xFF29E33C),
+                    width: 1,
                   ),
                 ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.language,
+                                color: Theme.of(context).iconTheme.color),
+                            const SizedBox(width: 10),
+                            Text(
+                              AppLocalizations.of(context).translate('language'),
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).textTheme.bodyMedium?.color,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Icon(
+                          isLanguageExpanded
+                              ? Icons.expand_more
+                              : Icons.chevron_right,
+                          color: Colors.grey,
+                        ),
+                      ],
+                    ),
+                    if (isLanguageExpanded) ...[
+                      const SizedBox(height: 15),
+                      // English Option
+                      ListTile(
+                        title: Text(  AppLocalizations.of(context).translate('english'),
+
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyMedium?.color,
+                          ),
+                        ),
+                        onTap: () {
+                          languageProvider.setLocale(const Locale('en')); // Set to English
+                        },
+                        trailing: languageProvider.locale.languageCode == 'en'
+                            ? Icon(Icons.check, color: Theme.of(context).iconTheme.color)
+                            : null,
+                      ),
+                      // French Option
+                      ListTile(
+                        title: Text(AppLocalizations.of(context).translate('french'),
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyMedium?.color,
+                          ),
+                        ),
+                        onTap: () {
+                          languageProvider.setLocale(const Locale('fr')); // Set to French
+                        },
+                        trailing: languageProvider.locale.languageCode == 'fr'
+                            ? Icon(Icons.check, color: Theme.of(context).iconTheme.color)
+                            : null,
+                      ),
+                    ],
+                  ],
+                ),
               ),
-              const SizedBox(height: 16),
+            ),
+            const SizedBox(height: 16),
               // Save button
               
             ],
@@ -677,7 +671,7 @@ Widget _buildTermssCard(BuildContext context) {
                         color: Theme.of(context).iconTheme.color),
                     const SizedBox(width: 10),
                     Text(
-                      'Terms & Privacy',
+                      AppLocalizations.of(context).translate('termsAndPrivacy'),
                       style: TextStyle(
                         fontSize: 16,
                         color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -726,7 +720,7 @@ GestureDetector(
                 color: Theme.of(context).iconTheme.color),
             const SizedBox(width: 10),
             Text(
-              'Terms & Conditions',
+AppLocalizations.of(context).translate('termsAndConditions'),
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -774,7 +768,7 @@ GestureDetector(
                 color: Theme.of(context).iconTheme.color),
             const SizedBox(width: 10),
             Text(
-              'Privacy Policy',
+AppLocalizations.of(context).translate('privacyPolicy'),
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,

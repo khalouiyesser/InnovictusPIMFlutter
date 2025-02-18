@@ -1,23 +1,18 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart'; // Add this import
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:piminnovictus/views/AuthViews/welcome_view.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialisation de Firebase
-  await Firebase.initializeApp();
+  // Initialize Firebase (if needed)
+  // await Firebase.initializeApp();
 
-  // // Initialisation de Stripe
-  // Stripe.publishableKey = "pk_test_51QrpAmR8fzucGsmZnxLGc6kT7BSr3uYxzaSiG7xLNF8GcchuhI6MUsX7k1ipqf1c1vQjHtSDYhsE9Ey1jclk4C7E00vmFxgkaz"; // Remplace par ta clé Publishable Stripe
-  // Stripe.instance.applySettings(); // Assure l'initialisation du SDK Stripe
-
-  // Initialisation de ThemeProvider
+  // Initialize ThemeProvider and LanguageProvider
   final themeProvider = ThemeProvider();
   final languageProvider = LanguageProvider();
 
@@ -37,7 +32,6 @@ void main() async {
   );
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -51,14 +45,16 @@ class MyApp extends StatelessWidget {
           theme: MyThemes.lightTheme,
           darkTheme: MyThemes.darkTheme,
           themeMode: themeProvider.themeMode,
-          locale: languageProvider.locale,
+          locale: languageProvider.locale, // Set the locale from LanguageProvider
           supportedLocales: const [
-            Locale('en', ''),
-            Locale('fr', ''),
+            Locale('en', ''), // English
+            Locale('fr', ''), // French
           ],
           localizationsDelegates: const [
-            AppLocalizationsDelegate(),
-
+            AppLocalizationsDelegate(), // Your custom delegate
+            GlobalMaterialLocalizations.delegate, // Material localizations
+            GlobalWidgetsLocalizations.delegate, // Widgets localizations
+            GlobalCupertinoLocalizations.delegate, // Cupertino localizations
           ],
           home: WelcomePage(),
         );

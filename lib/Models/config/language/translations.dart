@@ -10,30 +10,63 @@ class AppLocalizations {
   }
 
   static const Map<String, Map<String, String>> _localizedValues = {
-    'en': {
-      'welcome': 'Welcome',
-      'settings': 'Settings',
-      'home': 'Home',
-      'profile': 'Profile',
-      'language': 'Language',
-      'darkMode': 'Dark Mode',
-      'preferences': 'Preferences',
+  'en': {
+    // Profile Section
+    'profileInformation': 'Profile Information',
+    'personalInformation': 'Personal Information',
+    'username': 'Username',
+    'email': 'Email',
+    'phone': 'Phone',
+    'password': 'Password',
+    'currentPassword': 'Current Password',
+    'newPassword': 'New Password',
+    'confirmPassword': 'Confirm Password',
+    
+    // Preferences Section
+    'preferences': 'Preferences',
+    'darkMode': 'Dark Mode',
+    'language': 'Language',
+    'english': 'English',
+    'french': 'French',
+    
+    // Terms & Privacy Section
+    'termsAndPrivacy': 'Terms & Privacy',
+    'termsAndConditions': 'Terms & Conditions',
+    'privacyPolicy': 'Privacy Policy',
+    
+    // Actions & Buttons
+    'save': 'Save',
     'logout': 'Logout',
-      // Add more translations here
-    },
-    'fr': {
-      'welcome': 'Bienvenue',
-      'settings': 'Paramètres',
-      'home': 'Accueil',
-      'profile': 'Profil',
-      'language': 'Langue',
-      'darkMode': 'Mode Sombre',
-      'preferences': 'Préférences',
+  },
+  'fr': {
+    // Profile Section
+    'profileInformation': 'Informations du Profil',
+    'personalInformation': 'Informations Personnelles',
+    'username': 'Nom d\'utilisateur',
+    'email': 'E-mail',
+    'phone': 'Téléphone',
+    'password': 'Mot de passe',
+    'currentPassword': 'Mot de passe actuel',
+    'newPassword': 'Nouveau mot de passe',
+    'confirmPassword': 'Confirmer le mot de passe',
+    
+    // Preferences Section
+    'preferences': 'Préférences',
+    'darkMode': 'Mode Sombre',
+    'language': 'Langue',
+    'english': 'Anglais',
+    'french': 'Français',
+    
+    // Terms & Privacy Section
+    'termsAndPrivacy': 'Conditions et Confidentialité',
+    'termsAndConditions': 'Conditions Générales',
+    'privacyPolicy': 'Politique de Confidentialité',
+    
+    // Actions & Buttons
+    'save': 'Enregistrer',
     'logout': 'Déconnexion',
-      // Add more translations here
-    },
-  };
-
+  },
+};
   String translate(String key) {
     return _localizedValues[locale.languageCode]?[key] ?? 
            _localizedValues['en']?[key] ?? 
