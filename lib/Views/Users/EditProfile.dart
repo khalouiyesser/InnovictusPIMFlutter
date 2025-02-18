@@ -12,8 +12,13 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   bool isPreferencesExpanded = false;
+  bool isProfileInformationsExpanded = false;
   bool isPersonalInfoExpanded = false;
   bool isPasswordExpanded = false;
+  bool isDarkModeExpanded = false;
+  bool isLanguageExpanded = false;
+  String selectedLanguage = 'en';
+  bool isTermsExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -77,22 +82,16 @@ class _EditProfileState extends State<EditProfile> {
                         style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       const SizedBox(height: 30),
-                      // Item Dark Mode
-                      _buildMenuItem(
-                        context,
-                        icon: Icons.dark_mode,
-                        title: 'Dark Mode',
-                        switchWidget: Switch(
-                          value: themeProvider.isDarkMode,
-                          onChanged: (value) {
-                            themeProvider.toggleTheme(value);
-                          },
-                          activeColor: Theme.of(context).iconTheme.color,
-                        ),
-                      ),
+                      
+                      _buildPreferencesCard(context),
                       const SizedBox(height: 10),
                       // Carte Preferences intégrée
-                      _buildPreferencesCard(context),
+                      _buildProfileInformationsCard(context),
+                                            const SizedBox(height: 10),
+
+                      _buildTermssCard(context),
+                      // Item Logout
+                     
                       const SizedBox(height: 10),
                       // Item Logout
                       _buildMenuItem(
@@ -192,14 +191,13 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  // Carte Preferences intégrée contenant les deux sous-cartes
-  Widget _buildPreferencesCard(BuildContext context) {
+  Widget _buildProfileInformationsCard(BuildContext context) {
     return GestureDetector(
       onTap: () {
         setState(() {
-          isPreferencesExpanded = !isPreferencesExpanded;
+          isProfileInformationsExpanded = !isProfileInformationsExpanded;
           // Réinitialiser l'expansion des sous-cartes lors de la fermeture
-          if (!isPreferencesExpanded) {
+          if (!isProfileInformationsExpanded) {
             isPersonalInfoExpanded = false;
             isPasswordExpanded = false;
           }
@@ -225,11 +223,11 @@ class _EditProfileState extends State<EditProfile> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.settings,
+                    Icon(Icons.person,
                         color: Theme.of(context).iconTheme.color),
                     const SizedBox(width: 10),
                     Text(
-                      'Preferences',
+                      'Profile Informations',
                       style: TextStyle(
                         fontSize: 16,
                         color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -238,14 +236,14 @@ class _EditProfileState extends State<EditProfile> {
                   ],
                 ),
                 Icon(
-                  isPreferencesExpanded
+                  isProfileInformationsExpanded
                       ? Icons.expand_more
                       : Icons.chevron_right,
                   color: Colors.grey,
                 ),
               ],
             ),
-            if (isPreferencesExpanded) ...[
+            if (isProfileInformationsExpanded) ...[
               const SizedBox(height: 16),
               // Sous-carte : Personal Informations
               GestureDetector(
@@ -436,4 +434,342 @@ class _EditProfileState extends State<EditProfile> {
       ),
     );
   }
+Widget _buildPreferencesCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          isPreferencesExpanded = !isPreferencesExpanded;
+          // Reset sub-cards expansion when closing
+          if (!isPreferencesExpanded) {
+            isDarkModeExpanded = false;
+            isLanguageExpanded = false;
+          }
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(17),
+          border: Border.all(
+            color: const Color(0xFF29E33C),
+            width: 0,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Preferences card header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.settings,
+                        color: Theme.of(context).iconTheme.color),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Preferences',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
+                      ),
+                    ),
+                  ],
+                ),
+                Icon(
+                  isPreferencesExpanded
+                      ? Icons.expand_more
+                      : Icons.chevron_right,
+                  color: Colors.grey,
+                ),
+              ],
+            ),
+            if (isPreferencesExpanded) ...[
+              const SizedBox(height: 16),
+              // Dark Mode card
+ Container(
+  margin: const EdgeInsets.symmetric(vertical: 2.5),
+padding: const EdgeInsets.symmetric(horizontal: 12),
+  decoration: BoxDecoration(
+    color: Theme.of(context).cardColor,
+    borderRadius: BorderRadius.circular(12),
+    border: Border.all(
+      color: const Color(0xFF29E33C),
+      width: 1,
+    ),
+  ),
+  child: Column( // Changed from Row to Column to match language card structure
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.dark_mode,
+                  color: Theme.of(context).iconTheme.color),
+              const SizedBox(width: 10),
+              Text(
+                'Dark Mode',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                ),
+              ),
+            ],
+          ),
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, child) {
+              return Switch(
+                value: themeProvider.isDarkMode,
+                onChanged: (value) {
+                  themeProvider.toggleTheme(value);
+                },
+activeColor: Theme.of(context).iconTheme.color,                
+              );
+            },
+          ),
+        ],
+      ),
+    ],
+  ),
+),
+SizedBox(height: 16),
+// Language Selection card
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isLanguageExpanded = !isLanguageExpanded;
+                  });
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: const Color(0xFF29E33C),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.language,
+                                  color: Theme.of(context).iconTheme.color),
+                              const SizedBox(width: 10),
+                              Text(
+                                'Language',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Icon(
+                            isLanguageExpanded
+                                ? Icons.expand_more
+                                : Icons.chevron_right,
+                            color: Colors.grey,
+                          ),
+                        ],
+                      ),
+                     if (isLanguageExpanded) ...[
+  const SizedBox(height: 15),
+  // English Option
+  Padding(
+    padding: const EdgeInsets.only(left: 20), // Add left padding
+    child: ListTile(
+      title: Text('English',
+        style: TextStyle(
+          color: Theme.of(context).textTheme.bodyMedium?.color,
+        ),
+      ),
+      onTap: () {
+        setState(() {
+          selectedLanguage = 'en';
+        });
+      },
+      trailing: selectedLanguage == 'en' 
+        ? Icon(Icons.check, color: Theme.of(context).iconTheme.color)
+        : null,
+    ),
+  ),
+  // French Option
+  Padding(
+    padding: const EdgeInsets.only(left: 20), // Add left padding
+    child: ListTile(
+      title: Text('French',
+        style: TextStyle(
+          color: Theme.of(context).textTheme.bodyMedium?.color,
+        ),
+      ),
+      onTap: () {
+        setState(() {
+          selectedLanguage = 'fr';
+        });
+      },
+      trailing: selectedLanguage == 'fr'
+        ? Icon(Icons.check, color: Theme.of(context).iconTheme.color)
+        : null,
+    ),
+  ),
+],
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Save button
+              
+            ],
+          ],
+        ),
+      ),
+    );
 }
+Widget _buildTermssCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          isTermsExpanded = !isTermsExpanded;
+          // Reset sub-cards expansion when closing
+          if (!isTermsExpanded) {
+            isDarkModeExpanded = false;
+            isLanguageExpanded = false;
+          }
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(17),
+          border: Border.all(
+            color: const Color(0xFF29E33C),
+            width: 0,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Preferences card header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.shield_outlined,
+                        color: Theme.of(context).iconTheme.color),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Terms & Privacy',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
+                      ),
+                    ),
+                  ],
+                ),
+                Icon(
+                  isTermsExpanded
+                      ? Icons.expand_more
+                      : Icons.chevron_right,
+                  color: Colors.grey,
+                ),
+              ],
+            ),
+          if (isTermsExpanded) ...[
+  const SizedBox(height: 16),
+  // Terms & Conditions card
+  Container(
+    margin: const EdgeInsets.symmetric(vertical: 4),
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: Theme.of(context).cardColor,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: const Color(0xFF29E33C),
+        width: 1,
+      ),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.description_outlined,
+                color: Theme.of(context).iconTheme.color),
+            const SizedBox(width: 10),
+            Text(
+              'Terms & Conditions',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
+              ),
+            ),
+          ],
+        ),
+        Icon(
+          Icons.chevron_right,
+          color: Colors.grey,
+        ),
+      ],
+    ),
+  ),
+  
+  // Privacy Policy card
+  Container(
+    margin: const EdgeInsets.symmetric(vertical: 4),
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: Theme.of(context).cardColor,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: const Color(0xFF29E33C),
+        width: 1,
+      ),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.privacy_tip_outlined,
+                color: Theme.of(context).iconTheme.color),
+            const SizedBox(width: 10),
+            Text(
+              'Privacy Policy',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
+              ),
+            ),
+          ],
+        ),
+        Icon(
+          Icons.chevron_right,
+          color: Colors.grey,
+        ),
+      ],
+    ),
+  ),
+],],
+        ),
+      ),
+    );
+}}
