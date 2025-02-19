@@ -3,10 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:piminnovictus/Services/Const.dart';
 import 'package:http/http.dart' as http;
+import 'package:piminnovictus/Services/session_manager.dart';
 
 class AuthController {
   final Const con = Const();
   late final String api;
+  final SessionManager _sessionManager = SessionManager();
 
   // Instance de Firebase Auth
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -25,8 +27,20 @@ class AuthController {
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         print(response.body);
-        return json.decode(response.body);
-      } else {
+final responseData = json.decode(response.body);
+      
+      // Save session data after successful login
+      await _sessionManager.saveSession(
+        token: responseData['accessToken'],
+        userData: {
+          'email': email,
+          'userId': responseData['userId'],
+          'refreshToken': responseData['refreshToken'],
+        },
+      );
+      
+      return responseData;
+            } else {
         throw Exception('Échec de l\'envoi de l\'OTP: ${response.body}');
       }
     } catch (e) {

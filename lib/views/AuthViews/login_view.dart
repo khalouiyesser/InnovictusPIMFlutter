@@ -173,7 +173,7 @@ class _LoginViewState extends State<LoginView> {
                   try {
                     Map<String, dynamic> response = await auth.loginSimple(emailController.text, passwordController.text);
 
-                    if (response.isNotEmpty) { // Vérifie si le login a réussi
+                     if (response['accessToken'] != null) { // Vérifie si le login a réussi
                       Navigator.of(context).pushReplacement(
                         PageRouteBuilder(
                           pageBuilder: (context, animation, secondaryAnimation) =>

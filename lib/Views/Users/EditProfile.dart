@@ -2,6 +2,8 @@ import 'dart:ui'; // Pour le BackdropFilter
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
+import 'package:piminnovictus/Services/session_manager.dart';
+import 'package:piminnovictus/Views/AuthViews/login_view.dart';
 import 'package:piminnovictus/Views/AuthViews/privacy_policy.dart';
 import 'package:piminnovictus/Views/AuthViews/terms_and_conditions.dart';
 import 'package:provider/provider.dart';
@@ -102,10 +104,18 @@ class _EditProfileState extends State<EditProfile> {
                         context,
                         icon: Icons.logout,
   title: AppLocalizations.of(context).translate('logout'),
-                        onTap: () {
-                          // Logique de déconnexion ici
-                        },
-                      ),
+                        onTap: () async { final sessionManager = SessionManager();
+    
+    // Clear the session
+    await sessionManager.clearSession();
+    
+    // Navigate to welcome page and clear all previous routes
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => LoginView()),
+      (route) => false, // This removes all previous routes
+    );
+  },
+),
                       const SizedBox(height: 30),
                     ],
                   ),

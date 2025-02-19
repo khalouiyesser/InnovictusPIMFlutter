@@ -29,6 +29,7 @@ dependencies:
   google_sign_in: ^5.4.4
   firebase_core: ^2.32.0  # Dernière version compatible
   firebase_auth: ^4.16.0   # Version compatible avec firebase_core
+  flutter_secure_storage: ^9.2.2   # Utilisez la version la plus récente
 
 
 dev_dependencies:

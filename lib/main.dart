@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart'; // Add this import
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
+import 'package:piminnovictus/Services/session_manager.dart';
+import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:piminnovictus/views/AuthViews/welcome_view.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -16,6 +17,9 @@ void main() async {
   // Initialize ThemeProvider and LanguageProvider
   final themeProvider = ThemeProvider();
   final languageProvider = LanguageProvider();
+  final sessionManager = SessionManager();
+    final isLoggedIn = await sessionManager.isLoggedIn();
+
 
   await Future.wait([
     themeProvider.init(),
@@ -28,13 +32,15 @@ void main() async {
         ChangeNotifierProvider.value(value: themeProvider),
         ChangeNotifierProvider.value(value: languageProvider),
       ],
-      child: const MyApp(),
+      child: MyApp(isLoggedIn: isLoggedIn),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+    final bool isLoggedIn;
+
+  const MyApp({Key? key, required this.isLoggedIn}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +63,7 @@ class MyApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate, // Widgets localizations
             GlobalCupertinoLocalizations.delegate, // Cupertino localizations
           ],
-          home: WelcomePage(),
+          home: isLoggedIn ? BottomNavBarExample() : WelcomePage(),
         );
       },
     );

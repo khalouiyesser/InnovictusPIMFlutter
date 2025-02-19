@@ -285,6 +285,7 @@ import 'package:piminnovictus/Models/packs.dart';
 import 'package:piminnovictus/Views/Visitor/card_content.dart';
 import 'package:piminnovictus/Views/Visitor/flip_card.dart';
 import 'package:piminnovictus/Views/stripe.dart';
+import 'package:piminnovictus/views/AuthViews/welcome_view.dart';
 
 class SubscriptionCarousel extends StatefulWidget {
   final String? preselectedPackId;
@@ -364,7 +365,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => PaymentView(pack: selectedPack),
+          builder: (context) =>WelcomePage() //PaymentView(pack: selectedPack),
         ),
       );
     } else {
