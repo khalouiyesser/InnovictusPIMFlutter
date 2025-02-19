@@ -4,7 +4,7 @@
 
 class Const{
 
-  final String url = "http://192.168.1.176:3000";
+  final String url = "http://192.168.1.101:3000";
 }
 class SessionConstants {
   static const String tokenKey = 'auth_token';
