@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Views/DashboardClient/Wallet.dart';
 import 'package:piminnovictus/Views/DashboardClient/energy_settings_sheet.dart';
@@ -17,6 +18,59 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  Widget getWeatherIcon(int code, {double size = 24.0}) {
+    switch (code) {
+      case >= 200 && < 300:
+        return Image.asset(
+          'assets/1.png',
+          width: size,
+          height: size,
+        );
+      case >= 300 && < 400:
+        return Image.asset(
+          'assets/2.png',
+          width: size,
+          height: size,
+        );
+      case >= 500 && < 600:
+        return Image.asset(
+          'assets/3.png',
+          width: size,
+          height: size,
+        );
+      case >= 600 && < 700:
+        return Image.asset(
+          'assets/4.png',
+          width: size,
+          height: size,
+        );
+      case >= 700 && < 800:
+        return Image.asset(
+          'assets/5.png',
+          width: size,
+          height: size,
+        );
+      case == 800:
+        return Image.asset(
+          'assets/6.png',
+          width: size,
+          height: size,
+        );
+      case > 800 && <= 804:
+        return Image.asset(
+          'assets/7.png',
+          width: size,
+          height: size,
+        );
+      default:
+        return Image.asset(
+          'assets/7.png',
+          width: size,
+          height: size,
+        );
+    }
+  }
+
   // Déclaration de la variable _currentEnergyPercentage
   double _currentEnergyPercentage = 50.0; // Exemple de valeur initiale
 
@@ -96,39 +150,47 @@ class _DashboardPageState extends State<DashboardPage> {
                       SizedBox(height: screenHeight * 0.02),
                       // Date
                       // Date et Localisation sur la même ligne
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: padding),
-                        child: Row(
-                          children: [
-                            // Date
-                            Text(
-                              '10 February, 2025',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontSize: screenWidth * 0.035,
-                                color: theme.textTheme.bodyMedium?.color
-                                    ?.withOpacity(0.7),
-                              ),
-                            ),
-                            SizedBox(
-                                width: screenWidth *
-                                    0.40), // Espacement entre la date et la localisation
+                      BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
+                        builder: (context, state) {
+                          if (state is WeatherBlocSuccess) {
+                            return Padding(
+                              padding:
+                                  EdgeInsets.symmetric(horizontal: padding),
+                              child: Row(
+                                children: [
+                                  // Date
+                                  Text(
+                                    DateFormat('dd MMMM yyyy')
+                                        .format(state.weather.date!),
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      fontSize: screenWidth * 0.035,
+                                      color: theme.textTheme.bodyMedium?.color
+                                          ?.withOpacity(0.7),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                      width: screenWidth *
+                                          0.39), // Espacement entre la date et la localisation
+                                  getWeatherIcon(
+                                      state.weather.weatherConditionCode!,
+                                      size: screenWidth * 0.07),
 
-                            Icon(
-                              Icons.wb_sunny,
-                              color: Colors.yellow,
-                              size: screenWidth * 0.05,
-                            ),
-                            SizedBox(width: screenWidth * 0.02),
-                            Text(
-                              '23°C',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontSize: screenWidth * 0.035,
-                                color: theme.textTheme.bodyMedium?.color
-                                    ?.withOpacity(0.7),
+                                  SizedBox(width: screenWidth * 0.02),
+                                  Text(
+                                    '${state.weather.temperature!.celsius!.round()}°C',
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      fontSize: screenWidth * 0.035,
+                                      color: theme.textTheme.bodyMedium?.color
+                                          ?.withOpacity(0.7),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
+                            );
+                          } else {
+                            return Container();
+                          }
+                        },
                       ),
 
                       SizedBox(height: screenHeight * 0.01),
