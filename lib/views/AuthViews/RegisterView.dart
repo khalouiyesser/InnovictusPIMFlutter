@@ -17,9 +17,9 @@ class RegisterView extends StatefulWidget {
 
 class _RegisterViewState extends State<RegisterView>
     with WidgetsBindingObserver {
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController PhoneNumberController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController ConfirmPasswordController =
       TextEditingController();
@@ -27,14 +27,15 @@ class _RegisterViewState extends State<RegisterView>
   final FocusNode _passwordFocus = FocusNode();
   late AuthScreenTheme _theme;
   bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   bool _acceptedTerms = false;
 
   String? _emailError;
   String? _passwordError;
   String? _confirmPasswordError;
-  String? _firstNameError;
-  String? _lastNameError;
+  String? _fullNameError;
+  String? _PhoneNumberError;
 
   AuthController auth = AuthController();
 
@@ -44,10 +45,10 @@ class _RegisterViewState extends State<RegisterView>
     _updateTheme();
     WidgetsBinding.instance.addObserver(this);
     emailController.addListener(() => _validateEmail(emailController.text));
-    firstNameController
-        .addListener(() => _validateFirstName(firstNameController.text));
-    lastNameController
-        .addListener(() => _validateLastName(lastNameController.text));
+    fullNameController
+        .addListener(() => _validatefullName(fullNameController.text));
+    PhoneNumberController.addListener(
+        () => _validatePhoneNumber(PhoneNumberController.text));
     passwordController.addListener(() {
       _validatePassword(passwordController.text);
       _validataConfirmPassword(ConfirmPasswordController.text);
@@ -81,23 +82,26 @@ class _RegisterViewState extends State<RegisterView>
     super.dispose();
   }
 
-  void _validateLastName(String value) {
+  void _validatefullName(String value) {
     setState(() {
-      _lastNameError = value.isEmpty
-          ? "LastName cannot be empty"
+      _fullNameError = value.isEmpty
+          ? "FullName cannot be empty"
           : value.length < 3
-              ? "LastName should be at least 3 characters"
+              ? "FullName should be at least 6 characters"
               : null;
     });
   }
 
+// Validation de la confirmation du mot de passe
   void _validataConfirmPassword(String value) {
     setState(() {
-      _confirmPasswordError = value.isEmpty
-          ? "Confirm Password cannot be empty"
-          : value != passwordController.text
-              ? "Passwords don't match"
-              : null;
+      if (value.isEmpty) {
+        _confirmPasswordError = "Confirm password cannot be empty";
+      } else if (value != passwordController.text) {
+        _confirmPasswordError = "Passwords don't match";
+      } else {
+        _confirmPasswordError = null;
+      }
     });
   }
 
@@ -122,13 +126,15 @@ class _RegisterViewState extends State<RegisterView>
     });
   }
 
-  void _validateFirstName(String value) {
+  void _validatePhoneNumber(String value) {
     setState(() {
-      _firstNameError = value.isEmpty
-          ? "FirstName cannot be empty"
-          : value.length < 3
-              ? "FirstName should be at least 3 characters"
-              : null;
+      if (value.isEmpty) {
+        _PhoneNumberError = "Phone number cannot be empty";
+      } else if (!RegExp(r"^[259]\d{7}$").hasMatch(value)) {
+        _PhoneNumberError = "Phone must start with 2, 5 or 9 and have 8 digits";
+      } else {
+        _PhoneNumberError = null;
+      }
     });
   }
 
@@ -168,13 +174,12 @@ class _RegisterViewState extends State<RegisterView>
     if (ConfirmPasswordController.text.isNotEmpty &&
         passwordController.text.isNotEmpty &&
         emailController.text.isNotEmpty &&
-        firstNameController.text.isNotEmpty &&
-        lastNameController.text.isNotEmpty &&
+        fullNameController.text.isNotEmpty &&
+        PhoneNumberController.text.isNotEmpty &&
         _confirmPasswordError == null &&
         _passwordError == null &&
         _emailError == null &&
-        _firstNameError == null &&
-        _lastNameError == null) {
+        _fullNameError == null) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -185,8 +190,8 @@ class _RegisterViewState extends State<RegisterView>
       _validateEmail(emailController.text);
       _validatePassword(passwordController.text);
       _validataConfirmPassword(ConfirmPasswordController.text);
-      _validateFirstName(firstNameController.text);
-      _validateLastName(lastNameController.text);
+      _validatefullName(fullNameController.text);
+      _validatePhoneNumber(PhoneNumberController.text);
     }
   }
 
@@ -306,18 +311,10 @@ class _RegisterViewState extends State<RegisterView>
                   child: Column(
                     children: [
                       _buildTextField(
-                        controller: firstNameController,
-                        hintText: "First Name",
-                        errorText: _firstNameError,
-                        onChanged: _validateFirstName,
-                        screenWidth: screenWidth,
-                      ),
-                      SizedBox(height: screenHeight * 0.02),
-                      _buildTextField(
-                        controller: lastNameController,
-                        hintText: "Last Name",
-                        errorText: _lastNameError,
-                        onChanged: _validateLastName,
+                        controller: fullNameController,
+                        hintText: "Full Name",
+                        errorText: _fullNameError,
+                        onChanged: _validatefullName,
                         screenWidth: screenWidth,
                       ),
                       SizedBox(height: screenHeight * 0.02),
@@ -326,6 +323,14 @@ class _RegisterViewState extends State<RegisterView>
                         hintText: "Email",
                         errorText: _emailError,
                         onChanged: _validateEmail,
+                        screenWidth: screenWidth,
+                      ),
+                      SizedBox(height: screenHeight * 0.02),
+                      _buildTextField(
+                        controller: PhoneNumberController,
+                        hintText: "Phonne Number",
+                        errorText: _PhoneNumberError,
+                        onChanged: _validatePhoneNumber,
                         screenWidth: screenWidth,
                       ),
                       SizedBox(height: screenHeight * 0.02),
@@ -512,10 +517,16 @@ class _RegisterViewState extends State<RegisterView>
     bool obscureText = false,
     required double screenWidth,
   }) {
+    bool isPassword = hintText.toLowerCase().contains('password');
+
     return TextField(
       controller: controller,
       onChanged: onChanged,
-      obscureText: obscureText,
+      obscureText: isPassword
+          ? (hintText == "Password"
+              ? !_isPasswordVisible
+              : !_isConfirmPasswordVisible)
+          : false,
       style: TextStyle(color: _theme.textColor),
       decoration: InputDecoration(
         errorText: errorText,
@@ -555,6 +566,29 @@ class _RegisterViewState extends State<RegisterView>
           ),
         ),
         contentPadding: EdgeInsets.only(left: screenWidth * 0.05),
+        suffixIcon: isPassword
+            ? IconButton(
+                icon: Icon(
+                  hintText == "Password"
+                      ? (_isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off)
+                      : (_isConfirmPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off),
+                  color: _theme.textColor,
+                ),
+                onPressed: () {
+                  setState(() {
+                    if (hintText == "Password") {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    } else {
+                      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                    }
+                  });
+                },
+              )
+            : null,
       ),
     );
   }

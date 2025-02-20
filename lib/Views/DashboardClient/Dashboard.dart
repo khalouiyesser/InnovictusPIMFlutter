@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Views/DashboardClient/Wallet.dart';
 import 'package:piminnovictus/Views/DashboardClient/energy_settings_sheet.dart';
 import 'package:piminnovictus/Views/bachground.dart';
+import 'package:piminnovictus/viewmodels/WeatherAPI/bloc/weather_bloc_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:fl_chart/fl_chart.dart';
@@ -67,7 +69,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(right: screenWidth * 0.05),
+                            padding: EdgeInsets.only(right: screenWidth * 0.30),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -87,62 +89,30 @@ class _DashboardPageState extends State<DashboardPage> {
                             ),
                           ),
                           Row(
-                            children: [
-                              _buildImageButton(
-                                  "assets/wallet.png",
-                                  screenWidth * 0.09,
-                                  screenWidth * 0.09,
-                                  context),
-                              SizedBox(width: screenWidth * 0.04),
-                              Stack(
-                                children: [
-                                  _buildImageButton(
-                                      "assets/settings.png",
-                                      screenWidth * 0.08,
-                                      screenWidth * 0.08,
-                                      context),
-                                  Positioned(
-                                    right: 0,
-                                    top: 0,
-                                    child: Container(
-                                      width: screenWidth * 0.03,
-                                      height: screenWidth * 0.03,
-                                      decoration: const BoxDecoration(
-                                        color: Colors
-                                            .red, // Vous pouvez le thématiser
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                            children: [],
                           ),
                         ],
                       ),
                       SizedBox(height: screenHeight * 0.02),
                       // Date
+                      // Date et Localisation sur la même ligne
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: padding),
                         child: Row(
                           children: [
+                            // Date
                             Text(
-                              '10 Février, 2025',
+                              '10 February, 2025',
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 fontSize: screenWidth * 0.035,
                                 color: theme.textTheme.bodyMedium?.color
                                     ?.withOpacity(0.7),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
-                      // Température
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: padding),
-                        child: Row(
-                          children: [
+                            SizedBox(
+                                width: screenWidth *
+                                    0.40), // Espacement entre la date et la localisation
+
                             Icon(
                               Icons.wb_sunny,
                               color: Colors.yellow,
@@ -160,7 +130,38 @@ class _DashboardPageState extends State<DashboardPage> {
                           ],
                         ),
                       ),
+
+                      SizedBox(height: screenHeight * 0.01),
+
+// Température (Météo reste inchangée)
+                      BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
+                        builder: (context, state) {
+                          if (state is WeatherBlocSuccess) {
+                            return Padding(
+                              padding:
+                                  EdgeInsets.symmetric(horizontal: padding),
+                              child: Row(
+                                children: [
+                                  // Localisation
+                                  Text(
+                                    '📍 ${state.weather.areaName}',
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      fontSize: screenWidth * 0.035,
+                                      color: theme.textTheme.bodyMedium?.color
+                                          ?.withOpacity(0.7),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            return Container();
+                          }
+                        },
+                      ),
+
                       SizedBox(height: screenHeight * 0.03),
+
                       // Cercle de progression personnalisé
                       Center(
                         child: Stack(
@@ -260,25 +261,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildImageButton(
       String assetPath, double width, double height, BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        if (assetPath == "assets/settings.png") {
-          // Ouvrir EnergySettingsSheet en pop-up
-          EnergySettingsSheet.show(
-            context,
-            initialPercentage: _currentEnergyPercentage,
-            onSave: (newPercentage) {
-              setState(() {
-                _currentEnergyPercentage = newPercentage;
-              });
-            },
-          );
-        } else if (assetPath == "assets/wallet.png") {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => WalletPage()),
-          );
-        }
-      },
+      onTap: () {},
       child: Image.asset(
         assetPath,
         width: width,

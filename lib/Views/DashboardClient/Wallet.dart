@@ -35,17 +35,6 @@ class WalletPage extends StatelessWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(0),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.arrow_back,
-                            color: theme.colorScheme.primary,
-                            size: 28,
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ),
                     ), // Décalage pour éviter le chevauchement du bouton
 
                     // Header (avatar + nom)
@@ -285,7 +274,7 @@ class _ChartSection extends StatelessWidget {
                       },
                     ),
                   ),
-                   bottomTitles: AxisTitles(
+                  bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 20,
