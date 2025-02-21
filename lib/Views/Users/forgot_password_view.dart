@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Services/AuthController.dart';
 import '../AuthViews/login_view.dart';
+import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
 import 'otp.dart';
-
 
 class ForgotPasswordView extends StatefulWidget {
   const ForgotPasswordView({Key? key}) : super(key: key);
@@ -11,7 +11,9 @@ class ForgotPasswordView extends StatefulWidget {
   _ForgotPasswordViewState createState() => _ForgotPasswordViewState();
 }
 
-class _ForgotPasswordViewState extends State<ForgotPasswordView> {
+class _ForgotPasswordViewState extends State<ForgotPasswordView>
+    with WidgetsBindingObserver {
+  late AuthScreenTheme _theme;
   bool isPhoneInput = false;
   bool isEmailInput = false;
   bool phoneError = false;
@@ -38,16 +40,48 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _updateTheme();
+    // S'enregistre pour écouter les changements de luminosité du système
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    // Mettre à jour le thème quand la luminosité du système change
+    if (mounted) {
+      setState(() {
+        _updateTheme();
+      });
+    }
+  }
+
+  void _updateTheme() {
+    _theme = AuthScreenThemeDetector.getTheme();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isDarkMode = AuthScreenThemeDetector.isSystemDarkMode();
+
     return Scaffold(
       resizeToAvoidBottomInset:
           false, // Disable resizing of the screen when keyboard appears
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(
-              "assets/Pulse.png", // Your background image
-              fit: BoxFit.cover, // Ensures the image covers the entire screen
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: _theme.backgroundGradientColors,
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: isDarkMode
+                  ? Image.asset("assets/Pulse.png", fit: BoxFit.cover)
+                  : null, // Utilise l'image uniquement en mode sombre
             ),
           ),
           Center(
@@ -66,14 +100,14 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                     children: [
                       const SizedBox(height: 1),
 
-                      const Align(
+                      Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
                           "Forgot Password?",
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: _theme.textColor,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -90,12 +124,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                               decoration: InputDecoration(
                                 hintText: "Enter your phone number",
                                 hintStyle: TextStyle(
-                                    color: Colors.white70), // HintText en blanc
+                                    color: _theme
+                                        .hintTextColor), // HintText en blanc
                                 prefixIcon: Icon(Icons.phone,
                                     color: Colors.white), // Icône téléphone
                                 filled: true,
-                                fillColor: Colors
-                                    .grey[800], // Couleur similaire au bouton
+                                fillColor: _theme
+                                    .fieldFillColor, // Couleur similaire au bouton
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(
                                       24.0), // Bordures arrondies
@@ -110,7 +145,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                 ),
                               ),
                               style: TextStyle(
-                                  color: Colors.white), // Texte en blanc
+                                  color: _theme.textColor), // Texte en blanc
                               onSubmitted: (_) {
                                 setState(() {
                                   isPhoneInput = false;
@@ -128,9 +163,12 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                               child: Container(
                                 height: 56,
                                 decoration: BoxDecoration(
-                                  color: Colors.grey[800],
-                                  borderRadius: BorderRadius.circular(
-                                      25.0), // Bordures identiques
+                                  color: _theme.fieldFillColor,
+                                  borderRadius: BorderRadius.circular(24.0),
+                                  border: Border.all(
+                                    color: Colors.green, // Bordure verte
+                                  ), // Bordure verte au focus
+                                  // Bordures identiques
                                 ),
                                 padding: EdgeInsets.symmetric(horizontal: 16),
                                 child: Row(
@@ -142,7 +180,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                     Text(
                                       "Send OTP via SMS",
                                       style: TextStyle(
-                                          color: Colors.white, fontSize: 16),
+                                          color: _theme.textColor,
+                                          fontSize: 16),
                                     ),
                                   ],
                                 ),
@@ -156,11 +195,12 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                               controller: emailController,
                               decoration: InputDecoration(
                                 hintText: "Enter your email",
-                                hintStyle: TextStyle(color: Colors.white70),
+                                hintStyle:
+                                    TextStyle(color: _theme.hintTextColor),
                                 prefixIcon:
                                     Icon(Icons.email, color: Colors.white),
                                 filled: true,
-                                fillColor: Colors.grey[800],
+                                fillColor: _theme.fieldFillColor,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(
                                       24.0), // Bordures arrondies
@@ -177,7 +217,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                 ),
                               ),
                               style: TextStyle(
-                                  color: Colors.white), // Texte en blanc
+                                  color: _theme.textColor), // Texte en blanc
                               onSubmitted: (_) {
                                 setState(() {
                                   isEmailInput = false;
@@ -193,13 +233,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                 });
                               },
                               child: Container(
-                                height:
-                                    56, // 
+                                height: 56, //
                                 decoration: BoxDecoration(
-                                  color: Colors
-                                      .grey[800], 
-                                  borderRadius: BorderRadius.circular(
-                                      24.0), 
+                                  color: _theme.fieldFillColor,
+                                  border: Border.all(
+                                    color: Colors.green, // Bordure verte
+                                  ),
+                                  borderRadius: BorderRadius.circular(24.0),
                                 ),
                                 padding: EdgeInsets.symmetric(horizontal: 16),
                                 child: Row(
@@ -211,7 +251,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                     Text(
                                       "Send OTP via Email",
                                       style: TextStyle(
-                                          color: Colors.white, fontSize: 16),
+                                          color: _theme.textColor,
+                                          fontSize: 16),
                                     ),
                                   ],
                                 ),
@@ -241,11 +282,15 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                             //   context,
                             //   MaterialPageRoute(builder: (context) => const OTPPage()),
                             // );
-                          } else if (isEmailInput && emailController.text.isNotEmpty && isEmail(emailController.text)){
+                          } else if (isEmailInput &&
+                              emailController.text.isNotEmpty &&
+                              isEmail(emailController.text)) {
                             try {
-                              Map<String, dynamic> response = await con.forgotPassword(emailController.text);
+                              Map<String, dynamic> response = await con
+                                  .forgotPassword(emailController.text);
 
-                              if (response.containsKey('resetToken') && response.containsKey('code')) {
+                              if (response.containsKey('resetToken') &&
+                                  response.containsKey('code')) {
                                 String resetToken = response['resetToken'];
                                 int code = response['code'];
 
@@ -264,12 +309,15 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                 );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text("Erreur : ${response['message'] ?? 'Données manquantes'}")),
+                                  SnackBar(
+                                      content: Text(
+                                          "Erreur : ${response['message'] ?? 'Données manquantes'}")),
                                 );
                               }
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Erreur de connexion : $e")),
+                                SnackBar(
+                                    content: Text("Erreur de connexion : $e")),
                               );
                             }
                           }
@@ -281,7 +329,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                       buildActionButton(
                         text: "Back To Login",
                         backgroundColor: Colors.transparent,
-                        textColor: const Color.fromARGB(255, 255, 255, 255),
+                        textColor: _theme.textColor, // Remplacement ici
                         borderColor: Color(0xFF29E33C),
                         onTap: () {
                           Navigator.pushReplacement(
