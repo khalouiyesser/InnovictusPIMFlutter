@@ -5,6 +5,8 @@ import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
+import 'package:piminnovictus/Views/DashboardClient/Wallet.dart';
+import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:piminnovictus/views/AuthViews/welcome_view.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
@@ -31,6 +33,8 @@ void main() async {
       providers: [
         ChangeNotifierProvider.value(value: themeProvider),
         ChangeNotifierProvider.value(value: languageProvider),
+        ChangeNotifierProvider(create: (_) => ProfileSwitcherViewModel()..loadProfiles()),
+
       ],
       child: MyApp(isLoggedIn: isLoggedIn),
     ),

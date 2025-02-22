@@ -281,7 +281,7 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:piminnovictus/Models/packs.dart';
+import 'package:piminnovictus/Models/ClientModels/packs.dart';
 import 'package:piminnovictus/Views/Visitor/card_content.dart';
 import 'package:piminnovictus/Views/Visitor/flip_card.dart';
 import 'package:piminnovictus/Views/stripe.dart';

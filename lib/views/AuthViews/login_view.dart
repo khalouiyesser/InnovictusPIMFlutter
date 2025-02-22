@@ -588,7 +588,8 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                     Map<String, dynamic> response = await auth.loginSimple(
                         emailController.text, passwordController.text);
 
-if (response['accessToken'] != null) {                      Navigator.of(context).pushReplacement(
+                    if (response['accessToken'] != null) {
+                      Navigator.of(context).pushReplacement(
                         PageRouteBuilder(
                           pageBuilder:
                               (context, animation, secondaryAnimation) =>

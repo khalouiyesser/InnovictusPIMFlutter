@@ -1,6 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-import 'package:piminnovictus/Models/packs.dart';
+import 'package:piminnovictus/Models/ClientModels/packs.dart';
 import 'package:piminnovictus/views/Visitor/packs_list.dart';
 import '../card_content.dart';
 import '../flip_card.dart';
