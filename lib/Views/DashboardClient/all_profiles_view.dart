@@ -1,11 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/ClientModels/profile.dart';
+import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
 import 'package:provider/provider.dart';
 
-class AllProfilesView extends StatelessWidget {
+class AllProfilesView extends StatefulWidget {
   const AllProfilesView({Key? key}) : super(key: key);
 
+  @override
+  State<AllProfilesView> createState() => _AllProfilesViewState();
+}
+
+class _AllProfilesViewState extends State<AllProfilesView> {
+  final SessionManager _sessionManager = SessionManager();
+  List<Map<String, dynamic>> _recentUsers = [];
+  bool _isLoadingRecentUsers = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecentUsers();
+  }
+
+  Future<void> _loadRecentUsers() async {
+    try {
+      final users = await _sessionManager.getRecentUsers();
+      setState(() {
+        _recentUsers = users;
+        _isLoadingRecentUsers = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingRecentUsers = false;
+      });
+      // Handle error appropriately
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Consumer<ProfileSwitcherViewModel>(
@@ -41,39 +71,61 @@ class AllProfilesView extends StatelessWidget {
               const Divider(),
               
               // Recent connected accounts section
-                        Padding(
+                       Padding(
                 padding: const EdgeInsets.only(left: 16.0, top: 8.0, bottom: 8.0),
                 child: Text(
                   'Utilisateurs récents',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
-              ...viewModel.recentUsers.map((user) => ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: user.photoURL!= null
-                      ? NetworkImage(user.photoURL!)
-                      : const AssetImage('assets/user.jpg') as ImageProvider,
-                  backgroundColor: Colors.grey.shade200,
-                ),
-                title: Text(user.displayName.toString()),
               
-                onTap: () => viewModel.selectUser(user.uid),
-              )),
-              if (viewModel.recentUsers.isEmpty)
+              if (_isLoadingRecentUsers)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              else if (_recentUsers.isEmpty)
                 const Padding(
                   padding: EdgeInsets.all(16.0),
                   child: Text(
                     'Aucun utilisateur récent',
-                    style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      color: Colors.grey,
+                    ),
                     textAlign: TextAlign.center,
                   ),
-                ),
+                )
+              else
+                ..._recentUsers.map((user) => ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: user['photoURL'] != null
+                            ? NetworkImage(user['photoURL'])
+                            : const AssetImage('assets/user.jpg') as ImageProvider,
+                        backgroundColor: Colors.grey.shade200,
+                      ),
+                      title: Text(user['name'] ?? 'Unknown User'),
+                      subtitle: Text(_formatLastSeen(
+                        user['lastLogin'] != null 
+                            ? DateTime.parse(user['lastLogin']) 
+                            : null
+                      )),
+                      onTap: () async {
+                        // Handle recent user selection
+                        if (user['userId'] != null) {
+                          await viewModel.selectUser(user['userId']);
+                        }
+                      },
+                    )),
             ],
           ),
         );
       },
     );
   }
+
   
   String _formatLastSeen(DateTime? lastSeen) {
     if (lastSeen == null) return 'Inconnue';
