@@ -17,7 +17,7 @@ class AllProfilesView extends StatelessWidget {
           ),
           body: ListView(
             children: [
-              ...viewModel.profiles.map((profile) => ListTile(
+...viewModel.profilesSortedByCreationDate.map((profile) => ListTile(
                 leading: CircleAvatar(
                   backgroundImage: profile.imageUrl != null
                       ? NetworkImage(profile.imageUrl!)

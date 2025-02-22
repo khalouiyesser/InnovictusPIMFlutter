@@ -25,19 +25,15 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
   OverlayEntry? _arrowOverlay;
 
   void _showArrow() {
-    // Remove any existing overlay
     _hideArrow();
-    
-    // Get the position of the avatar
     final RenderBox renderBox = _avatarKey.currentContext!.findRenderObject() as RenderBox;
     final Offset position = renderBox.localToGlobal(Offset.zero);
     final Size size = renderBox.size;
     
-    // Create the overlay entry with the arrow
     _arrowOverlay = OverlayEntry(
       builder: (context) => Positioned(
-        top: position.dy + size.height - 2, // Reduced space between avatar and arrow
-        left: position.dx + (size.width / 2) - 10, // Center horizontally
+        top: position.dy + size.height - 2,
+        left: position.dx + (size.width / 2) - 10,
         child: Material(
           color: Colors.transparent,
           elevation: 0,
@@ -50,7 +46,6 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
       ),
     );
     
-    // Add the overlay to the screen
     Overlay.of(context).insert(_arrowOverlay!);
   }
 
@@ -69,9 +64,14 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
   Widget build(BuildContext context) {
     return Consumer<ProfileSwitcherViewModel>(
       builder: (context, viewModel, child) {
+        if (viewModel.currentProfile == null) return Container();
+
+        // Get recent profiles (excluding current profile)
+        final recentProfiles = viewModel.getRecentProfiles(2);
+
         return PopupMenuButton<String>(
           key: _avatarKey,
-          offset: const Offset(0, 54), // Reduced to have dropdown closer to arrow
+          offset: const Offset(0, 54),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           onOpened: _showArrow,
           onCanceled: _hideArrow,
@@ -82,15 +82,25 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
                 : const AssetImage('assets/user.jpg') as ImageProvider,
           ),
           itemBuilder: (BuildContext context) => [
+            // Current Profile
             PopupMenuItem<String>(
               padding: EdgeInsets.zero,
               child: _buildCurrentProfileItem(viewModel.currentProfile!),
             ),
-            ...viewModel.profiles.map((profile) => PopupMenuItem<String>(
+            // Divider
+            const PopupMenuItem<String>(
+              height: 1,
+              padding: EdgeInsets.zero,
+              enabled: false,
+              child: Divider(height: 1),
+            ),
+            // Recent Profiles
+            ...recentProfiles.map((profile) => PopupMenuItem<String>(
               value: profile.id,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: _buildProfileItem(profile),
             )),
+            // View All Profiles Button
             PopupMenuItem<String>(
               padding: EdgeInsets.zero,
               child: _buildViewAllProfilesButton(context),
@@ -106,36 +116,29 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
   }
  
   Widget _buildCurrentProfileItem(ProfileModel profile) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundImage: profile.imageUrl != null
-                    ? NetworkImage(profile.imageUrl!)
-                    : const AssetImage('assets/user.jpg') as ImageProvider,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  profile.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              if (profile.isSelected)
-                const Icon(Icons.check_circle, color: Color(0xFF29E33C), size: 20),
-            ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 20,
+            backgroundImage: profile.imageUrl != null
+                ? NetworkImage(profile.imageUrl!)
+                : const AssetImage('assets/user.jpg') as ImageProvider,
           ),
-        ),
-        const Divider(height: 1),
-      ],
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              profile.name,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          const Icon(Icons.check_circle, color: Color(0xFF29E33C), size: 20),
+        ],
+      ),
     );
   }
 
@@ -155,8 +158,6 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
             style: const TextStyle(fontSize: 16),
           ),
         ),
-        if (profile.isSelected)
-          const Icon(Icons.check_circle, color: Color(0xFF29E33C), size: 20),
       ],
     );
   }

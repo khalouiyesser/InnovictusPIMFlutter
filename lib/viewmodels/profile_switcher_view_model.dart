@@ -27,48 +27,7 @@ class ProfileSwitcherViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadProfiles() async {
-    _setLoading(true);
-    try {
-      final userId = await _sessionManager.getUserId();
-      final token = await _sessionManager.getAccessToken();
-      
-      if (userId == null || token == null) {
-        _setLoading(false);
-        return;
-      }
 
-      final response = await http.get(
-        Uri.parse('$_baseUrl/profile/user/$userId'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final List<dynamic> profilesJson = json.decode(response.body);
-        _profiles = profilesJson
-            .map((json) => ProfileModel.fromJson(json))
-            .toList();
-
-        if (_currentProfile == null && _profiles.isNotEmpty) {
-          _currentProfile = _profiles.first;
-          _currentProfile!.isSelected = true;
-        }
-
-        await loadRecentUsers();
-        notifyListeners();
-      } else {
-        print('Error loading profiles: ${response.statusCode}');
-        print('Response body: ${response.body}');
-      }
-    } catch (e) {
-      print('Error loading profiles: $e');
-    } finally {
-      _setLoading(false);
-    }
-  }
 
   Future<void> loadRecentUsers() async {
     try {
@@ -117,39 +76,39 @@ class ProfileSwitcherViewModel with ChangeNotifier {
   }
 
   Future<void> createProfile(String name, String? imageUrl) async {
-    _setLoading(true);
-    try {
-      final userId = await _sessionManager.getUserId();
-      final token = await _sessionManager.getAccessToken();
-      if (userId == null || token == null) return;
+  _setLoading(true);
+  try {
+    final userId = await _sessionManager.getUserId();
+    final token = await _sessionManager.getAccessToken();
+    if (userId == null || token == null) return;
 
-      final response = await http.post(
-        Uri.parse('$_baseUrl/profile'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'name': name,
-          'image': imageUrl,
-          'userId': userId,
-          'packId': 'default'
-        }),
-      );
+    final response = await http.post(
+      Uri.parse('$_baseUrl/profile'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'name': name,
+        'image': imageUrl,
+        'userId': userId,
+        'packId': 'default',
+        'createdAt': DateTime.now().toIso8601String(), // Add this line
+      }),
+    );
 
-      if (response.statusCode == 201) {
-        await loadProfiles();
-      } else {
-        print('Error creating profile: ${response.statusCode}');
-        print('Response body: ${response.body}');
-      }
-    } catch (e) {
-      print('Error creating profile: $e');
-    } finally {
-      _setLoading(false);
+    if (response.statusCode == 201) {
+      await loadProfiles();
+    } else {
+      print('Error creating profile: ${response.statusCode}');
+      print('Response body: ${response.body}');
     }
+  } catch (e) {
+    print('Error creating profile: $e');
+  } finally {
+    _setLoading(false);
   }
-
+}
   Future<void> deleteProfile(String profileId) async {
     _setLoading(true);
     try {
@@ -176,4 +135,70 @@ class ProfileSwitcherViewModel with ChangeNotifier {
       _setLoading(false);
     }
   }
+List<ProfileModel> getRecentProfiles(int limit) {
+    // Filter out the current profile and get the most recent ones
+    return _profiles
+        .where((profile) => profile.id != currentProfile?.id)
+        .take(limit)
+        .toList();
+  }
+
+  // Update the loadProfiles method to sort profiles by recent usage
+  Future<void> loadProfiles() async {
+    _setLoading(true);
+    try {
+      final userId = await _sessionManager.getUserId();
+      final token = await _sessionManager.getAccessToken();
+      
+      if (userId == null || token == null) {
+        _setLoading(false);
+        return;
+      }
+
+      final response = await http.get(
+        Uri.parse('$_baseUrl/profile/user/$userId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> profilesJson = json.decode(response.body);
+        _profiles = profilesJson
+            .map((json) => ProfileModel.fromJson(json))
+            .toList();
+
+        // Sort profiles by last used date if available
+        _profiles.sort((a, b) => b.lastUsed.compareTo(a.lastUsed));
+
+        if (_currentProfile == null && _profiles.isNotEmpty) {
+          _currentProfile = _profiles.first;
+          _currentProfile!.isSelected = true;
+        }
+
+        notifyListeners();
+      }
+    } catch (e) {
+      print('Error loading profiles: $e');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  List<ProfileModel> get profilesSortedByCreationDate {
+  // Create a copy of the profiles list to avoid modifying the original
+  List<ProfileModel> sortedProfiles = List.from(_profiles);
+  // Sort profiles by creation date (oldest to newest)
+  sortedProfiles.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+  return sortedProfiles;
+}
+
+// If you want newest to oldest, use this version instead:
+List<ProfileModel> get profilesSortedByCreationDateDesc {
+  List<ProfileModel> sortedProfiles = List.from(_profiles);
+  sortedProfiles.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  return sortedProfiles;
+}
+  
 }
