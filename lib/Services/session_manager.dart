@@ -1,6 +1,8 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 
+import 'package:piminnovictus/Models/User.dart';
+
 class SessionManager {
   static const String _keyToken = 'user_token';
   static const String _keyUser = 'user_data';
@@ -87,6 +89,13 @@ Future<void> saveSession({
     ]);
   }
 
+ Future<User?> getCurrentUser() async {
+    final userData = await getSessionData();
+    if (userData != null) {
+      return User.fromJson(userData);
+    }
+    return null;
+  }
 
   // Update specific user data field
   Future<void> updateUserData(String key, dynamic value) async {
