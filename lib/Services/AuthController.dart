@@ -200,6 +200,79 @@ class AuthController {
     }
   }
 
+  Future<UserCredential?> loginWithGoogle(BuildContext context) async {
+    try {
+      // Première étape : Déconnexion pour éviter les conflits
+      await _googleSignIn.signOut();
+      await _firebaseAuth.signOut();
+
+      // Démarrer le processus de connexion Google
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        print("❌ Connexion Google annulée par l'utilisateur.");
+        return null;
+      }
+
+      try {
+        // Obtenir les détails d'authentification
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+
+        // Créer les identifiants Firebase
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        // Connexion à Firebase
+        final UserCredential userCredential =
+            await _firebaseAuth.signInWithCredential(credential);
+
+        if (userCredential.user != null) {
+          print("✅ Connexion réussie : ${userCredential}");
+
+          // Envoyer les données au backend si nécessaire
+          try {
+            final response = await http.post(
+              Uri.parse("$api/auth/loginGoogle"),
+              headers: {'Content-Type': 'application/json'},
+              body: json.encode({
+                'googleId': googleUser.id,
+              }),
+            );
+
+            if (response.statusCode != 200) {
+              // Navigation vers le Dashboard
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      BottomNavBarExample(googleId: googleUser.id),
+                ),
+              );
+              return userCredential;
+            }
+          } catch (e) {
+            print("⚠️ Erreur lors de l'enregistrement backend: $e");
+          }
+        }
+
+        return userCredential;
+      } catch (authError) {
+        print("❌ Erreur d'authentification Google: $authError");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Échec de l'authentification Google")),
+        );
+        return null;
+      }
+    } catch (e) {
+      print("❌ Erreur lors de la connexion Google: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Erreur lors de la connexion Google")),
+      );
+      return null;
+    }
+  }
+
   Future<String?> createPaymentIntent(int amount, String currency) async {
     try {
       final response = await http.post(
