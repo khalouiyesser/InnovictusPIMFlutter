@@ -22,6 +22,10 @@ class MyApp extends StatelessWidget {
 }
 
 class BottomNavBarExample extends StatefulWidget {
+    final String? googleId; // Paramètre googleId ajouté
+      const BottomNavBarExample({Key? key, this.googleId}) : super(key: key);
+
+
   @override
   _BottomNavBarExampleState createState() => _BottomNavBarExampleState();
 }
@@ -173,7 +177,7 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
                       label: '',
                     ),
                     const BottomNavigationBarItem(
-                      icon: Icon(Icons.account_balance_wallet_outlined),
+                      icon: Icon(Icons.wallet),
                       activeIcon: Icon(Icons.account_balance_wallet),
                       label: '',
                     ),
@@ -183,8 +187,8 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
                       label: '',
                     ),
                     const BottomNavigationBarItem(
-                      icon: Icon(Icons.settings_outlined),
-                      activeIcon: Icon(Icons.settings),
+                      icon: Icon(Icons.percent_sharp),
+                      activeIcon: Icon(Icons.percent),
                       label: '',
                     ),
                     const BottomNavigationBarItem(

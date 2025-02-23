@@ -65,7 +65,7 @@ class WalletPage extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '9.262 Greeno',
+                            '0 Greeno',
                             style: TextStyle(
                               color: kGreen,
                               fontSize: screenWidth * 0.07,
@@ -77,19 +77,12 @@ class WalletPage extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '\$16,858.15',
+                                '\$0',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontSize: screenWidth * 0.04,
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Text(
-                                '+0.7%',
-                                style: TextStyle(
-                                  color: kGreen,
-                                  fontSize: screenWidth * 0.035,
-                                ),
-                              ),
                             ],
                           ),
                         ],
@@ -103,18 +96,8 @@ class WalletPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         _ActionButton(
-                          label: 'sent',
+                          label: 'List of Transaction ',
                           icon: Icons.send_rounded,
-                          onTap: () {},
-                        ),
-                        _ActionButton(
-                          label: 'receive',
-                          icon: Icons.download_rounded,
-                          onTap: () {},
-                        ),
-                        _ActionButton(
-                          label: 'buy',
-                          icon: Icons.shopping_cart,
                           onTap: () {},
                         ),
                       ],

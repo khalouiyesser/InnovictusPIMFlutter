@@ -444,7 +444,7 @@ class _RegisterViewState extends State<RegisterView>
                             backgroundColor: Colors.transparent,
                           ),
                           onPressed: () {
-                            auth.signUpWithGoogle();
+                            auth.signUpWithGoogle(context);
                             // print('Google sign-in pressed');
                           },
                         ),

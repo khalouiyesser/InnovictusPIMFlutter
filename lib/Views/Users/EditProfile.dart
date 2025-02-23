@@ -1,5 +1,6 @@
 import 'dart:ui'; // Pour le BackdropFilter
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/User.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
@@ -17,6 +18,12 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  // Au début de la classe _EditProfileState, ajoutez :
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final SessionManager _sessionManager = SessionManager();
+  User? currentUser;
   bool isPreferencesExpanded = false;
   bool isProfileInformationsExpanded = false;
   bool isPersonalInfoExpanded = false;
@@ -25,6 +32,32 @@ class _EditProfileState extends State<EditProfile> {
   bool isLanguageExpanded = false;
   String selectedLanguage = 'en';
   bool isTermsExpanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadUserData() async {
+    final user = await _sessionManager.getCurrentUser();
+    if (user != null) {
+      setState(() {
+        currentUser = user;
+        _nameController.text = user.name;
+        _emailController.text = user.email ?? '';
+        _phoneController.text = user.phoneNumber ?? '';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,19 +107,36 @@ class _EditProfileState extends State<EditProfile> {
                         ],
                       ),
                       const SizedBox(height: 15),
-                      Text(
-                        'Khaled Guedria',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).textTheme.bodyMedium?.color,
-                        ),
-                      ),
+                      currentUser == null
+                          ? const CircularProgressIndicator()
+                          : Text(
+                              currentUser!.name,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.normal,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.color,
+                              ),
+                            ),
+
+                      currentUser == null
+                          ? const CircularProgressIndicator()
+                          : Text(
+                              currentUser!.email ?? '',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.normal,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.color,
+                              ),
+                            ),
+
                       const SizedBox(height: 5),
-                      const Text(
-                        'khaled.guedria@esprit.tn',
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
-                      ),
+
                       const SizedBox(height: 30),
 
                       _buildPreferencesCard(context),
@@ -309,8 +359,9 @@ class _EditProfileState extends State<EditProfile> {
                       if (isPersonalInfoExpanded) ...[
                         const SizedBox(height: 15),
                         TextField(
+                          controller: _nameController,
                           decoration: InputDecoration(
-                            hintText: AppLocalizations.of(context)
+                            labelText: AppLocalizations.of(context)
                                 .translate('username'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -320,8 +371,9 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                         const SizedBox(height: 15),
                         TextField(
+                          controller: _emailController,
                           decoration: InputDecoration(
-                            hintText:
+                            labelText:
                                 AppLocalizations.of(context).translate('email'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -331,8 +383,9 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                         const SizedBox(height: 15),
                         TextField(
+                          controller: _phoneController,
                           decoration: InputDecoration(
-                            hintText:
+                            labelText:
                                 AppLocalizations.of(context).translate('phone'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -346,9 +399,14 @@ class _EditProfileState extends State<EditProfile> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 // Logique de sauvegarde
-                                print("Preferences saved");
+                                final updatedUser = User(
+                                  id: currentUser!.id,
+                                  name: _nameController.text,
+                                  email: _emailController.text,
+                                  phoneNumber: _phoneController.text,
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF29E33C),

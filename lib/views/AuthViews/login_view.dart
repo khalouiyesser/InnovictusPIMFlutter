@@ -329,7 +329,7 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
               height: 50,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  auth.signUpWithGoogle();
+                  auth.signUpWithGoogle(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AuthScreenThemeDetector.isSystemDarkMode()

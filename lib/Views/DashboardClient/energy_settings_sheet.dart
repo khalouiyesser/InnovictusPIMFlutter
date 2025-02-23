@@ -108,7 +108,7 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
             children: [
               IconButton(
                 icon: Icon(
-                  Icons.add_circle_outline,
+                  Icons.remove_circle_outline,
                   color: Theme.of(context).brightness == Brightness.light
                       ? Colors.black
                       : Colors.white,
@@ -117,7 +117,7 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
                 onPressed: () {
                   setState(() {
                     if (_energyPercentage < 100) {
-                      _energyPercentage += 5;
+                      _energyPercentage -= 5;
                     }
                   });
                 },

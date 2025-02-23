@@ -116,7 +116,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
                       const SizedBox(height: 100),
                       // const SizedBox(height: 40),
 
-                      isPhoneInput
+                      /* isPhoneInput
                           ? TextField(
                               controller: phoneController,
                               keyboardType:
@@ -187,6 +187,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
                                 ),
                               ),
                             ),
+                            */
 
                       const SizedBox(height: 30),
 

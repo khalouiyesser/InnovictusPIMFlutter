@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:piminnovictus/Models/User.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
+import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/DashboardClient/Wallet.dart';
 import 'package:piminnovictus/Views/DashboardClient/energy_settings_sheet.dart';
 import 'package:piminnovictus/Views/bachground.dart';
@@ -18,6 +20,8 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  final SessionManager _sessionManager = SessionManager();
+  User? currentUser;
   Widget getWeatherIcon(int code, {double size = 24.0}) {
     switch (code) {
       case >= 200 && < 300:
@@ -73,6 +77,19 @@ class _DashboardPageState extends State<DashboardPage> {
 
   // Déclaration de la variable _currentEnergyPercentage
   double _currentEnergyPercentage = 50.0; // Exemple de valeur initiale
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final user = await _sessionManager.getCurrentUser();
+    setState(() {
+      currentUser = user;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,13 +149,16 @@ class _DashboardPageState extends State<DashboardPage> {
                                   style: theme.textTheme.titleMedium
                                       ?.copyWith(fontSize: screenWidth * 0.04),
                                 ),
-                                Text(
-                                  'Khaled Guedria',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontSize: screenWidth * 0.05,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                                currentUser == null
+                                    ? const CircularProgressIndicator()
+                                    : Text(
+                                        currentUser!.name,
+                                        style: theme.textTheme.titleLarge
+                                            ?.copyWith(
+                                          fontSize: screenWidth * 0.05,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                               ],
                             ),
                           ),
