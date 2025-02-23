@@ -49,4 +49,37 @@ class ProfileModel {
       'createdAt': createdAt.toIso8601String(),
     };
   }
+  String getTimeAgo([DateTime? fromDate]) {
+    final now = fromDate ?? DateTime.now();
+    final difference = now.difference(lastUsed);
+
+    if (difference.inSeconds < 60) {
+      return "à l'instant";
+    }
+    
+    if (difference.inMinutes < 60) {
+      return "il y a ${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'}";
+    }
+    
+    if (difference.inHours < 24) {
+      return "il y a ${difference.inHours} ${difference.inHours == 1 ? 'heure' : 'heures'}";
+    }
+    
+    if (difference.inDays < 7) {
+      return "il y a ${difference.inDays} ${difference.inDays == 1 ? 'jour' : 'jours'}";
+    }
+
+    if (difference.inDays < 30) {
+      final weeks = (difference.inDays / 7).floor();
+      return "il y a ${weeks} ${weeks == 1 ? 'semaine' : 'semaines'}";
+    }
+
+    if (difference.inDays < 365) {
+      final months = (difference.inDays / 30).floor();
+      return "il y a ${months} ${months == 1 ? 'mois' : 'mois'}";
+    }
+
+    final years = (difference.inDays / 365).floor();
+    return "il y a ${years} ${years == 1 ? 'an' : 'ans'}";
+  }
 }

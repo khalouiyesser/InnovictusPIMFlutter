@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/ClientModels/profile.dart';
+import 'package:piminnovictus/Models/User.dart';
+import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/DashboardClient/all_profiles_view.dart';
 import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +25,24 @@ class ProfileSwitcherDropdown extends StatefulWidget {
 class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
   final GlobalKey _avatarKey = GlobalKey();
   OverlayEntry? _arrowOverlay;
+ final SessionManager _sessionManager = SessionManager();
+  User? currentUser;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  
+  Future<void> _loadUserData() async {
+    final user = await _sessionManager.getCurrentUser();
+    if (mounted) {
+      setState(() {
+        currentUser = user;
+      });
+    }
+  }
   void _showArrow() {
     _hideArrow();
     final RenderBox renderBox = _avatarKey.currentContext!.findRenderObject() as RenderBox;
@@ -116,34 +135,62 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
   }
  
   Widget _buildCurrentProfileItem(ProfileModel profile) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 20,
-            backgroundImage: profile.imageUrl != null
-                ? NetworkImage(profile.imageUrl!)
-                : const AssetImage('assets/user.jpg') as ImageProvider,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              profile.name,
+
+   return Padding(
+  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+  child: Row(
+    children: [
+      // Avatar section
+      CircleAvatar(
+        radius: 20,
+        backgroundImage: profile.imageUrl != null
+            ? NetworkImage(profile.imageUrl!)
+            : const AssetImage('assets/user.jpg') as ImageProvider,
+      ),
+      const SizedBox(width: 12),
+      // Column for name+icon row and email
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Name and icon row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  profile.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
+                ),
+                const Icon(
+                  Icons.check_circle,
+                  color: Color(0xFF29E33C),
+                  size: 20,
+                ),
+              ],
+            ),
+            // Email row
+            Text(
+              currentUser?.email ?? 'No email',
               style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
+                fontSize: 12,
+                fontWeight: FontWeight.normal,
+                color: Colors.white,
               ),
             ),
-          ),
-          const Icon(Icons.check_circle, color: Color(0xFF29E33C), size: 20),
-        ],
+          ],
+        ),
       ),
-    );
-  }
+    ],
+  ),
+);}
 
   Widget _buildProfileItem(ProfileModel profile) {
-    return Row(
+    return Column(
+  children: [
+    Row(
       children: [
         CircleAvatar(
           radius: 20,
@@ -153,14 +200,27 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: Text(
-            profile.name,
-            style: const TextStyle(fontSize: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                profile.name,
+                style: const TextStyle(fontSize: 16),
+              ),
+              Text(
+profile.getTimeAgo(),                
+style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
           ),
         ),
       ],
-    );
-  }
+    ),
+  ],
+);}
 
   Widget _buildViewAllProfilesButton(BuildContext context) {
     return Column(

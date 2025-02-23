@@ -54,6 +54,13 @@ class _AllProfilesViewState extends State<AllProfilesView> {
                       : const AssetImage('assets/user.jpg') as ImageProvider,
                 ),
                 title: Text(profile.name),
+                subtitle: Text(
+    profile.getTimeAgo(),
+    style: const TextStyle(
+      fontSize: 12,
+      color: Colors.grey,
+    ),
+  ),
                 trailing: profile.isSelected
                     ? const Icon(Icons.check_circle, color: Colors.blue)
                     : null,

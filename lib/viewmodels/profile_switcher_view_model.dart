@@ -13,19 +13,142 @@ class ProfileSwitcherViewModel with ChangeNotifier {
   bool _isLoading = false;
   final SessionManager _sessionManager = SessionManager();
   final String _baseUrl;
-  
-  ProfileSwitcherViewModel() : _baseUrl = Const().url;
-
-  // Getters
+    // Getters
   List<ProfileModel> get profiles => _profiles;
   ProfileModel? get currentProfile => _currentProfile;
   bool get isLoading => _isLoading;
   List<User> get recentUsers => _recentUsers;
+  Map<String, dynamic>? get currentProfileData => _currentProfileData;
 
   void _setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
   }
+
+  Map<String, dynamic>? _currentProfileData;
+  
+  ProfileSwitcherViewModel() : _baseUrl = Const().url {
+    _initializeLastProfile();
+  }
+
+ 
+
+  Future<void> _initializeLastProfile() async {
+    try {
+      // Get the last selected profile ID from SessionManager
+      final sessionData = await _sessionManager.getSessionData();
+      final lastProfileId = sessionData?['currentProfileId'];
+      
+      if (lastProfileId != null) {
+        await loadProfiles();
+        // Find and set the last selected profile
+        final lastProfile = _profiles.firstWhere(
+          (profile) => profile.id == lastProfileId,
+          orElse: () => _profiles.first,
+        );
+        await switchProfile(lastProfile.id);
+      }
+    } catch (e) {
+      print('Error initializing last profile: $e');
+    }
+  }
+
+  Future<void> switchProfile(String profileId) async {
+    _setLoading(true);
+    try {
+      // Update profile selection
+      for (var profile in _profiles) {
+        profile.isSelected = profile.id == profileId;
+        if (profile.isSelected) {
+          _currentProfile = profile;
+        }
+      }
+
+      // Save current profile ID to session
+      await _sessionManager.updateUserData('currentProfileId', profileId);
+      
+      // Load profile-specific data (e.g., packs)
+      await _loadProfileData(profileId);
+      
+      // Update last used timestamp
+      await _updateProfileLastUsed(profileId);
+      
+      notifyListeners();
+    } catch (e) {
+      print('Error switching profiles: $e');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> _loadProfileData(String profileId) async {
+    try {
+      final token = await _sessionManager.getAccessToken();
+      if (token == null) return;
+
+      // Load profile-specific data (adjust endpoint as needed)
+      final response = await http.get(
+        Uri.parse('$_baseUrl/profile/$profileId/data'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        _currentProfileData = json.decode(response.body);
+        notifyListeners();
+      }
+    } catch (e) {
+      print('Error loading profile data: $e');
+    }
+  }
+
+  Future<void> _updateProfileLastUsed(String profileId) async {
+    try {
+      final token = await _sessionManager.getAccessToken();
+      if (token == null) return;
+
+      await http.patch(
+        Uri.parse('$_baseUrl/profile/$profileId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'lastUsed': DateTime.now().toIso8601String(),
+        }),
+      );
+    } catch (e) {
+      print('Error updating profile last used: $e');
+    }
+  }
+
+  // Get profile-specific pack
+  Future<Map<String, dynamic>?> getProfilePack() async {
+    if (_currentProfile == null) return null;
+    try {
+      final token = await _sessionManager.getAccessToken();
+      if (token == null) return null;
+
+      final response = await http.get(
+        Uri.parse('$_baseUrl/profile/${_currentProfile!.id}/pack'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      }
+      return null;
+    } catch (e) {
+      print('Error loading profile pack: $e');
+      return null;
+    }
+  }
+
+  
 
 
 
@@ -58,23 +181,6 @@ class ProfileSwitcherViewModel with ChangeNotifier {
       print('Error selecting user: $e');
     }
   }
-
-  Future<void> switchProfile(String profileId) async {
-    try {
-      for (var profile in _profiles) {
-        profile.isSelected = profile.id == profileId;
-        if (profile.isSelected) {
-          _currentProfile = profile;
-        }
-      }
-
-      await _sessionManager.updateUserData('currentProfileId', profileId);
-      notifyListeners();
-    } catch (e) {
-      print('Error switching profiles: $e');
-    }
-  }
-
   Future<void> createProfile(String name, String? imageUrl) async {
   _setLoading(true);
   try {
