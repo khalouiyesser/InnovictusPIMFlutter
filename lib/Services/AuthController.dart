@@ -144,7 +144,8 @@ class AuthController {
 
         // Créer les identifiants Firebase
         final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
+          accessToken: googleAuth.accessToken,     
+          
           idToken: googleAuth.idToken,
         );
 
