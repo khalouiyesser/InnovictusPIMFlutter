@@ -5,10 +5,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:piminnovictus/Services/Const.dart';
 import 'package:http/http.dart' as http;
 import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
+import 'package:piminnovictus/Services/session_manager.dart';
 
 class AuthController {
   final Const con = Const();
   late final String api;
+  final SessionManager _sessionManager = SessionManager();
 
   // Instance de Firebase Auth
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -24,6 +26,57 @@ class AuthController {
   AuthController() : api = Const().url;
 
   /// Fonction pour LoginSimple de mot de passe
+  /* Future<Map<String, dynamic>> loginSimple(String email,String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$api/auth/login"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'email': email, 'password': password}),
+      );
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        print(response.body);
+final responseData = json.decode(response.body);
+      
+      // Save session data after successful login
+      await _sessionManager.saveSession(
+        token: responseData['accessToken'],
+        userData: {
+          'email': email,
+          'userId': responseData['userId'],
+          'refreshToken': responseData['refreshToken'],
+        },
+      );
+      
+      return responseData;
+            } else {
+        throw Exception('Échec de l\'envoi de l\'OTP: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Erreur lors de l\'envoi de l\'OTP: $e');
+    }
+  }*/
+  Future<Map<String, dynamic>?> getUserDetails(
+      String userId, String token) async {
+    try {
+      final response = await http.get(
+        Uri.parse("$api/auth/user/$userId"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+      );
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to fetch user details: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching user details: $e');
+    }
+  }
+
   Future<Map<String, dynamic>> loginSimple(
       String email, String password) async {
     try {
@@ -34,13 +87,30 @@ class AuthController {
       );
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        print(response.body);
-        return json.decode(response.body);
+        final responseData = json.decode(response.body);
+
+        // Fetch user details after successful login
+        final userDetails = await getUserDetails(
+            responseData['userId'], responseData['accessToken']);
+
+        // Save complete session data
+        await _sessionManager.saveSession(
+          token: responseData['accessToken'],
+          userData: {
+            'email': email,
+            'userId': responseData['userId'],
+            'refreshToken': responseData['refreshToken'],
+            'name': userDetails?['name'], // Add name from user details
+            // Add any other user fields you need
+          },
+        );
+
+        return responseData;
       } else {
-        throw Exception('Échec de l\'envoi de l\'OTP: ${response.body}');
+        throw Exception('Login failed: ${response.body}');
       }
     } catch (e) {
-      throw Exception('Erreur lors de l\'envoi de l\'OTP: $e');
+      throw Exception('Error during login: $e');
     }
   }
 
@@ -144,8 +214,7 @@ class AuthController {
 
         // Créer les identifiants Firebase
         final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,     
-          
+          accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
 

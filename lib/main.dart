@@ -153,6 +153,9 @@ import 'package:piminnovictus/viewmodels/WeatherAPI/bloc/weather_bloc_bloc.dart'
 import 'package:provider/provider.dart';
 import 'package:piminnovictus/views/AuthViews/welcome_view.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
+import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
+import 'package:piminnovictus/Services/session_manager.dart';
+import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
 
 Future<Position> _determinePosition() async {
   bool serviceEnabled;
@@ -189,6 +192,8 @@ void main() async {
 
     final themeProvider = ThemeProvider();
     final languageProvider = LanguageProvider();
+    final sessionManager = SessionManager();
+    final isLoggedIn = await sessionManager.isLoggedIn();
 
     await Future.wait([
       themeProvider.init(),
@@ -202,11 +207,13 @@ void main() async {
         providers: [
           ChangeNotifierProvider.value(value: themeProvider),
           ChangeNotifierProvider.value(value: languageProvider),
+          ChangeNotifierProvider(
+              create: (_) => ProfileSwitcherViewModel()..loadProfiles()),
           BlocProvider(
             create: (context) => WeatherBlocBloc()..add(FetchWeather(position)),
           ),
         ],
-        child: const MyApp(),
+        child: MyApp(isLoggedIn: isLoggedIn),
       ),
     );
   } catch (e) {
@@ -216,7 +223,9 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final bool isLoggedIn;
+
+  const MyApp({Key? key, required this.isLoggedIn}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -239,19 +248,7 @@ class MyApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          home: BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
-            builder: (context, state) {
-              if (state is WeatherBlocLoading) {
-                return const Scaffold(
-                  body: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              }
-              // Vous pouvez ajouter d'autres conditions ici selon vos besoins
-              return  WelcomePage();
-            },
-          ),
+          home: isLoggedIn ? BottomNavBarExample() : WelcomePage(),
         );
       },
     );
@@ -286,6 +283,9 @@ class MyApp extends StatelessWidget {
   // Initialize ThemeProvider and LanguageProvider
   final themeProvider = ThemeProvider();
   final languageProvider = LanguageProvider();
+  final sessionManager = SessionManager();
+    final isLoggedIn = await sessionManager.isLoggedIn();
+
 
   await Future.wait([
     themeProvider.init(),
@@ -297,14 +297,18 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider.value(value: themeProvider),
         ChangeNotifierProvider.value(value: languageProvider),
+        ChangeNotifierProvider(create: (_) => ProfileSwitcherViewModel()..loadProfiles()),
+
       ],
-      child: const MyApp(),
+      child: MyApp(isLoggedIn: isLoggedIn),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+    final bool isLoggedIn;
+
+  const MyApp({Key? key, required this.isLoggedIn}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -327,6 +331,7 @@ class MyApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
+<<<<<<< HEAD
           home: FutureBuilder<Position>(
             future: _determinePosition(),
             builder: (context, snapshot) {
@@ -344,6 +349,9 @@ class MyApp extends StatelessWidget {
               );
             },
           ),
+=======
+          home: isLoggedIn ? BottomNavBarExample() : WelcomePage(),
+>>>>>>> origin/hadhemi
         );
       },
     );

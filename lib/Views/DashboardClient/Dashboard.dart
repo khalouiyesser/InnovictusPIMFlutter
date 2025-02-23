@@ -9,6 +9,9 @@ import 'package:piminnovictus/Views/DashboardClient/energy_settings_sheet.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:piminnovictus/viewmodels/WeatherAPI/bloc/weather_bloc_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
+import 'package:piminnovictus/Views/DashboardClient/profile_switcher_dropdown.dart';
+
 import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:fl_chart/fl_chart.dart';
 
@@ -133,10 +136,25 @@ class _DashboardPageState extends State<DashboardPage> {
                                 width: screenWidth * 0.008,
                               ),
                             ),
-                            child: CircleAvatar(
-                              radius: screenWidth * 0.06,
-                              backgroundImage:
-                                  const AssetImage('assets/user.jpg'),
+                            child: Consumer<ProfileSwitcherViewModel>(
+                              builder: (context, viewModel, child) {
+                                if (viewModel.isLoading) {
+                                  return SizedBox(
+                                    width: screenWidth * 0.12,
+                                    height: screenWidth * 0.12,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                  );
+                                }
+
+                                return ProfileSwitcherDropdown(
+                                  customRadius: screenWidth * 0.06,
+                                  borderColor: theme.colorScheme.primary,
+                                  borderWidth: screenWidth * 0.008,
+                                );
+                              },
                             ),
                           ),
                           Padding(

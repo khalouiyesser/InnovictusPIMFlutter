@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:piminnovictus/Models/packs.dart';
+import 'package:piminnovictus/Models/ClientModels/packs.dart';
 // import 'package:piminnovictus/views/Visitor/pack_details.dart';
 import 'package:piminnovictus/views/background.dart';
 

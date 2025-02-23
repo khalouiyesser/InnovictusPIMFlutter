@@ -361,7 +361,6 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
               ),
             ),
           ),
-
           // Sign up text
           Positioned(
             bottom: 50,

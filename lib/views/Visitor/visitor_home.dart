@@ -192,11 +192,8 @@ Widget build(BuildContext context) {
     floatingActionButton: LayoutBuilder(
   builder: (context, constraints) {
     final screenWidth = constraints.maxWidth;
-    return AnimatedOpacity(
-      duration: const Duration(milliseconds: 600),
-      opacity: _isVisible ? 1.0 : 0.0,
-      child: SizedBox(
-        width: screenWidth * 0.5, 
+    return SizedBox(
+        width: screenWidth * 0.35, 
         height: screenWidth * 0.12,
         child: FloatingActionButton.extended(
           onPressed: () {
@@ -207,7 +204,7 @@ Widget build(BuildContext context) {
           },
           backgroundColor: const Color(0xFF29E33C),
           label: const Text(
-            'Skip',
+            'Go to login',
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -215,7 +212,7 @@ Widget build(BuildContext context) {
             ),
           ),
         ),
-      ),
+      
     );
   },
 ),

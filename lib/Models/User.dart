@@ -6,14 +6,13 @@ class User {
   final String? email;
   final String? phoneNumber;
 
-  User({
-    required this.id,
-    required this.name,
-    this.image,
-    this.lastSeen,
-    this.email,
-    this.phoneNumber,
-  });
+  User(
+      {required this.id,
+      required this.name,
+      this.image,
+      this.lastSeen,
+      this.email,
+      this.phoneNumber});
 
   // Factory method to create User from JSON
   factory User.fromJson(Map<String, dynamic> json) {
