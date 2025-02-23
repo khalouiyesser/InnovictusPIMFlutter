@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "213262949474",
+    "firebase_url": "https://green-energy-ffb62-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "green-energy-ffb62",
     "storage_bucket": "green-energy-ffb62.firebasestorage.app"
   },
@@ -13,6 +14,22 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "213262949474-8tpchjh45ffo34v8l9qbdd3eck1tu133.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "tn.esprit.piminnovictus",
+            "certificate_hash": "6f5a38016f318a0bc6d9f51f4b91815fb3fa59f0"
+          }
+        },
+        {
+          "client_id": "213262949474-p8qafi8buokqn80q11tr42reitpg998m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "tn.esprit.piminnovictus",
+            "certificate_hash": "15458395cd92c2c42248696718b438659e8c605e"
+          }
+        },
         {
           "client_id": "213262949474-n621113ftol42lpfuv4dbppc0m9prm68.apps.googleusercontent.com",
           "client_type": 3
@@ -29,6 +46,13 @@
             {
               "client_id": "213262949474-n621113ftol42lpfuv4dbppc0m9prm68.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "213262949474-1sao7518qdteavdn3s19u8v1mf1qhlub.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "tn.esprit.piminnovictus"
+              }
             }
           ]
         }
