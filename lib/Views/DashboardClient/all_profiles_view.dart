@@ -15,18 +15,27 @@ class _AllProfilesViewState extends State<AllProfilesView> {
   final SessionManager _sessionManager = SessionManager();
   List<Map<String, dynamic>> _recentUsers = [];
   bool _isLoadingRecentUsers = true;
+  String? _currentUserId;
 
   @override
   void initState() {
     super.initState();
-    _loadRecentUsers();
+    _loadCurrentUserAndRecentUsers();
   }
 
-  Future<void> _loadRecentUsers() async {
+  Future<void> _loadCurrentUserAndRecentUsers() async {
     try {
+      // Get current user ID
+      _currentUserId = await _sessionManager.getUserId();
+      
+      // Get recent users and filter out the current user
       final users = await _sessionManager.getRecentUsers();
+      final filteredUsers = users.where((user) => 
+        user['userId'] != _currentUserId
+      ).toList();
+      
       setState(() {
-        _recentUsers = users;
+        _recentUsers = filteredUsers;
         _isLoadingRecentUsers = false;
       });
     } catch (e) {
@@ -36,6 +45,7 @@ class _AllProfilesViewState extends State<AllProfilesView> {
       // Handle error appropriately
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ProfileSwitcherViewModel>(
@@ -47,7 +57,7 @@ class _AllProfilesViewState extends State<AllProfilesView> {
           ),
           body: ListView(
             children: [
-...viewModel.profilesSortedByCreationDate.map((profile) => ListTile(
+              ...viewModel.profilesSortedByCreationDate.map((profile) => ListTile(
                 leading: CircleAvatar(
                   backgroundImage: profile.imageUrl != null
                       ? NetworkImage(profile.imageUrl!)
@@ -55,12 +65,12 @@ class _AllProfilesViewState extends State<AllProfilesView> {
                 ),
                 title: Text(profile.name),
                 subtitle: Text(
-    profile.getTimeAgo(),
-    style: const TextStyle(
-      fontSize: 12,
-      color: Colors.grey,
-    ),
-  ),
+                  profile.getTimeAgo(),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
                 trailing: profile.isSelected
                     ? const Icon(Icons.check_circle, color: Colors.blue)
                     : null,
@@ -78,7 +88,7 @@ class _AllProfilesViewState extends State<AllProfilesView> {
               const Divider(),
               
               // Recent connected accounts section
-                       Padding(
+              Padding(
                 padding: const EdgeInsets.only(left: 16.0, top: 8.0, bottom: 8.0),
                 child: Text(
                   'Utilisateurs récents',
@@ -114,11 +124,7 @@ class _AllProfilesViewState extends State<AllProfilesView> {
                         backgroundColor: Colors.grey.shade200,
                       ),
                       title: Text(user['name'] ?? 'Unknown User'),
-                      subtitle: Text(_formatLastSeen(
-                        user['lastLogin'] != null 
-                            ? DateTime.parse(user['lastLogin']) 
-                            : null
-                      )),
+                      subtitle: Text(user['email'] ?? 'Unknown email'),
                       onTap: () async {
                         // Handle recent user selection
                         if (user['userId'] != null) {
@@ -132,7 +138,6 @@ class _AllProfilesViewState extends State<AllProfilesView> {
       },
     );
   }
-
   
   String _formatLastSeen(DateTime? lastSeen) {
     if (lastSeen == null) return 'Inconnue';

@@ -17,7 +17,7 @@ class AuthController {
 
 
   /// Fonction pour LoginSimple de mot de passe
-  Future<Map<String, dynamic>> loginSimple(String email,String password) async {
+ /* Future<Map<String, dynamic>> loginSimple(String email,String password) async {
     try {
       final response = await http.post(
         Uri.parse("$api/auth/login"),
@@ -46,7 +46,62 @@ final responseData = json.decode(response.body);
     } catch (e) {
       throw Exception('Erreur lors de l\'envoi de l\'OTP: $e');
     }
+  }*/
+  Future<Map<String, dynamic>?> getUserDetails(String userId, String token) async {
+  try {
+    final response = await http.get(
+      Uri.parse("$api/auth/user/$userId"),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to fetch user details: ${response.body}');
+    }
+  } catch (e) {
+    throw Exception('Error fetching user details: $e');
   }
+}Future<Map<String, dynamic>> loginSimple(String email, String password) async {
+  try {
+    final response = await http.post(
+      Uri.parse("$api/auth/login"),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'email': email, 'password': password}),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final responseData = json.decode(response.body);
+      
+      // Fetch user details after successful login
+      final userDetails = await getUserDetails(
+        responseData['userId'],
+        responseData['accessToken']
+      );
+      
+      // Save complete session data
+      await _sessionManager.saveSession(
+        token: responseData['accessToken'],
+        userData: {
+          'email': email,
+          'userId': responseData['userId'],
+          'refreshToken': responseData['refreshToken'],
+          'name': userDetails?['name'], // Add name from user details
+          // Add any other user fields you need
+        },
+      );
+      
+      return responseData;
+    } else {
+      throw Exception('Login failed: ${response.body}');
+    }
+  } catch (e) {
+    throw Exception('Error during login: $e');
+  }
+}
 
   /// Fonction pour signupSimple de mot de passe
   Future<Map<String, dynamic>> signupSimple(String firstName,String lastName,String email,String password) async {

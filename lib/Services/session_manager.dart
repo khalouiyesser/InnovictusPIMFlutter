@@ -39,13 +39,14 @@ Future<void> saveSession({
     required String token,
     required Map<String, dynamic> userData,
   }) async {
+    print("userData before saving: $userData");
     await Future.wait([
       _storage.write(key: _keyAccessToken, value: token),
       _storage.write(key: _keyRefreshToken, value: userData['refreshToken']),
       _storage.write(key: _keyUserId, value: userData['userId']),
       _storage.write(key: _keyUserData, value: json.encode(userData)),
     ]);
-    
+    print(userData);
     // Add user to recent users list
     await addRecentUser(userData);
   }
@@ -59,6 +60,7 @@ Future<void> saveSession({
   Future<Map<String, dynamic>?> getUserData() async {
     String? userStr = await _storage.read(key: _keyUser);
     if (userStr != null && userStr.isNotEmpty) {
+      print(json.decode(userStr));
       return json.decode(userStr);
     }
     return null;
@@ -74,6 +76,10 @@ Future<void> saveSession({
   Future<Map<String, dynamic>?> getSessionData() async {
     String? userDataStr = await _storage.read(key: _keyUserData);
     if (userDataStr != null && userDataStr.isNotEmpty) {
+       var decodedData = json.decode(userDataStr);
+
+      print('Session Data: $decodedData'); // Print the full session data
+    print('User name from session: ${decodedData['name']}'); 
       return json.decode(userDataStr);
     }
     return null;
@@ -92,7 +98,13 @@ Future<void> saveSession({
  Future<User?> getCurrentUser() async {
     final userData = await getSessionData();
     if (userData != null) {
+          var user = User.fromJson(userData);
+
+          print('Current User: ${user.name}'); // Print the user's name
+
+         // Print specifically the name
       return User.fromJson(userData);
+      
     }
     return null;
   }
