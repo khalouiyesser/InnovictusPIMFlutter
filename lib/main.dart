@@ -331,7 +331,6 @@ class MyApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-<<<<<<< HEAD
           home: FutureBuilder<Position>(
             future: _determinePosition(),
             builder: (context, snapshot) {
@@ -349,9 +348,6 @@ class MyApp extends StatelessWidget {
               );
             },
           ),
-=======
-          home: isLoggedIn ? BottomNavBarExample() : WelcomePage(),
->>>>>>> origin/hadhemi
         );
       },
     );

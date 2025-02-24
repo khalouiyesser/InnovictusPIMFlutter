@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/ClientModels/packs.dart';
 import 'package:piminnovictus/Models/ClientModels/profile.dart';
+import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
 import 'package:piminnovictus/Views/Users/create_profile.dart';
@@ -30,10 +31,9 @@ class _AllProfilesViewState extends State<AllProfilesView> {
     try {
       _currentUserId = await _sessionManager.getUserId();
       final users = await _sessionManager.getRecentUsers();
-      final filteredUsers = users.where((user) => 
-        user['userId'] != _currentUserId
-      ).toList();
-      
+      final filteredUsers =
+          users.where((user) => user['userId'] != _currentUserId).toList();
+
       setState(() {
         _recentUsers = filteredUsers;
         _isLoadingRecentUsers = false;
@@ -44,275 +44,335 @@ class _AllProfilesViewState extends State<AllProfilesView> {
       });
     }
   }
-Future<void> _showSwitchProfileDialog(BuildContext context, String profileName, String profileId, ProfileSwitcherViewModel viewModel) {
-  return showDialog<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return Dialog(
-        backgroundColor: Colors.transparent,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final dialogWidth = constraints.maxWidth * 0.8;
-            final dialogHeight = constraints.maxHeight * 0.25;
-            
-            return Container(
-              width: dialogWidth,
-              height: dialogHeight,
-              padding: EdgeInsets.all(dialogWidth * 0.04),
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 1, 10, 2).withOpacity(0.9),
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.3),
-                  width: 1,
+
+  Future<void> _showSwitchProfileDialog(
+      BuildContext context,
+      String profileName,
+      String profileId,
+      ProfileSwitcherViewModel viewModel) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        final theme = Theme.of(context);
+        final double screenWidth = MediaQuery.of(context).size.width;
+        final double screenHeight = MediaQuery.of(context).size.height;
+        // On récupère le provider pour pouvoir l'utiliser si besoin
+        final themeProvider = Provider.of<ThemeProvider>(context);
+
+        return Dialog(
+          backgroundColor: const Color.fromARGB(255, 184, 183, 183),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final dialogWidth = constraints.maxWidth * 0.8;
+              final dialogHeight = constraints.maxHeight * 0.25;
+
+              return Container(
+                width: dialogWidth,
+                height: dialogHeight,
+                padding: EdgeInsets.all(dialogWidth * 0.04),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF93DAB2).withOpacity(0.8),
+                      Colors.white.withOpacity(0.5),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(
+                    color: const Color.fromARGB(255, 202, 202, 202)
+                        .withOpacity(0.3),
+                    width: 1,
+                  ),
                 ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Changer de profil',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: dialogWidth * 0.06,
-                      fontWeight: FontWeight.bold,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Changer de profil',
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontSize: screenWidth * 0.04),
                     ),
-                  ),
-                  SizedBox(height: dialogHeight * 0.05),
-                  Text(
-                    'Voulez-vous vraiment passer au profil "$profileName" ?',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: dialogWidth * 0.04,
+                    SizedBox(height: dialogHeight * 0.05),
+                    Text(
+                      'Voulez-vous vraiment passer au profil "$profileName" ?',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.displayLarge
+                          ?.copyWith(fontSize: screenWidth * 0.04),
                     ),
-                  ),
-                  SizedBox(height: dialogHeight * 0.1),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // No Button
-                      SizedBox(
-                        width: dialogWidth * 0.35,
-                        height: dialogHeight * 0.15,
-                        child: OutlinedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(
-                              color: Color(0xFF29E33C),
-                              width: 2,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            padding: EdgeInsets.zero,
-                          ),
-                          child: Text(
-                            'Non',
-                            style: TextStyle(
-                              color: const Color(0xFF29E33C),
-                              fontSize: dialogWidth * 0.04,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: dialogWidth * 0.04),
-                      // Yes Button
-                      SizedBox(
-                        width: dialogWidth * 0.35,
-                        height: dialogHeight * 0.15,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFF29E33C),
-                                Color.fromARGB(255, 9, 128, 25)
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: ElevatedButton(
-                            onPressed: () async {
+                    SizedBox(height: dialogHeight * 0.1),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // No Button
+                        SizedBox(
+                          width: dialogWidth * 0.35,
+                          height: dialogHeight * 0.15,
+                          child: OutlinedButton(
+                            onPressed: () {
                               Navigator.of(context).pop();
-                              await viewModel.switchProfile(profileId);
-                              if (context.mounted) {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                    builder: (context) => BottomNavBarExample(),
-                                  ),
-                                  (Route<dynamic> route) => false,
-                                );
-                              }
                             },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              shadowColor: Colors.transparent,
-                              padding: EdgeInsets.zero,
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(
+                                color: Color(0xFF29E33C),
+                                width: 2,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
+                              padding: EdgeInsets.zero,
                             ),
                             child: Text(
-                              'Oui',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: dialogWidth * 0.04,
-                                fontWeight: FontWeight.bold,
+                              'Non',
+                              style: theme.textTheme.displayLarge
+                                  ?.copyWith(fontSize: screenWidth * 0.03),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: dialogWidth * 0.04),
+                        // Yes Button
+                        SizedBox(
+                          width: dialogWidth * 0.35,
+                          height: dialogHeight * 0.15,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color.fromARGB(255, 32, 224, 51),
+                                  Color.fromARGB(255, 9, 128, 25)
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                Navigator.of(context).pop();
+                                await viewModel.switchProfile(profileId);
+                                if (context.mounted) {
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          BottomNavBarExample(),
+                                    ),
+                                    (Route<dynamic> route) => false,
+                                  );
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                padding: EdgeInsets.zero,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: Text(
+                                'Oui',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: dialogWidth * 0.04,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      );
-    },
-  );
-}
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<ProfileSwitcherViewModel>(
-      builder: (context, viewModel, child) {
-        return Scaffold(
-          appBar: AppBar(
-            leading: const BackButton(),
-            title: const Text('Sélectionner un profil'),
-          ),
-          body: ListView(
-            children: [
-              ...viewModel.profilesSortedByCreationDate.map((profile) => ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: profile.imageUrl != null
-                      ? NetworkImage(profile.imageUrl!)
-                      : const AssetImage('assets/user.jpg') as ImageProvider,
-                ),
-                title: Text(profile.name),
-                subtitle: Text(
-                  profile.getTimeAgo(),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
-                trailing: profile.isSelected
-                    ? const Icon(Icons.check_circle, color: Colors.blue)
-                    : null,
-                onTap: () => _showSwitchProfileDialog(
-                  context,
-                  profile.name,
-                  profile.id,
-                  viewModel,
-                ),
-              )),
-              ListTile(
-  leading: const CircleAvatar(
-    child: Icon(Icons.add),
-  ),
-  title: const Text('Créer un nouveau profil'),
-  onTap: () async {
-    // Get the packs list from your PacksList widget
-    final List<Pack> packs = [
-      Pack(
-        id: "1",
-        title: "Basic Pack",
-        image: "assets/panel.png",
-        description: "• Unlock energy potential\n• Maximize savings\n• Smart monitoring",
-        price: 999,
-        panelsCount: "6",
-        energyGain: "5 kWh/jour",
-        co2Saved: "10 kg CO₂/jour",
-        certification: "Empreinte carbone réduite"
-      ),
-      // Add other packs here...
-    ];
-    
-    final result = await showDialog(
-      context: context,
-      builder: (context) => CreateProfileDialog(packs: packs),
-    );
-    
-    if (result != null) {
-      // Handle the created profile with selected pack
-      // You can access:
-      // result['name'] - profile name
-      // result['imagePath'] - selected image path
-      // result['selectedPack'] - selected pack object
-    }
-  },
-),
-              const Divider(),
-              
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0, top: 8.0, bottom: 8.0),
-                child: Text(
-                  'Utilisateurs récents',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
-              
-              if (_isLoadingRecentUsers)
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-              else if (_recentUsers.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'Aucun utilisateur récent',
-                    style: TextStyle(
-                      fontStyle: FontStyle.italic,
-                      color: Colors.grey,
+                      ],
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                )
-              else
-                ..._recentUsers.map((user) => ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: user['photoURL'] != null
-                        ? NetworkImage(user['photoURL'])
-                        : const AssetImage('assets/user.jpg') as ImageProvider,
-                    backgroundColor: Colors.grey.shade200,
-                  ),
-                  title: Text(user['name'] ?? 'Unknown User'),
-                  subtitle: Text(user['email'] ?? 'Unknown email'),
-                  onTap: () async {
-                    if (user['userId'] != null) {
-                      _showSwitchProfileDialog(
-                        context,
-                        user['name'] ?? 'Unknown User',
-                        user['userId'],
-                        viewModel,
-                      );
-                    }
-                  },
-                )),
-            ],
+                  ],
+                ),
+              );
+            },
           ),
         );
       },
     );
   }
-  
+
+  @override
+  Widget build(BuildContext context) {
+    final isLightMode = Theme.of(context).brightness == Brightness.light;
+
+    return Consumer<ProfileSwitcherViewModel>(
+      builder: (context, viewModel, child) {
+        return Container(
+          decoration: BoxDecoration(
+            gradient: isLightMode
+                ? LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF93DAB2).withOpacity(0.8),
+                      Colors.white.withOpacity(0.5),
+                    ],
+                  )
+                : RadialGradient(
+                    center: Alignment.center,
+                    radius: 1.0, // Ajustez le rayon si besoin
+                    colors: [
+                      Color(0xFF0A140C),
+                      Color(0xFF0D0F0D),
+                    ],
+                    stops: [0.2, 1.0],
+                  ),
+          ),
+          child: Scaffold(
+            backgroundColor:
+                Colors.transparent, // Pour laisser transparaître le gradient
+
+            appBar: AppBar(
+              backgroundColor: Colors
+                  .transparent, // Nécessaire pour laisser transparaître le gradient
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF93DAB2).withOpacity(0.8),
+                      Colors.white.withOpacity(0.5),
+                    ],
+                  ),
+                ),
+              ),
+
+              leading: const BackButton(),
+              title: const Text('Sélectionner un profil'),
+            ),
+            body: ListView(
+              children: [
+                ...viewModel.profilesSortedByCreationDate
+                    .map((profile) => ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: profile.imageUrl != null
+                                ? NetworkImage(profile.imageUrl!)
+                                : const AssetImage('assets/user.jpg')
+                                    as ImageProvider,
+                          ),
+                          title: Text(profile.name),
+                          subtitle: Text(
+                            profile.getTimeAgo(),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          trailing: profile.isSelected
+                              ? const Icon(Icons.check_circle,
+                                  color: Colors.blue)
+                              : null,
+                          onTap: () => _showSwitchProfileDialog(
+                            context,
+                            profile.name,
+                            profile.id,
+                            viewModel,
+                          ),
+                        )),
+                ListTile(
+                  leading: const CircleAvatar(
+                    child: Icon(Icons.add),
+                  ),
+                  title: const Text('Créer un nouveau profil'),
+                  onTap: () async {
+                    // Get the packs list from your PacksList widget
+                    final List<Pack> packs = [
+                      Pack(
+                          id: "1",
+                          title: "Basic Pack",
+                          image: "assets/panel.png",
+                          description:
+                              "• Unlock energy potential\n• Maximize savings\n• Smart monitoring",
+                          price: 999,
+                          panelsCount: "6",
+                          energyGain: "5 kWh/jour",
+                          co2Saved: "10 kg CO₂/jour",
+                          certification: "Empreinte carbone réduite"),
+                      // Add other packs here...
+                    ];
+
+                    final result = await showDialog(
+                      context: context,
+                      builder: (context) => CreateProfileDialog(packs: packs),
+                    );
+
+                    if (result != null) {
+                      // Handle the created profile with selected pack
+                      // You can access:
+                      // result['name'] - profile name
+                      // result['imagePath'] - selected image path
+                      // result['selectedPack'] - selected pack object
+                    }
+                  },
+                ),
+                const Divider(),
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 16.0, top: 8.0, bottom: 8.0),
+                  child: Text(
+                    'Utilisateurs récents',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                if (_isLoadingRecentUsers)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                else if (_recentUsers.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      'Aucun utilisateur récent',
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        color: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.color
+                            ?.withOpacity(0.7),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                else
+                  ..._recentUsers.map((user) => ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: user['photoURL'] != null
+                              ? NetworkImage(user['photoURL'])
+                              : const AssetImage('assets/user.jpg')
+                                  as ImageProvider,
+                          backgroundColor: Colors.grey.shade200,
+                        ),
+                        title: Text(user['name'] ?? 'Unknown User'),
+                        subtitle: Text(user['email'] ?? 'Unknown email'),
+                        onTap: () async {
+                          if (user['userId'] != null) {
+                            _showSwitchProfileDialog(
+                              context,
+                              user['name'] ?? 'Unknown User',
+                              user['userId'],
+                              viewModel,
+                            );
+                          }
+                        },
+                      )),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   String _formatLastSeen(DateTime? lastSeen) {
     if (lastSeen == null) return 'Inconnue';
-    
+
     final now = DateTime.now();
     final difference = now.difference(lastSeen);
-    
+
     if (difference.inDays > 0) {
       return 'Il y a ${difference.inDays} jour${difference.inDays > 1 ? 's' : ''}';
     } else if (difference.inHours > 0) {

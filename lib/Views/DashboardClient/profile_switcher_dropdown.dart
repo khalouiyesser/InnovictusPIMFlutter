@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/ClientModels/profile.dart';
 import 'package:piminnovictus/Models/User.dart';
+import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/DashboardClient/all_profiles_view.dart';
 import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
+import 'package:provider/provider.dart';
+
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ProfileSwitcherDropdown extends StatefulWidget {
@@ -19,13 +23,14 @@ class ProfileSwitcherDropdown extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ProfileSwitcherDropdownState createState() => _ProfileSwitcherDropdownState();
+  _ProfileSwitcherDropdownState createState() =>
+      _ProfileSwitcherDropdownState();
 }
 
 class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
   final GlobalKey _avatarKey = GlobalKey();
   OverlayEntry? _arrowOverlay;
- final SessionManager _sessionManager = SessionManager();
+  final SessionManager _sessionManager = SessionManager();
   User? currentUser;
 
   @override
@@ -34,7 +39,6 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
     _loadUserData();
   }
 
-  
   Future<void> _loadUserData() async {
     final user = await _sessionManager.getCurrentUser();
     if (mounted) {
@@ -43,28 +47,32 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
       });
     }
   }
+
   void _showArrow() {
     _hideArrow();
-    final RenderBox renderBox = _avatarKey.currentContext!.findRenderObject() as RenderBox;
+    final RenderBox renderBox =
+        _avatarKey.currentContext!.findRenderObject() as RenderBox;
     final Offset position = renderBox.localToGlobal(Offset.zero);
     final Size size = renderBox.size;
-    
+
     _arrowOverlay = OverlayEntry(
       builder: (context) => Positioned(
         top: position.dy + size.height - 2,
         left: position.dx + (size.width / 2) - 10,
-        child: Material(
-          color: Colors.transparent,
-          elevation: 0,
-          child: Icon(
-            Icons.arrow_drop_down,
-            color: Theme.of(context).colorScheme.primary,
-            size: 20,
+        child: Consumer<ThemeProvider>(
+          builder: (context, themeProvider, _) => Material(
+            color: Colors.transparent,
+            elevation: 0,
+            child: Icon(
+              Icons.arrow_drop_down,
+              color: MyThemes.primaryColor,
+              size: 20,
+            ),
           ),
         ),
       ),
     );
-    
+
     Overlay.of(context).insert(_arrowOverlay!);
   }
 
@@ -81,48 +89,68 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ProfileSwitcherViewModel>(
-      builder: (context, viewModel, child) {
+    return Consumer2<ThemeProvider, ProfileSwitcherViewModel>(
+      builder: (context, themeProvider, viewModel, _) {
         if (viewModel.currentProfile == null) return Container();
 
-        // Get recent profiles (excluding current profile)
         final recentProfiles = viewModel.getRecentProfiles(2);
+        final isDark = themeProvider.isDarkMode;
 
         return PopupMenuButton<String>(
           key: _avatarKey,
           offset: const Offset(0, 54),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          color: isDark ? MyThemes.secondaryColor : MyThemes.whiteColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(
+              color: isDark
+                  ? MyThemes.whiteColor.withOpacity(0.1)
+                  : MyThemes.blackColor.withOpacity(0.1),
+            ),
+          ),
           onOpened: _showArrow,
           onCanceled: _hideArrow,
-          child: CircleAvatar(
-            radius: widget.customRadius,
-            backgroundImage: viewModel.currentProfile?.imageUrl != null
-                ? NetworkImage(viewModel.currentProfile!.imageUrl!)
-                : const AssetImage('assets/user.jpg') as ImageProvider,
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: widget.borderColor,
+                width: widget.borderWidth,
+              ),
+            ),
+            child: CircleAvatar(
+              radius: widget.customRadius,
+              backgroundImage: viewModel.currentProfile?.imageUrl != null
+                  ? NetworkImage(viewModel.currentProfile!.imageUrl!)
+                  : const AssetImage('assets/user.jpg') as ImageProvider,
+            ),
           ),
           itemBuilder: (BuildContext context) => [
-            // Current Profile
             PopupMenuItem<String>(
               padding: EdgeInsets.zero,
-              child: _buildCurrentProfileItem(viewModel.currentProfile!),
+              child:
+                  _buildCurrentProfileItem(viewModel.currentProfile!, isDark),
             ),
-            // Divider
-            const PopupMenuItem<String>(
+            PopupMenuItem<String>(
               height: 1,
               padding: EdgeInsets.zero,
               enabled: false,
-              child: Divider(height: 1),
+              child: Divider(
+                height: 1,
+                color: isDark
+                    ? MyThemes.whiteColor.withOpacity(0.1)
+                    : MyThemes.blackColor.withOpacity(0.1),
+              ),
             ),
-            // Recent Profiles
             ...recentProfiles.map((profile) => PopupMenuItem<String>(
-              value: profile.id,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: _buildProfileItem(profile),
-            )),
-            // View All Profiles Button
+                  value: profile.id,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: _buildProfileItem(profile, isDark),
+                )),
             PopupMenuItem<String>(
               padding: EdgeInsets.zero,
-              child: _buildViewAllProfilesButton(context),
+              child: _buildViewAllProfilesButton(context, isDark),
             ),
           ],
           onSelected: (String profileId) {
@@ -133,100 +161,111 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
       },
     );
   }
- 
-  Widget _buildCurrentProfileItem(ProfileModel profile) {
 
-   return Padding(
-  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-  child: Row(
-    children: [
-      // Avatar section
-      CircleAvatar(
-        radius: 20,
-        backgroundImage: profile.imageUrl != null
-            ? NetworkImage(profile.imageUrl!)
-            : const AssetImage('assets/user.jpg') as ImageProvider,
-      ),
-      const SizedBox(width: 12),
-      // Column for name+icon row and email
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Name and icon row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildCurrentProfileItem(ProfileModel profile, bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 20,
+            backgroundImage: profile.imageUrl != null
+                ? NetworkImage(profile.imageUrl!)
+                : const AssetImage('assets/user.jpg') as ImageProvider,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  profile.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      profile.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                        color:
+                            isDark ? MyThemes.whiteColor : MyThemes.blackText,
+                      ),
+                    ),
+                    const Icon(
+                      Icons.check_circle,
+                      color: MyThemes.primaryColor,
+                      size: 20,
+                    ),
+                  ],
                 ),
-                const Icon(
-                  Icons.check_circle,
-                  color: Color(0xFF29E33C),
-                  size: 20,
+                Text(
+                  currentUser?.email ?? 'No email',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.normal,
+                    color: isDark
+                        ? MyThemes.whiteColor.withOpacity(0.7)
+                        : MyThemes.blackText.withOpacity(0.7),
+                  ),
                 ),
               ],
             ),
-            // Email row
-            Text(
-              currentUser?.email ?? 'No email',
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.normal,
-                color: Colors.white,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileItem(ProfileModel profile, bool isDark) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundImage: profile.imageUrl != null
+                  ? NetworkImage(profile.imageUrl!)
+                  : const AssetImage('assets/user.jpg') as ImageProvider,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    profile.name,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: isDark ? MyThemes.whiteColor : MyThemes.blackText,
+                    ),
+                  ),
+                  Text(
+                    profile.getTimeAgo(),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark
+                          ? MyThemes.whiteColor.withOpacity(0.5)
+                          : MyThemes.blackText.withOpacity(0.5),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-      ),
-    ],
-  ),
-);}
-
-  Widget _buildProfileItem(ProfileModel profile) {
-    return Column(
-  children: [
-    Row(
-      children: [
-        CircleAvatar(
-          radius: 20,
-          backgroundImage: profile.imageUrl != null
-              ? NetworkImage(profile.imageUrl!)
-              : const AssetImage('assets/user.jpg') as ImageProvider,
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                profile.name,
-                style: const TextStyle(fontSize: 16),
-              ),
-              Text(
-profile.getTimeAgo(),                
-style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
-              ),
-            ],
-          ),
-        ),
       ],
-    ),
-  ],
-);}
+    );
+  }
 
-  Widget _buildViewAllProfilesButton(BuildContext context) {
+  Widget _buildViewAllProfilesButton(BuildContext context, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Divider(height: 1),
+        Divider(
+          height: 1,
+          color: isDark
+              ? MyThemes.whiteColor.withOpacity(0.1)
+              : MyThemes.blackColor.withOpacity(0.1),
+        ),
         InkWell(
           onTap: () {
             Navigator.pop(context);
@@ -239,11 +278,11 @@ style: const TextStyle(
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: const Text(
+            child: Text(
               'Voir tous les profils',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.white,
+                color: MyThemes.primaryColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
