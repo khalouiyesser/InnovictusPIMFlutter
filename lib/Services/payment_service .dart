@@ -30,7 +30,7 @@ class PaymentService {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => WebViewPage(url: paymentUrl),
+              builder: (context) => WebViewPage(url: paymentUrl, pendingSignupId: pendingSignupId,),
             ),
           );
         } else {
@@ -44,6 +44,28 @@ class PaymentService {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error opening payment page")),
       );
+    }
+  }
+
+  Future<void> finalizeSignup(String userId) async {
+    final String apiUrl = "${Const().url}/auth/finalize-signup/$userId"; // Corrected const() usage
+    final response = await http.patch(
+      Uri.parse(apiUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        // Add any necessary data to send with the PATCH request
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      // Handle successful response
+      print(responseData['message']); // Display success message
+    } else {
+      // Handle error response
+      print('Error: ${response.statusCode}');
     }
   }
 }
