@@ -110,6 +110,18 @@ For any questions or concerns regarding this Privacy Policy, please contact us a
 
 By using GreenEnergyChain, you acknowledge that you have read, understood, and agree to these Terms and Conditions and Privacy Policy. Thank you for choosing GreenEnergyChain for your renewable energy needs.''',
 
+// Profile Selection Screen
+  'selectProfile': 'Select a profile',
+  'recentUsers': 'Recent users',
+  'noRecentUsers': 'No recent users',
+  'unknownUser': 'Unknown User',
+  'unknownEmail': 'Unknown email',
+  'lastSeen': 'Last seen',
+  'daysAgo': '{} day(s) ago',
+  'hoursAgo': '{} hour(s) ago',
+  'minutesAgo': '{} minute(s) ago',
+  'switchProfileConfirm': 'Do you really want to switch to profile "{}"?',
+'createNewProfile': 'Create New Profile',
 
 
   },
@@ -216,6 +228,18 @@ Pour toute question ou préoccupation concernant cette Politique de Confidential
 
 En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté ces Conditions Générales et cette Politique de Confidentialité. Merci de choisir GreenEnergyChain pour vos besoins en énergie renouvelable.''',
 
+// Profile Selection Screen
+  'selectProfile': 'Sélectionner un profil',
+  'recentUsers': 'Utilisateurs récents',
+  'noRecentUsers': 'Aucun utilisateur récent',
+  'unknownUser': 'Utilisateur inconnu',
+  'unknownEmail': 'Email inconnu',
+  'lastSeen': 'Dernière connexion',
+  'daysAgo': 'Il y a {} jour(s)',
+  'hoursAgo': 'Il y a {} heure(s)',
+  'minutesAgo': 'Il y a {} minute(s)',
+  'switchProfileConfirm': 'Voulez-vous vraiment passer au profil "{}" ?',
+'createNewProfile': 'Créer un nouveau profil',
 
 
   },

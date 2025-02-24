@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/ClientModels/packs.dart';
 import 'package:piminnovictus/Models/ClientModels/profile.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
+import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
 import 'package:piminnovictus/Views/Users/create_profile.dart';
@@ -181,12 +183,14 @@ Future<void> _showSwitchProfileDialog(BuildContext context, String profileName, 
 }
   @override
   Widget build(BuildContext context) {
+     final languageProvider =
+        Provider.of<LanguageProvider>(context, listen: false);
     return Consumer<ProfileSwitcherViewModel>(
       builder: (context, viewModel, child) {
         return Scaffold(
           appBar: AppBar(
             leading: const BackButton(),
-            title: const Text('Sélectionner un profil'),
+  title: Text(AppLocalizations.of(context).translate('selectProfile')),
           ),
           body: ListView(
             children: [
@@ -218,7 +222,8 @@ Future<void> _showSwitchProfileDialog(BuildContext context, String profileName, 
   leading: const CircleAvatar(
     child: Icon(Icons.add),
   ),
-  title: const Text('Créer un nouveau profil'),
+    title: Text(AppLocalizations.of(context).translate('createNewProfile')),
+
   onTap: () async {
     // Get the packs list from your PacksList widget
     final List<Pack> packs = [
@@ -255,7 +260,8 @@ Future<void> _showSwitchProfileDialog(BuildContext context, String profileName, 
               Padding(
                 padding: const EdgeInsets.only(left: 16.0, top: 8.0, bottom: 8.0),
                 child: Text(
-                  'Utilisateurs récents',
+                    AppLocalizations.of(context).translate('recentUsers'),
+
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
@@ -268,11 +274,12 @@ Future<void> _showSwitchProfileDialog(BuildContext context, String profileName, 
                   ),
                 )
               else if (_recentUsers.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
+                 Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    'Aucun utilisateur récent',
-                    style: TextStyle(
+                    AppLocalizations.of(context).translate('noRecentUsers'),
+
+                    style:const  TextStyle(
                       fontStyle: FontStyle.italic,
                       color: Colors.grey,
                     ),
