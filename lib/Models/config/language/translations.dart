@@ -122,7 +122,7 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
   'minutesAgo': '{} minute(s) ago',
   'switchProfileConfirm': 'Do you really want to switch to profile "{}"?',
 'createNewProfile': 'Create New Profile',
-
+'viewAllProfiles': 'View All Profiles',
 
   },
 
@@ -241,6 +241,7 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
   'switchProfileConfirm': 'Voulez-vous vraiment passer au profil "{}" ?',
 'createNewProfile': 'Créer un nouveau profil',
 
+'viewAllProfiles': 'Voir tous les profils',
 
   },
 };
