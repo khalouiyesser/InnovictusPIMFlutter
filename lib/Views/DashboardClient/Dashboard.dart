@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:piminnovictus/Models/User.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
+import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/DashboardClient/Wallet.dart';
-import 'package:piminnovictus/Views/DashboardClient/buyEnergie.dart';
 import 'package:piminnovictus/Views/DashboardClient/energy_settings_sheet.dart';
-import 'package:piminnovictus/Views/DashboardClient/profile_switcher_dropdown.dart';
 import 'package:piminnovictus/Views/bachground.dart';
-import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
+import 'package:piminnovictus/viewmodels/WeatherAPI/bloc/weather_bloc_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
+import 'package:piminnovictus/Views/DashboardClient/profile_switcher_dropdown.dart';
+
 import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:fl_chart/fl_chart.dart';
 
@@ -18,8 +23,76 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  final SessionManager _sessionManager = SessionManager();
+  User? currentUser;
+  Widget getWeatherIcon(int code, {double size = 24.0}) {
+    switch (code) {
+      case >= 200 && < 300:
+        return Image.asset(
+          'assets/1.png',
+          width: size,
+          height: size,
+        );
+      case >= 300 && < 400:
+        return Image.asset(
+          'assets/2.png',
+          width: size,
+          height: size,
+        );
+      case >= 500 && < 600:
+        return Image.asset(
+          'assets/3.png',
+          width: size,
+          height: size,
+        );
+      case >= 600 && < 700:
+        return Image.asset(
+          'assets/4.png',
+          width: size,
+          height: size,
+        );
+      case >= 700 && < 800:
+        return Image.asset(
+          'assets/5.png',
+          width: size,
+          height: size,
+        );
+      case == 800:
+        return Image.asset(
+          'assets/6.png',
+          width: size,
+          height: size,
+        );
+      case > 800 && <= 804:
+        return Image.asset(
+          'assets/7.png',
+          width: size,
+          height: size,
+        );
+      default:
+        return Image.asset(
+          'assets/7.png',
+          width: size,
+          height: size,
+        );
+    }
+  }
+
   // Déclaration de la variable _currentEnergyPercentage
   double _currentEnergyPercentage = 50.0; // Exemple de valeur initiale
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final user = await _sessionManager.getCurrentUser();
+    setState(() {
+      currentUser = user;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,37 +128,37 @@ class _DashboardPageState extends State<DashboardPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                         Container(
-  decoration: BoxDecoration(
-    shape: BoxShape.circle,
-    border: Border.all(
-      color: theme.colorScheme.primary,
-      width: screenWidth * 0.008,
-    ),
-  ),
-  child: Consumer<ProfileSwitcherViewModel>(
-    builder: (context, viewModel, child) {
-      if (viewModel.isLoading) {
-        return SizedBox(
-          width: screenWidth * 0.12,
-          height: screenWidth * 0.12,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: theme.colorScheme.primary,
-          ),
-        );
-      }
-      
-      return ProfileSwitcherDropdown(
-        customRadius: screenWidth * 0.06,
-        borderColor: theme.colorScheme.primary,
-        borderWidth: screenWidth * 0.008,
-      );
-    },
-  ),
-),
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: theme.colorScheme.primary,
+                                width: screenWidth * 0.008,
+                              ),
+                            ),
+                            child: Consumer<ProfileSwitcherViewModel>(
+                              builder: (context, viewModel, child) {
+                                if (viewModel.isLoading) {
+                                  return SizedBox(
+                                    width: screenWidth * 0.12,
+                                    height: screenWidth * 0.12,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                  );
+                                }
+
+                                return ProfileSwitcherDropdown(
+                                  customRadius: screenWidth * 0.06,
+                                  borderColor: theme.colorScheme.primary,
+                                  borderWidth: screenWidth * 0.008,
+                                );
+                              },
+                            ),
+                          ),
                           Padding(
-                            padding: EdgeInsets.only(right: screenWidth * 0.05),
+                            padding: EdgeInsets.only(right: screenWidth * 0.30),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -94,91 +167,101 @@ class _DashboardPageState extends State<DashboardPage> {
                                   style: theme.textTheme.titleMedium
                                       ?.copyWith(fontSize: screenWidth * 0.04),
                                 ),
-                                Text(
-                                  'Khaled Guedria',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontSize: screenWidth * 0.05,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                                currentUser == null
+                                    ? const CircularProgressIndicator()
+                                    : Text(
+                                        currentUser!.name,
+                                        style: theme.textTheme.titleLarge
+                                            ?.copyWith(
+                                          fontSize: screenWidth * 0.05,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                               ],
                             ),
                           ),
                           Row(
-                            children: [
-                              _buildImageButton(
-                                  "assets/wallet.png",
-                                  screenWidth * 0.09,
-                                  screenWidth * 0.09,
-                                  context),
-                              SizedBox(width: screenWidth * 0.04),
-                              Stack(
-                                children: [
-                                  _buildImageButton(
-                                      "assets/settings.png",
-                                      screenWidth * 0.08,
-                                      screenWidth * 0.08,
-                                      context),
-                                  Positioned(
-                                    right: 0,
-                                    top: 0,
-                                    child: Container(
-                                      width: screenWidth * 0.03,
-                                      height: screenWidth * 0.03,
-                                      decoration: const BoxDecoration(
-                                        color: Colors
-                                            .red, // Vous pouvez le thématiser
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                            children: [],
                           ),
                         ],
                       ),
                       SizedBox(height: screenHeight * 0.02),
                       // Date
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: padding),
-                        child: Row(
-                          children: [
-                            Text(
-                              '10 Février, 2025',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontSize: screenWidth * 0.035,
-                                color: theme.textTheme.bodyMedium?.color
-                                    ?.withOpacity(0.7),
+                      // Date et Localisation sur la même ligne
+                      BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
+                        builder: (context, state) {
+                          if (state is WeatherBlocSuccess) {
+                            return Padding(
+                              padding:
+                                  EdgeInsets.symmetric(horizontal: padding),
+                              child: Row(
+                                children: [
+                                  // Date
+                                  Text(
+                                    DateFormat('dd MMMM yyyy')
+                                        .format(state.weather.date!),
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      fontSize: screenWidth * 0.035,
+                                      color: theme.textTheme.bodyMedium?.color
+                                          ?.withOpacity(0.7),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                      width: screenWidth *
+                                          0.39), // Espacement entre la date et la localisation
+                                  getWeatherIcon(
+                                      state.weather.weatherConditionCode!,
+                                      size: screenWidth * 0.07),
+
+                                  SizedBox(width: screenWidth * 0.02),
+                                  Text(
+                                    '${state.weather.temperature!.celsius!.round()}°C',
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      fontSize: screenWidth * 0.035,
+                                      color: theme.textTheme.bodyMedium?.color
+                                          ?.withOpacity(0.7),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
+                            );
+                          } else {
+                            return Container();
+                          }
+                        },
                       ),
+
                       SizedBox(height: screenHeight * 0.01),
-                      // Température
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: padding),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.wb_sunny,
-                              color: Colors.yellow,
-                              size: screenWidth * 0.05,
-                            ),
-                            SizedBox(width: screenWidth * 0.02),
-                            Text(
-                              '23°C',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontSize: screenWidth * 0.035,
-                                color: theme.textTheme.bodyMedium?.color
-                                    ?.withOpacity(0.7),
+
+// Température (Météo reste inchangée)
+                      BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
+                        builder: (context, state) {
+                          if (state is WeatherBlocSuccess) {
+                            return Padding(
+                              padding:
+                                  EdgeInsets.symmetric(horizontal: padding),
+                              child: Row(
+                                children: [
+                                  // Localisation
+                                  Text(
+                                    '📍 ${state.weather.areaName}',
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      fontSize: screenWidth * 0.035,
+                                      color: theme.textTheme.bodyMedium?.color
+                                          ?.withOpacity(0.7),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
+                            );
+                          } else {
+                            return Container();
+                          }
+                        },
                       ),
+
                       SizedBox(height: screenHeight * 0.03),
+
                       // Cercle de progression personnalisé
                       Center(
                         child: Stack(
@@ -190,7 +273,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 0.85,
                                 progressColor: progressColor,
                                 progressBackgroundColor:
-                                progressBackgroundColor,
+                                    progressBackgroundColor,
                               ),
                             ),
                             Column(
@@ -209,7 +292,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 Text(
                                   '85%',
                                   style:
-                                  theme.textTheme.headlineLarge?.copyWith(
+                                      theme.textTheme.headlineLarge?.copyWith(
                                     fontSize: screenWidth * 0.1,
                                     fontWeight: FontWeight.normal,
                                   ),
@@ -240,7 +323,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       // Grille d'infos
                       Padding(
                         padding:
-                        EdgeInsets.symmetric(vertical: screenHeight * 0.01),
+                            EdgeInsets.symmetric(vertical: screenHeight * 0.01),
                         child: GridView.count(
                           childAspectRatio: 1.6,
                           crossAxisCount: screenWidth > 600 ? 4 : 2,
@@ -278,25 +361,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildImageButton(
       String assetPath, double width, double height, BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        if (assetPath == "assets/settings.png") {
-          // Ouvrir EnergySettingsSheet en pop-up
-          EnergySettingsSheet.show(
-            context,
-            initialPercentage: _currentEnergyPercentage,
-            onSave: (newPercentage) {
-              setState(() {
-                _currentEnergyPercentage = newPercentage;
-              });
-            },
-          );
-        } else if (assetPath == "assets/wallet.png") {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => WalletPage()),
-          );
-        }
-      },
+      onTap: () {},
       child: Image.asset(
         assetPath,
         width: width,
@@ -468,14 +533,14 @@ class _DashboardPageState extends State<DashboardPage> {
                         ],
                         isCurved: true,
                         color:
-                        theme.colorScheme.primary ?? MyThemes.primaryColor,
+                            theme.colorScheme.primary ?? MyThemes.primaryColor,
                         barWidth: 2,
                         isStrokeCapRound: true,
                         dotData: const FlDotData(show: false),
                         belowBarData: BarAreaData(
                           show: true,
                           color: (theme.colorScheme.primary ??
-                              MyThemes.primaryColor)
+                                  MyThemes.primaryColor)
                               .withOpacity(0.11),
                         ),
                       ),
@@ -500,10 +565,10 @@ class CircularProgressPainter extends CustomPainter {
   final Color progressBackgroundColor;
 
   CircularProgressPainter(
-      this.progress, {
-        required this.progressColor,
-        required this.progressBackgroundColor,
-      });
+    this.progress, {
+    required this.progressColor,
+    required this.progressBackgroundColor,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {

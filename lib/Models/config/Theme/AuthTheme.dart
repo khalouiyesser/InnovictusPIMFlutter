@@ -29,7 +29,7 @@ class AuthScreenThemeDetector {
           ? Colors.white.withOpacity(0.2)
           : Colors.grey.withOpacity(0.1),
       hintTextColor: isDarkMode ? Colors.white70 : Colors.black54,
-      primaryColor: const Color(0xFF29E33C).withOpacity(0.9),
+      primaryColor: const Color(0xFF29E33C),
       shouldShowBackgroundImage: isDarkMode,
     );
   }

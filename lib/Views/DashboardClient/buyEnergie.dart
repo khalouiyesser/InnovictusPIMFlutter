@@ -388,17 +388,6 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.arrow_back,
-                            color: theme.colorScheme.primary,
-                            size: 28,
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ),
                     ),
                     _buildEnergyIndicator(theme),
                     const SizedBox(height: 20),
@@ -434,7 +423,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
           alignment: Alignment.center,
           children: [
             CustomPaint(
-              size: Size(150, 150),
+              size: Size(200, 200),
               painter: CircularProgressPainter(0.7),
             ),
             Column(
@@ -447,7 +436,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
                   ),
                 ),
                 Text(
-                  "70%",
+                  "300KW",
                   style: theme.textTheme.headlineLarge?.copyWith(
                     fontSize: screenWidth * 0.1,
                     fontWeight: FontWeight.normal,

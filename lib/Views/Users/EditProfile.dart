@@ -18,6 +18,10 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  // Au début de la classe _EditProfileState, ajoutez :
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final SessionManager _sessionManager = SessionManager();
   User? currentUser;
   bool isPreferencesExpanded = false;
@@ -35,11 +39,24 @@ class _EditProfileState extends State<EditProfile> {
     _loadUserData();
   }
 
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
   Future<void> _loadUserData() async {
     final user = await _sessionManager.getCurrentUser();
-    setState(() {
-      currentUser = user;
-    });
+    if (user != null) {
+      setState(() {
+        currentUser = user;
+        _nameController.text = user.name;
+        _emailController.text = user.email ?? '';
+        _phoneController.text = user.phoneNumber ?? '';
+      });
+    }
   }
 
   @override
@@ -96,7 +113,7 @@ class _EditProfileState extends State<EditProfile> {
                               currentUser!.name,
                               style: TextStyle(
                                 fontSize: 20,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.normal,
                                 color: Theme.of(context)
                                     .textTheme
                                     .bodyMedium
@@ -109,7 +126,7 @@ class _EditProfileState extends State<EditProfile> {
                           : Text(
                               currentUser!.email ?? '',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 20,
                                 fontWeight: FontWeight.normal,
                                 color: Theme.of(context)
                                     .textTheme
@@ -342,8 +359,9 @@ class _EditProfileState extends State<EditProfile> {
                       if (isPersonalInfoExpanded) ...[
                         const SizedBox(height: 15),
                         TextField(
+                          controller: _nameController,
                           decoration: InputDecoration(
-                            hintText: AppLocalizations.of(context)
+                            labelText: AppLocalizations.of(context)
                                 .translate('username'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -353,8 +371,9 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                         const SizedBox(height: 15),
                         TextField(
+                          controller: _emailController,
                           decoration: InputDecoration(
-                            hintText:
+                            labelText:
                                 AppLocalizations.of(context).translate('email'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -364,8 +383,9 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                         const SizedBox(height: 15),
                         TextField(
+                          controller: _phoneController,
                           decoration: InputDecoration(
-                            hintText:
+                            labelText:
                                 AppLocalizations.of(context).translate('phone'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -379,9 +399,14 @@ class _EditProfileState extends State<EditProfile> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 // Logique de sauvegarde
-                                print("Preferences saved");
+                                final updatedUser = User(
+                                  id: currentUser!.id,
+                                  name: _nameController.text,
+                                  email: _emailController.text,
+                                  phoneNumber: _phoneController.text,
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF29E33C),

@@ -184,6 +184,7 @@
 //   }
 // }
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
 import 'package:piminnovictus/Services/AuthController.dart';
 import 'package:piminnovictus/Views/Users/NewPassword.dart';
 import 'package:piminnovictus/Views/bachground.dart';
@@ -204,10 +205,11 @@ class OTPPage extends StatefulWidget {
   _OTPPageState createState() => _OTPPageState();
 }
 
-class _OTPPageState extends State<OTPPage> {
+class _OTPPageState extends State<OTPPage> with WidgetsBindingObserver {
   List<String> otpCode = List.filled(6, "");
   late List<FocusNode> focusNodes;
   final AuthController con = AuthController();
+  late AuthScreenTheme _theme;
 
   late String resetToken;
   late int code;
@@ -215,11 +217,29 @@ class _OTPPageState extends State<OTPPage> {
   @override
   void initState() {
     super.initState();
+    _updateTheme();
+    WidgetsBinding.instance.addObserver(this);
+
     focusNodes = List.generate(6, (index) => FocusNode());
     resetToken = widget.resetToken;
     code = widget.code;
 
-    print("OTPPage - Email: ${widget.email}, ResetToken: $resetToken, Code: $code");
+    print(
+        "OTPPage - Email: ${widget.email}, ResetToken: $resetToken, Code: $code");
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    // Mettre à jour le thème quand la luminosité du système change
+    if (mounted) {
+      setState(() {
+        _updateTheme();
+      });
+    }
+  }
+
+  void _updateTheme() {
+    _theme = AuthScreenThemeDetector.getTheme();
   }
 
   @override
@@ -232,6 +252,8 @@ class _OTPPageState extends State<OTPPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = AuthScreenThemeDetector.isSystemDarkMode();
+
     return Scaffold(
       body: BlurredRadialBackground(
         child: SafeArea(
@@ -257,7 +279,7 @@ class _OTPPageState extends State<OTPPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: List.generate(
                     6,
-                        (index) => SizedBox(
+                    (index) => SizedBox(
                       width: 50,
                       height: 50,
                       child: TextField(
@@ -278,12 +300,17 @@ class _OTPPageState extends State<OTPPage> {
                           ),
                         ),
                         maxLength: 1,
-                        buildCounter: (context, {required currentLength, required isFocused, required maxLength}) => null,
+                        buildCounter: (context,
+                                {required currentLength,
+                                required isFocused,
+                                required maxLength}) =>
+                            null,
                         onChanged: (value) {
                           if (value.isNotEmpty) {
                             otpCode[index] = value;
                             if (index < 5) {
-                              FocusScope.of(context).requestFocus(focusNodes[index + 1]);
+                              FocusScope.of(context)
+                                  .requestFocus(focusNodes[index + 1]);
                             }
                           } else {
                             otpCode[index] = "";
@@ -313,7 +340,8 @@ class _OTPPageState extends State<OTPPage> {
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text("Code incorrect, veuillez réessayer."),
+                            content:
+                                Text("Code incorrect, veuillez réessayer."),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -353,7 +381,8 @@ class _OTPPageState extends State<OTPPage> {
                         resetToken = response["resetToken"];
                         code = response["code"];
                       });
-                      print("Nouveau ResetToken: $resetToken, Nouveau Code: $code");
+                      print(
+                          "Nouveau ResetToken: $resetToken, Nouveau Code: $code");
                     }
                   },
                   child: const Text(

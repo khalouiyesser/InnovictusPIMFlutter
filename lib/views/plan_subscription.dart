@@ -282,15 +282,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:piminnovictus/Models/ClientModels/packs.dart';
+import 'package:piminnovictus/Services/payment_service%20.dart';
 import 'package:piminnovictus/Views/Visitor/card_content.dart';
 import 'package:piminnovictus/Views/Visitor/flip_card.dart';
 import 'package:piminnovictus/Views/stripe.dart';
+import 'package:piminnovictus/viewmodels/Auth/subscription_view_model.dart';
 import 'package:piminnovictus/views/AuthViews/welcome_view.dart';
 
 class SubscriptionCarousel extends StatefulWidget {
   final String? preselectedPackId;
+  final String pendingSignupId; // Make sure this is not nullable
 
-  const SubscriptionCarousel({Key? key, this.preselectedPackId}) : super(key: key);
+  const SubscriptionCarousel({
+    Key? key, 
+    this.preselectedPackId, 
+    required this.pendingSignupId
+  }) : super(key: key);
 
   @override
   State<SubscriptionCarousel> createState() => _SubscriptionCarouselState();
@@ -299,7 +306,7 @@ class SubscriptionCarousel extends StatefulWidget {
 class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
   final List<Pack> packs = [
     Pack(
-      id: '1',
+      id: '67bbcb92c538c6915580df58',
       title: 'Basic Pack',
       image: 'assets/panel.png',
       description: 'Unlock energy potential...',
@@ -310,7 +317,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       certification: 'ISO Certified',
     ),
     Pack(
-      id: '2',
+      id: '67bbcb92c538c6915580df58',
       title: 'Advanced Pack',
       image: 'assets/background.jpg',
       description: 'Track energy live.',
@@ -321,7 +328,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       certification: 'ISO Certified',
     ),
     Pack(
-      id: '3',
+      id: '67bbcb92c538c6915580df58',
       title: 'Advanced Pack',
       image: 'assets/background.jpg',
       description: 'Track energy live.',
@@ -332,7 +339,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       certification: 'ISO Certified',
     ),
     Pack(
-      id: '4',
+      id: '67bbcb92c538c6915580df58',
       title: 'Advanced Pack',
       image: 'assets/background.jpg',
       description: 'Track energy live.',
@@ -343,31 +350,111 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       certification: 'ISO Certified',
     ),
   ];
+  late final SubscriptionViewModel _viewModel;
 
   String? _selectedPackId;
-
   @override
   void initState() {
     super.initState();
-    _selectedPackId = widget.preselectedPackId;
+    _viewModel = SubscriptionViewModel(pendingSignupId:widget.pendingSignupId);
+    if (widget.preselectedPackId != null) {
+      _viewModel.selectedPackId = widget.preselectedPackId;
+    }
   }
-
   void _selectPack(String packId) {
     setState(() {
       _selectedPackId = _selectedPackId == packs ? null : packId;
     });
   }
+void _proceedToPayment() async {
+    if (_viewModel.selectedPackId != null) {
+      try {
+        // First try to find the pack
+        Pack? selectedPack;
+        try {
+          selectedPack = packs.firstWhere(
+            (pack) => pack.id == _viewModel.selectedPackId,
+          );
+        } catch (e) {
+          print('Selected pack ID: ${_viewModel.selectedPackId}');
+          print('Available pack IDs: ${packs.map((p) => p.id).toList()}');
+          // If pack not found, show error
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: const Color.fromARGB(255, 8, 16, 9),
+                title: const Text(
+                  'Error',
+                  style: TextStyle(color: Colors.white),
+                ),
+                content: const Text(
+                  'Selected pack not found in available packs.',
+                  style: TextStyle(color: Colors.white),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Color.fromARGB(255, 31, 219, 59),
+                    ),
+                    child: const Text(
+                      'OK',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+          return;
+        }
 
-  void _proceedToPayment() {
-    if (_selectedPackId != null) {
-      final selectedPack = packs.firstWhere((pack) => pack.id == _selectedPackId);
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>WelcomePage() //PaymentView(pack: selectedPack),
-        ),
-      );
+        // If we found the pack, proceed with the API call
+        final success = await _viewModel.updatePackForPendingSignup();
+        
+        if (success) {
+  String packId = "67bbcbabc538c6915580df5a";  
+  String pendingSignupId = widget.pendingSignupId;
+  PaymentService.openPayment(context, packId, pendingSignupId);
+}
+else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: const Color.fromARGB(255, 8, 16, 9),
+                title: const Text(
+                  'Error',
+                  style: TextStyle(color: Colors.white),
+                ),
+                content: Text(
+                  _viewModel.error ?? 'An error occurred',
+                  style: TextStyle(color: Colors.white),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Color.fromARGB(255, 31, 219, 59),
+                    ),
+                    child: const Text(
+                      'OK',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } catch (e) {
+        print('Error in _proceedToPayment: $e');
+      }
     } else {
       showDialog(
         context: context,

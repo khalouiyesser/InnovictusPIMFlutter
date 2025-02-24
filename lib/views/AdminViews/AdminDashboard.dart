@@ -150,7 +150,11 @@ double getMaxY(List<FlSpot> dataPoints) {
                               children: [
                                 CustomPaint(
                                   size: const Size(200, 200),
-                                  painter: CircularProgressPainter(0.85),
+                                  painter: CircularProgressPainter(
+                                    0.85,
+                                    progressBackgroundColor: Colors.grey.withOpacity(0.3),
+                                    progressColor: Colors.green,
+                                  ),
                                 ),
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -468,7 +472,7 @@ double getMaxY(List<FlSpot> dataPoints) {
 class CircularProgressPainter extends CustomPainter {
   
   final double progress;
-  CircularProgressPainter(this.progress);
+  CircularProgressPainter(this.progress, {required Color progressBackgroundColor, required Color progressColor});
 
   @override
   void paint(Canvas canvas, Size size) {

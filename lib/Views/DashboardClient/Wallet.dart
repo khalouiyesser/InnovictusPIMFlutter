@@ -35,17 +35,6 @@ class WalletPage extends StatelessWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(0),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.arrow_back,
-                            color: theme.colorScheme.primary,
-                            size: 28,
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ),
                     ), // Décalage pour éviter le chevauchement du bouton
 
                     // Header (avatar + nom)
@@ -76,7 +65,7 @@ class WalletPage extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '9.262 Greeno',
+                            '0 Greeno',
                             style: TextStyle(
                               color: kGreen,
                               fontSize: screenWidth * 0.07,
@@ -88,19 +77,12 @@ class WalletPage extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '\$16,858.15',
+                                '\$0',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontSize: screenWidth * 0.04,
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Text(
-                                '+0.7%',
-                                style: TextStyle(
-                                  color: kGreen,
-                                  fontSize: screenWidth * 0.035,
-                                ),
-                              ),
                             ],
                           ),
                         ],
@@ -114,18 +96,8 @@ class WalletPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         _ActionButton(
-                          label: 'sent',
+                          label: 'List of Transaction ',
                           icon: Icons.send_rounded,
-                          onTap: () {},
-                        ),
-                        _ActionButton(
-                          label: 'receive',
-                          icon: Icons.download_rounded,
-                          onTap: () {},
-                        ),
-                        _ActionButton(
-                          label: 'buy',
-                          icon: Icons.shopping_cart,
                           onTap: () {},
                         ),
                       ],
@@ -311,9 +283,9 @@ class _ChartSection extends StatelessWidget {
                     ),
                   ),
                   topTitles:
-                  AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   rightTitles:
-                  AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
                 borderData: FlBorderData(show: false),
                 lineBarsData: [
@@ -510,11 +482,11 @@ class _CalendarWithTrackingState extends State<CalendarWithTracking> {
 
   // Construit la cellule d'un jour, avec la date et le cercle de tracking
   Widget _buildDayCell(
-      DateTime day,
-      bool isSelected,
-      double trackingLevel, {
-        bool isToday = false,
-      }) {
+    DateTime day,
+    bool isSelected,
+    double trackingLevel, {
+    bool isToday = false,
+  }) {
     final dateString = day.day.toString();
     // Ne pas afficher le cercle si la date est après aujourd'hui
     if (day.isAfter(DateTime.now())) {
@@ -554,7 +526,7 @@ class _CalendarWithTrackingState extends State<CalendarWithTracking> {
                 color: isSelected
                     ? Colors.white
                     : theme.textTheme.bodyMedium?.color
-                    ?.withOpacity(0.7), // 🔹 Correction ici
+                        ?.withOpacity(0.7), // 🔹 Correction ici
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
