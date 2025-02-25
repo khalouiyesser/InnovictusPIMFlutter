@@ -202,7 +202,8 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
   "feature_selling": "Sell your excess solar energy directly to others.",
   "feature_ai_iot": "AI + IoT optimize energy flow in real-time.",
   "feature_blockchain": "Blockchain ensures 100% secure & transparent transactions.",
-  "feature_green_impact": "Earn certified proof of your green impact & reduce carbon emissions."
+  "feature_green_impact": "Earn certified proof of your green impact & reduce carbon emissions.",
+  "energy_revolution_title": "The Energy Revolution Starts Now !",
 
 
   },
@@ -401,6 +402,7 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
   "feature_ai_iot": "L'IA + l'IoT optimisent le flux d'énergie en temps réel.",
   "feature_blockchain": "La blockchain garantit des transactions 100% sécurisées et transparentes.",
   "feature_green_impact": "Obtenez une preuve certifiée de votre impact écologique et réduisez les émissions de carbone.",
+  "energy_revolution_title": "La Révolution Énergétique Commence Maintenant !",
 
   },
 };

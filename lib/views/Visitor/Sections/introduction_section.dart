@@ -77,7 +77,7 @@ class IntroductionSection extends StatelessWidget {
                 // Main Title
                 Center(
                   child: Text(
-                    'The Energy Revolution Starts Now !',
+  AppLocalizations.of(context).translate("energy_revolution_title"),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
