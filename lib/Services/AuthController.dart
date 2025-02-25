@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:piminnovictus/Models/Auth/signup_response.dart';
 import 'package:piminnovictus/Services/Const.dart';
 import 'package:http/http.dart' as http;
 import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
@@ -114,6 +115,38 @@ final responseData = json.decode(response.body);
     }
   }
 
+  Future<SignupResponse> signupSimple({
+    required String name,
+    required String email,
+    required String password,
+    required String phoneNumber,
+    required String packId,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$api/auth/signup"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'name': name,
+          'email': email,
+          'password': password,
+          'phoneNumber': phoneNumber,
+          'packId': packId,
+        }),
+      );
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final responseData = json.decode(response.body);
+        return SignupResponse.fromJson(responseData);
+      } else {
+        throw Exception('Signup failed: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Error during signup: $e');
+    }
+  }
+
+/*
   /// Fonction pour signupSimple de mot de passe
   Future<Map<String, dynamic>> signupSimple(
       String firstName, String lastName, String email, String password) async {
@@ -140,7 +173,7 @@ final responseData = json.decode(response.body);
       throw Exception('Erreur lors de l\'envoi de l\'OTP: $e');
     }
   }
-
+*/
   /// Fonction pour l'oubli de mot de passe
   Future<Map<String, dynamic>> forgotPassword(String email) async {
     try {

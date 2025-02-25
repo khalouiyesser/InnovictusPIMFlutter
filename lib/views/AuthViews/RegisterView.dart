@@ -28,6 +28,7 @@ class _RegisterViewState extends State<RegisterView>
   late AuthScreenTheme _theme;
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isLoading = false;
 
   bool _acceptedTerms = false;
 
@@ -38,6 +39,71 @@ class _RegisterViewState extends State<RegisterView>
   String? _PhoneNumberError;
 
   AuthController auth = AuthController();
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color.fromARGB(255, 8, 16, 9),
+          title: const Text(
+            'Error',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: Text(
+            message,
+            style: const TextStyle(color: Colors.white),
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 31, 219, 59),
+              ),
+              child: const Text(
+                'OK',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _handleSignup() async {
+    try {
+      final signupResponse = await auth.signupSimple(
+        name: fullNameController.text,
+        email: emailController.text,
+        password: passwordController.text,
+        phoneNumber: PhoneNumberController.text,
+        packId: "67bbcb92c538c6915580df58", // Make sure to handle null packId
+      );
+
+      // Handle successful signup
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SubscriptionCarousel(
+              preselectedPackId: widget.packId,
+              pendingSignupId: signupResponse.pendingSignupId,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        _showErrorDialog(e.toString());
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -138,7 +204,7 @@ class _RegisterViewState extends State<RegisterView>
     });
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (!_acceptedTerms) {
       showDialog(
         context: context,
@@ -171,6 +237,13 @@ class _RegisterViewState extends State<RegisterView>
       return;
     }
 
+    // Validate all fields
+    _validateEmail(emailController.text);
+    _validatePassword(passwordController.text);
+    _validataConfirmPassword(ConfirmPasswordController.text);
+    _validatefullName(fullNameController.text);
+    _validatePhoneNumber(PhoneNumberController.text);
+
     if (ConfirmPasswordController.text.isNotEmpty &&
         passwordController.text.isNotEmpty &&
         emailController.text.isNotEmpty &&
@@ -179,19 +252,13 @@ class _RegisterViewState extends State<RegisterView>
         _confirmPasswordError == null &&
         _passwordError == null &&
         _emailError == null &&
-        _fullNameError == null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                SubscriptionCarousel(preselectedPackId: widget.packId)),
-      );
-    } else {
-      _validateEmail(emailController.text);
-      _validatePassword(passwordController.text);
-      _validataConfirmPassword(ConfirmPasswordController.text);
-      _validatefullName(fullNameController.text);
-      _validatePhoneNumber(PhoneNumberController.text);
+        _fullNameError == null &&
+        _PhoneNumberError == null) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      await _handleSignup();
     }
   }
 

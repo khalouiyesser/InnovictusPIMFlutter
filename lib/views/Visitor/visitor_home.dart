@@ -398,7 +398,7 @@ class _VisitorPageState extends State<VisitorPage> {
                             horizontal: screenWidth * 0.05),
                         child: Column(
                           children: [
-                            SizedBox(height: screenWidth * 0.05),
+                            SizedBox(height: screenWidth * 0.15),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [

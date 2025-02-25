@@ -35,6 +35,7 @@ dependencies:
 
   flutter_stripe: ^10.0.0  # Mets la dernière version
   firebase_core: ^2.32.0  # Dernière version compatible
+  webview_flutter: ^4.4.4
 
 
 dev_dependencies:

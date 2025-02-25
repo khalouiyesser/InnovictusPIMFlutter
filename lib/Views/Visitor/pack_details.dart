@@ -229,10 +229,7 @@ import 'package:piminnovictus/Views/AuthViews/RegisterView.dart';
 
 class PackDetails extends StatelessWidget {
   final Pack pack;
-  const PackDetails({
-    Key? key,
-    required this.pack
-  }) : super(key: key);
+  const PackDetails({Key? key, required this.pack}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -256,13 +253,17 @@ class PackDetails extends StatelessWidget {
 
           // Responsive Sizing
           final basePadding = screenWidth * 0.05; // Responsive padding
-          final titleFontSize = screenWidth * 0.06; // Responsive title font size
-          final descriptionFontSize = screenWidth * 0.04; // Responsive description font size
-          final buttonFontSize = screenWidth * 0.045; // Responsive button font size
+          final titleFontSize =
+              screenWidth * 0.06; // Responsive title font size
+          final descriptionFontSize =
+              screenWidth * 0.04; // Responsive description font size
+          final buttonFontSize =
+              screenWidth * 0.045; // Responsive button font size
           final buttonWidth = screenWidth * 0.4; // Responsive button width
           final buttonHeight = screenWidth * 0.12; // Responsive button height
           final imageHeight = screenWidth * 0.55; // Responsive image height
-          final imageWidth = imageHeight * 1.4; // Responsive image width (maintain aspect ratio)
+          final imageWidth = imageHeight *
+              1.4; // Responsive image width (maintain aspect ratio)
 
           return SingleChildScrollView(
             padding: EdgeInsets.all(basePadding),
@@ -324,9 +325,10 @@ class PackDetails extends StatelessWidget {
 
                         Navigator.of(context).push(
                           PageRouteBuilder(
-
-                            pageBuilder: (context, animation, secondaryAnimation) =>
-                                RegisterView(packId: pack.id),                            transitionDuration: Duration.zero,
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    RegisterView(packId: pack.id),
+                            transitionDuration: Duration.zero,
                             reverseTransitionDuration: Duration.zero,
                           ),
                         );
@@ -362,15 +364,20 @@ class PackDetails extends StatelessWidget {
                     padding: EdgeInsets.all(basePadding),
                     child: Column(
                       children: [
-                        _buildTableRow("💰 Prix :", pack.price.toString(), descriptionFontSize),
+                        _buildTableRow("💰 Prix :", pack.price.toString(),
+                            descriptionFontSize),
                         _buildDivider(),
-                        _buildTableRow("🔆 Panneaux Solaires :", pack.panelsCount, descriptionFontSize),
+                        _buildTableRow("🔆 Panneaux Solaires :",
+                            pack.panelsCount, descriptionFontSize),
                         _buildDivider(),
-                        _buildTableRow("⚡ Énergie Gagnée :", pack.energyGain, descriptionFontSize),
+                        _buildTableRow("⚡ Énergie Gagnée :", pack.energyGain,
+                            descriptionFontSize),
                         _buildDivider(),
-                        _buildTableRow("🌍 Fossile Évitée :", pack.co2Saved, descriptionFontSize),
+                        _buildTableRow("🌍 Fossile Évitée :", pack.co2Saved,
+                            descriptionFontSize),
                         _buildDivider(),
-                        _buildTableRow("✅ Certification :", pack.certification, descriptionFontSize),
+                        _buildTableRow("✅ Certification :", pack.certification,
+                            descriptionFontSize),
                       ],
                     ),
                   ),
@@ -397,7 +404,10 @@ class PackDetails extends StatelessWidget {
               ),
               TextSpan(
                 text: value,
-                style: TextStyle(color: Colors.white, fontSize: fontSize, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -434,7 +444,9 @@ class PackDetails extends StatelessWidget {
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(25),
-          border: borderColor != null ? Border.all(color: borderColor, width: 2) : null,
+          border: borderColor != null
+              ? Border.all(color: borderColor, width: 2)
+              : null,
         ),
         child: Text(
           text,

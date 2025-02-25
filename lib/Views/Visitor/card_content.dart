@@ -4,19 +4,18 @@ import 'package:piminnovictus/Models/ClientModels/packs.dart';
 import '../AuthViews/RegisterView.dart';
 import 'pack_details.dart';
 
-
 class CardContent extends StatelessWidget {
   final String? image;
   final String? title;
   final String? text;
   final String? buttonText;
   final String? signiUpButtont;
-    final String? selectButtont;
+  final String? selectButtont;
 
-final VoidCallback? onSelectPressed;
-    final bool isSelected; 
+  final VoidCallback? onSelectPressed;
+  final bool isSelected;
 
-final Pack pack;
+  final Pack pack;
   const CardContent({
     super.key,
     this.image,
@@ -24,17 +23,14 @@ final Pack pack;
     this.text,
     this.buttonText,
     this.signiUpButtont,
-        this.selectButtont,
-
-        this.onSelectPressed, // Add this parameter
-        this.isSelected = false, 
-
-required this.pack,
+    this.selectButtont,
+    this.onSelectPressed, // Add this parameter
+    this.isSelected = false,
+    required this.pack,
   });
 
   @override
   Widget build(BuildContext context) {
-    
     return LayoutBuilder(
       builder: (context, constraints) {
         final cardWidth = constraints.maxWidth;
@@ -62,8 +58,10 @@ required this.pack,
             color: Colors.white.withOpacity(0.1),
             borderRadius: BorderRadius.circular(15),
             border: Border.all(
-              color: isSelected ? const Color(0xFF29E33C) : Colors.white.withOpacity(0.3),
-      width: isSelected ? 3 : 1,
+              color: isSelected
+                  ? const Color(0xFF29E33C)
+                  : Colors.white.withOpacity(0.3),
+              width: isSelected ? 3 : 1,
             ),
           ),
           child: Column(
@@ -197,9 +195,8 @@ required this.pack,
                       ),
                     ),
                   ],
-                 
                 ),
-              ]else if (selectButtont != null) ...[
+              ] else if (selectButtont != null) ...[
                 // New select button for subscription view
                 SizedBox(height: cardHeight * 0.01),
                 Center(
