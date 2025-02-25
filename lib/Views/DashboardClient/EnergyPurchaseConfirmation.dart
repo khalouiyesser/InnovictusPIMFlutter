@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
+import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
 import 'package:piminnovictus/Views/DashboardClient/Dashboard.dart';
 import 'package:piminnovictus/Views/bachground.dart';
@@ -12,6 +14,9 @@ class EnergyPurchaseConfirmationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider =
+        Provider.of<LanguageProvider>(context, listen: false);
+  
     final themeProvider = Provider.of<ThemeProvider>(context);
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -47,14 +52,15 @@ class EnergyPurchaseConfirmationPage extends StatelessWidget {
                   ),
                   SizedBox(height: 80),
                   Text(
-                    'Purchase Successful',
+                    AppLocalizations.of(context).translate("purchase_successful"),
                     style: theme.textTheme.titleMedium
                         ?.copyWith(fontSize: screenWidth * 0.05),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "You have purchased $energyAmount kWh of solar energy.",
-                    style: theme.textTheme.bodyLarge
+AppLocalizations.of(context)
+                        .translate("purchased_amount")
+                        .replaceAll("{amount}", energyAmount.toString()),                    style: theme.textTheme.bodyLarge
                         ?.copyWith(fontSize: screenWidth * 0.04),
                   ),
                   const SizedBox(height: 30),
@@ -65,7 +71,7 @@ class EnergyPurchaseConfirmationPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'Your energy is being generated...',
+                    AppLocalizations.of(context).translate("energy_generating"),
                     style: theme.textTheme.titleMedium
                         ?.copyWith(fontSize: screenWidth * 0.04),
                   ),
@@ -88,8 +94,8 @@ class EnergyPurchaseConfirmationPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      "Back to Home",
+                    child:  Text(
+                      AppLocalizations.of(context).translate("back_to_home"),
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.white,

@@ -195,6 +195,8 @@ class _DashboardPageState extends State<DashboardPage> {
                       BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
                         builder: (context, state) {
                           if (state is WeatherBlocSuccess) {
+                                                              final translations = AppLocalizations.of(context);
+
                             return Padding(
                               padding:
                                   EdgeInsets.symmetric(horizontal: padding),
@@ -241,6 +243,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
                         builder: (context, state) {
                           if (state is WeatherBlocSuccess) {
+
                             return Padding(
                               padding:
                                   EdgeInsets.symmetric(horizontal: padding),

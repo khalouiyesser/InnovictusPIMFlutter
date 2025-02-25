@@ -153,6 +153,23 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
 'twoWeeks': '2 Weeks',
 'week': 'Week',
 
+
+  "power_home_title": "Power your home with clean energy!",
+  "total_energy": "Total Energy",
+  "get_started_steps": "Get Started in 3 Steps",
+  "enter_energy_quantity": "Enter Energy Quantity",
+  "enter_quantity_hint": "Enter quantity in KW",
+  "equivalent_coins": "Equivalent in Coins: {coin}",
+  "enter_code": "Enter your Code",
+  "payment_success": "Your payment with coins has been successfully processed. Thank you for choosing clean solar energy!",
+  "check_email": "Check your email for the details!",
+  "back": "Back",
+  "next": "Next",
+
+   "purchase_successful": "Purchase Successful",
+  "purchased_amount": "You have purchased {amount} kWh of solar energy.",
+  "energy_generating": "Your energy is being generated...",
+  "back_to_home": "Back to Home",
   },
 
   'fr': {
@@ -302,6 +319,22 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
     'month': 'Mois',
 'twoWeeks': '2 Semaines',
 'week': 'Semaine',
+
+ "power_home_title": "Alimentez votre maison avec de l'énergie propre !",
+  "total_energy": "Énergie Totale",
+  "get_started_steps": "Commencez en 3 étapes",
+  "enter_energy_quantity": "Entrez la quantité d'énergie",
+  "enter_quantity_hint": "Entrez la quantité en KW",
+  "equivalent_coins": "Équivalent en Pièces : {coin}",
+  "enter_code": "Entrez votre code",
+  "payment_success": "Votre paiement a été traité avec succès. Merci d'avoir choisi l'énergie solaire propre !",
+  "check_email": "Vérifiez votre email pour les détails !",
+  "back": "Retour",
+  "next": "Suivant",
+  "purchase_successful": "Achat Réussi",
+  "purchased_amount": "Vous avez acheté {amount} kWh d'énergie solaire.",
+  "energy_generating": "Votre énergie est en cours de génération...",
+  "back_to_home": "Retour à l'Accueil"
   },
 };
 
