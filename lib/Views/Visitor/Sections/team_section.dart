@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TeamSection extends StatelessWidget {
@@ -103,8 +104,7 @@ class TeamSection extends StatelessWidget {
                   children: [
                     Icon(Icons.groups, color: Colors.white, size: titleFontSize),
                     SizedBox(width: screenWidth * 0.02),
-                    Text(
-                      "Who We Are?",
+                    Text(AppLocalizations.of(context)!.translate("whoWeAre"),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: titleFontSize,
@@ -115,16 +115,13 @@ class TeamSection extends StatelessWidget {
                 ),
                 SizedBox(height: containerSpacing),
                 Text(
-                  "We are a team of passionate engineers committed to creating innovative solutions for a sustainable future. "
-                  "Our mission is to revolutionize the energy landscape in Tunisia by offering a real, impactful solution that supports the environment. "
-                  "Through GreenEnergyChain, we aim to reduce reliance on fossil fuels, promote renewable energy, and empower communities "
-                  "with smart, decentralized energy systems. Together, we are shaping a greener, more sustainable world.",
+                    AppLocalizations.of(context)!.translate("aboutUs"),
                   style: TextStyle(color: Colors.white70, fontSize: contentFontSize),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: containerSpacing * 2),
                 Text(
-                  "Contact Us",
+  AppLocalizations.of(context)!.translate("contact_us"),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: titleFontSize,

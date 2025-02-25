@@ -217,6 +217,9 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
   "enterprise_users": "Enterprise Users",
   "carbon_footprint_certified": "Carbon Footprint Certified",
   "installed_solar_panels": "Installed Solar Panels",
+  "whoWeAre": "Who We Are?",
+  "aboutUs": "We are a team of passionate engineers committed to creating innovative solutions for a sustainable future. Our mission is to revolutionize the energy landscape in Tunisia by offering a real, impactful solution that supports the environment. Through GreenEnergyChain, we aim to reduce reliance on fossil fuels, promote renewable energy, and empower communities with smart, decentralized energy systems. Together, we are shaping a greener, more sustainable world.",
+"contact_us": "Contact Us"
 
 
 
@@ -440,10 +443,12 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
   
   "achievement_section_title": "Notre communauté GreenEnergyChain et ses réalisations",
   "regular_users": "Utilisateurs réguliers",
-  "enterprise_users": "Utilisateurs entreprise",
+  "enterprise_users": "Entreprises",
   "carbon_footprint_certified": "Empreinte carbone certifiée",
   "installed_solar_panels": "Panneaux solaires installés",
-   
+    "whoWeAre": "Qui sommes-nous ?",
+  "aboutUs": "Nous sommes une équipe d'ingénieurs passionnés, engagés à créer des solutions innovantes pour un avenir durable. Notre mission est de révolutionner le paysage énergétique en Tunisie en proposant une solution réelle et impactante qui soutient l’environnement. Grâce à GreenEnergyChain, nous visons à réduire la dépendance aux combustibles fossiles, promouvoir les énergies renouvelables et autonomiser les communautés avec des systèmes énergétiques intelligents et décentralisés. Ensemble, nous façonnons un monde plus vert et plus durable.",
+"contact_us": "Contactez-nous"
 },
 };
 
