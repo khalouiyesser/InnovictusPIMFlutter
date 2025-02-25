@@ -37,7 +37,8 @@ class AppLocalizations {
     // Actions & Buttons
     'save': 'Save',
     'logout': 'Logout',
-
+    'logoutmsg' : 'Do you really want to log out?',
+    'cancel' : 'Cancel',
      // Terms and Conditions Screen
     'termsTitle': 'Terms and Conditions',
     'understand': 'I Understand',
@@ -201,8 +202,9 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
     // Actions & Buttons
     'save': 'Enregistrer',
     'logout': 'Déconnexion',
+    'logoutmsg' : 'Voulez-vous vraiment vous déconnecter?',
+    'cancel' : 'Annuler',
 
-    
         // Terms and Conditions Screen
  'termsTitle': 'Conditions Générales',
     'understand': 'J\'ai Compris',
