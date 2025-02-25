@@ -175,6 +175,7 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
   "back_to_home": "Back to Home",
     'setEnergySalePercentage': 'Set the percentage of your energy reserved for sale',
 
+  "titleall": "All our Packs and Offers",
 
 "view_all_packs_offers": "View all packs & offers",
    "energy_intro_1": "For too long, energy has been controlled by ",
@@ -237,9 +238,9 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
   "co2_saved": "Fossil Fuel Avoided",
   "certification": "Certification",
   "solar_panels": "Solar Panels",
-  "pack_details_every": "Everything about {title}!"
-
-
+  "pack_details_every": "Everything about {title}!",
+  "search_hint": "Search Packs & Offers ...",
+  "no_results": "No results found"
 
 
 
@@ -479,7 +480,10 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
   "co2_saved": "Fossile Évitée",
   "certification": "Certification",
     "solar_panels": "Panneaux Solaires",
-  "pack_details_every": "Tout sur {title} !"
+  "pack_details_every": "Tout sur {title} !",
+ "search_hint": "Rechercher des Packs et Offres ...",
+  "no_results": "Aucun résultat trouvé",
+    "titleall": "Tous nos Packs et Offres",
 
 
 },
