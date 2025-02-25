@@ -195,10 +195,8 @@ Future<void> _showSwitchProfileDialog(BuildContext context, String profileName, 
           body: ListView(
             children: [
               ...viewModel.profilesSortedByCreationDate.map((profile) => ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: profile.imageUrl != null
-                      ? NetworkImage(profile.imageUrl!)
-                      : const AssetImage('assets/user.jpg') as ImageProvider,
+                leading: CircleAvatar(             backgroundImage: AssetImage('assets/user.jpg'),
+
                 ),
                 title: Text(profile.name),
                 subtitle: Text(
@@ -289,9 +287,8 @@ Future<void> _showSwitchProfileDialog(BuildContext context, String profileName, 
               else
                 ..._recentUsers.map((user) => ListTile(
                   leading: CircleAvatar(
-                    backgroundImage: user['photoURL'] != null
-                        ? NetworkImage(user['photoURL'])
-                        : const AssetImage('assets/user.jpg') as ImageProvider,
+                                 backgroundImage: AssetImage('assets/user.jpg'),
+
                     backgroundColor: Colors.grey.shade200,
                   ),
                   title: Text(user['name'] ?? 'Unknown User'),

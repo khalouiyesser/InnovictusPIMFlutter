@@ -137,17 +137,17 @@ class _DashboardPageState extends State<DashboardPage> {
                               shape: BoxShape.circle,
                               border: Border.all(
                                 color: theme.colorScheme.primary,
-                                width: screenWidth * 0.008,
+                                width: screenWidth * 0.005,
                               ),
                             ),
                             child: Consumer<ProfileSwitcherViewModel>(
                               builder: (context, viewModel, child) {
                                 if (viewModel.isLoading) {
                                   return SizedBox(
-                                    width: screenWidth * 0.12,
-                                    height: screenWidth * 0.12,
+                                    width: screenWidth * 0.10,
+                                    height: screenWidth * 0.10,
                                     child: CircularProgressIndicator(
-                                      strokeWidth: 2,
+                                      strokeWidth: 0,
                                       color: theme.colorScheme.primary,
                                     ),
                                   );
@@ -156,7 +156,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 return ProfileSwitcherDropdown(
                                   customRadius: screenWidth * 0.06,
                                   borderColor: theme.colorScheme.primary,
-                                  borderWidth: screenWidth * 0.008,
+                                  borderWidth: screenWidth * 0.006,
                                 );
                               },
                             ),
