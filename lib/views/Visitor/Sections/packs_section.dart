@@ -80,9 +80,8 @@ class _PacksSectionState extends State<PacksSection> {
           ),
           back: CardContent(
             text: pack.description,
-            buttonText: AppLocalizations.of(context).translate("details"),
+            signiUpButtont: AppLocalizations.of(context).translate("details"),
 
-            signiUpButtont: AppLocalizations.of(context).translate("get_it"),
 
             pack: pack,
           ),

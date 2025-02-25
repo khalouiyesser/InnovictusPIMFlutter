@@ -9,7 +9,6 @@ class CardContent extends StatelessWidget {
   final String? image;
   final String? title;
   final String? text;
-  final String? buttonText;
   final String? signiUpButtont;
     final String? selectButtont;
 
@@ -22,7 +21,6 @@ final Pack pack;
     this.image,
     this.title,
     this.text,
-    this.buttonText,
     this.signiUpButtont,
         this.selectButtont,
 
@@ -49,7 +47,6 @@ required this.pack,
         double availableHeight = cardHeight;
         if (image != null) availableHeight -= cardHeight * 0.70;
         if (title != null) availableHeight -= cardHeight * 0.15;
-        if (buttonText != null) availableHeight -= cardHeight * 0.15;
 
         final lineHeight = textStyle.fontSize! * textStyle.height!;
         final maxLines = (availableHeight / lineHeight).floor();
@@ -111,73 +108,23 @@ required this.pack,
                     ),
                   ),
                 ),
-              if (buttonText != null && signiUpButtont != null) ...[
+              if ( signiUpButtont != null) ...[
                 SizedBox(height: cardHeight * 0.01),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                     SizedBox(width: cardWidth * 0.02),
                     SizedBox(
-                      width: cardWidth * 0.37,
-                      height: cardHeight * 0.12,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFF29E33C),
-                              Color.fromARGB(255, 9, 128, 25)
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              PageRouteBuilder(
-                                pageBuilder:
-                                    (context, animation, secondaryAnimation) =>
-                                        PackDetails(pack: pack),
-                                transitionDuration: Duration.zero,
-                                reverseTransitionDuration: Duration.zero,
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            padding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Text(
-                            buttonText!,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: cardWidth * 0.08,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: cardWidth * 0.02),
-                    SizedBox(
-                      width: cardWidth * 0.35,
-                      height: cardHeight * 0.12,
+                     width: cardWidth * 0.5,
+                      height: cardHeight * 0.16,
                       child: OutlinedButton(
                         onPressed: () {
-                          Navigator.of(context).push(
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      RegisterView(packId: pack.id),
-                              transitionDuration: Duration.zero,
-                              reverseTransitionDuration: Duration.zero,
-                            ),
-                          );
-                        },
+                              Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PackDetails(pack: pack),
+      ),
+    );
+                          },
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(
                               color: Color(0xFF29E33C), width: 2),

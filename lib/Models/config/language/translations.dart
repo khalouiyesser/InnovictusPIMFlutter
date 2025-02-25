@@ -219,9 +219,25 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
   "installed_solar_panels": "Installed Solar Panels",
   "whoWeAre": "Who We Are?",
   "aboutUs": "We are a team of passionate engineers committed to creating innovative solutions for a sustainable future. Our mission is to revolutionize the energy landscape in Tunisia by offering a real, impactful solution that supports the environment. Through GreenEnergyChain, we aim to reduce reliance on fossil fuels, promote renewable energy, and empower communities with smart, decentralized energy systems. Together, we are shaping a greener, more sustainable world.",
-"contact_us": "Contact Us"
-
-
+"contact_us": "Contact Us",
+"pack_details": "Pack Details",
+  "title": "Title",
+  "description": "Description",
+  "price": "Price",
+  "duration": "Duration",
+  "features": "Features",
+  "select": "Select",
+  "available_packs": "Available Packs",
+  "subscribe": "Subscribe",
+  "confirm": "Confirm",
+  "loading": "Loading...",
+  "error_occurred": "An error occurred",
+  "try_again": "Try Again",
+  "energy_gain": "Energy Gained",
+  "co2_saved": "Fossil Fuel Avoided",
+  "certification": "Certification",
+  "solar_panels": "Solar Panels",
+  "pack_details_every": "Everything about {title}!"
 
 
 
@@ -448,7 +464,24 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
   "installed_solar_panels": "Panneaux solaires installés",
     "whoWeAre": "Qui sommes-nous ?",
   "aboutUs": "Nous sommes une équipe d'ingénieurs passionnés, engagés à créer des solutions innovantes pour un avenir durable. Notre mission est de révolutionner le paysage énergétique en Tunisie en proposant une solution réelle et impactante qui soutient l’environnement. Grâce à GreenEnergyChain, nous visons à réduire la dépendance aux combustibles fossiles, promouvoir les énergies renouvelables et autonomiser les communautés avec des systèmes énergétiques intelligents et décentralisés. Ensemble, nous façonnons un monde plus vert et plus durable.",
-"contact_us": "Contactez-nous"
+"contact_us": "Contactez-nous",
+"pack_details": "Détails du Pack",
+  "title": "Titre",
+  "description": "Description",
+  "price": "Prix",
+  "duration": "Durée",
+  "features": "Caractéristiques",
+  "select": "Sélectionner",
+  "available_packs": "Packs Disponibles",
+  "subscribe": "S'abonner",
+  "confirm": "Confirmer",
+  "energy_gain": "Énergie Gagnée",
+  "co2_saved": "Fossile Évitée",
+  "certification": "Certification",
+    "solar_panels": "Panneaux Solaires",
+  "pack_details_every": "Tout sur {title} !"
+
+
 },
 };
 
