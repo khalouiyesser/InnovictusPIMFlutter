@@ -212,6 +212,11 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
   "ready_to_leap": "Ready to take the leap? Tap \"Account Creation\" and start your energy revolution today!",
   "details": "Details",
   "get_it": "Get It",
+  "achievement_section_title": "Our GreenEnergyChain Community and Achievements",
+  "regular_users": "Regular Users",
+  "enterprise_users": "Enterprise Users",
+  "carbon_footprint_certified": "Carbon Footprint Certified",
+  "installed_solar_panels": "Installed Solar Panels",
 
 
 
@@ -432,7 +437,14 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
   "ready_to_leap": "Prêt à franchir le pas ? Appuyez sur \"Création de compte\" et commencez votre révolution énergétique dès aujourd'hui !",
   "details": "Détails",
   "get_it": "Obtenez-le",
-  },
+  
+  "achievement_section_title": "Notre communauté GreenEnergyChain et ses réalisations",
+  "regular_users": "Utilisateurs réguliers",
+  "enterprise_users": "Utilisateurs entreprise",
+  "carbon_footprint_certified": "Empreinte carbone certifiée",
+  "installed_solar_panels": "Panneaux solaires installés",
+   
+},
 };
 
   String translate(String key) {
