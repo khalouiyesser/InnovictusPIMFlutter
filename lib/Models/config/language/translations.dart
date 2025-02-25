@@ -206,6 +206,29 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
   "energy_revolution_title": "The Energy Revolution Starts Now !",
 
 
+"power_up_packs": "Power Up with Our Exclusive Packs",
+  "choose_perfect_plan": "Choose the Perfect Plan & Take Control of Your Energy!",
+  "flexible_solutions": "Flexible, transparent, and built for YOU! Whether you’re an individual, a business, or a large enterprise, GreenEnergyChain offers tailored solutions to maximize your energy efficiency and savings.",
+  "ready_to_leap": "Ready to take the leap? Tap \"Account Creation\" and start your energy revolution today!",
+  "details": "Details",
+  "get_it": "Get It",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   },
 
   'fr': {
@@ -403,7 +426,12 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
   "feature_blockchain": "La blockchain garantit des transactions 100% sécurisées et transparentes.",
   "feature_green_impact": "Obtenez une preuve certifiée de votre impact écologique et réduisez les émissions de carbone.",
   "energy_revolution_title": "La Révolution Énergétique Commence Maintenant !",
-
+"power_up_packs": "Boostez votre énergie avec nos packs exclusifs",
+  "choose_perfect_plan": "Choisissez le plan parfait et prenez le contrôle de votre énergie !",
+  "flexible_solutions": "Flexible, transparent et conçu pour VOUS ! Que vous soyez un particulier, une entreprise ou une grande société, GreenEnergyChain propose des solutions adaptées pour maximiser votre efficacité énergétique et vos économies.",
+  "ready_to_leap": "Prêt à franchir le pas ? Appuyez sur \"Création de compte\" et commencez votre révolution énergétique dès aujourd'hui !",
+  "details": "Détails",
+  "get_it": "Obtenez-le",
   },
 };
 

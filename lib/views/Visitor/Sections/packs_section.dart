@@ -1,6 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/ClientModels/packs.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/views/Visitor/packs_list.dart';
 import '../card_content.dart';
 import '../flip_card.dart';
@@ -79,8 +80,10 @@ class _PacksSectionState extends State<PacksSection> {
           ),
           back: CardContent(
             text: pack.description,
-            buttonText: 'Details',
-            signiUpButtont: 'Get It',
+            buttonText: AppLocalizations.of(context).translate("details"),
+
+            signiUpButtont: AppLocalizations.of(context).translate("get_it"),
+
             pack: pack,
           ),
         )).toList();
@@ -100,7 +103,8 @@ class _PacksSectionState extends State<PacksSection> {
               AnimatedTextKit(
                 animatedTexts: [
                   ColorizeAnimatedText(
-                    'Power Up with Our Exclusive Packs',
+AppLocalizations.of(context).translate("power_up_packs"),
+textAlign: TextAlign.center,
                     textStyle: TextStyle(
                       fontSize: titleFontSize, // Taille responsive
                       fontWeight: FontWeight.bold,
@@ -120,15 +124,15 @@ class _PacksSectionState extends State<PacksSection> {
                 children: [
                   _buildDescriptionRow(
                       Icons.bar_chart,
-                      'Choose the Perfect Plan & Take Control of Your Energy!',
+AppLocalizations.of(context).translate("choose_perfect_plan"),
                       screenWidth),
                   _buildDescriptionRow(
                       Icons.apartment,
-                      'Flexible, transparent, and built for YOU! Whether you’re an individual, a business, or a large enterprise, GreenEnergyChain offers tailored solutions to maximize your energy efficiency and savings.',
+AppLocalizations.of(context).translate("flexible_solutions"),
                       screenWidth),
                   _buildDescriptionRow(
                       Icons.rocket_launch,
-                      'Ready to take the leap? Tap "Account Creation" and start your energy revolution today!',
+AppLocalizations.of(context).translate("ready_to_leap"),
                       screenWidth),
                 ],
               ),
@@ -178,7 +182,7 @@ class _PacksSectionState extends State<PacksSection> {
                         ),
                       ),
                       child: Text(
-                        "View all packs & offers",
+AppLocalizations.of(context).translate("view_all_packs_offers"),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: contentFontSize, // Taille responsive
