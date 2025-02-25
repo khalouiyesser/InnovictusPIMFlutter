@@ -76,220 +76,227 @@ class _EditProfileState extends State<EditProfile> {
               // Contenu principal avec flou d'arrière-plan
               BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 70),
-                      // Image du profil et informations
-                      Stack(
+                child: SafeArea(
+                  child: LayoutBuilder(
+                  builder: (context, constraints) {   
+                                     physics: const AlwaysScrollableScrollPhysics();
+
+ return SingleChildScrollView(
+                      child: Column(
                         children: [
-                          const CircleAvatar(
-                            radius: 50,
-                            backgroundImage: AssetImage('assets/user.jpg'),
-                          ),
-                          Positioned(
-                            bottom: 5,
-                            right: 5,
-                            child: Container(
-                              padding: const EdgeInsets.all(3),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).iconTheme.color,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: const Color(0xFF29E33C),
-                                  width: 2,
+                          const SizedBox(height: 70),
+                          // Image du profil et informations
+                          Stack(
+                            children: [
+                              const CircleAvatar(
+                                radius: 50,
+                                backgroundImage: AssetImage('assets/user.jpg'),
+                              ),
+                              Positioned(
+                                bottom: 5,
+                                right: 5,
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).iconTheme.color,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: const Color(0xFF29E33C),
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: const Icon(Icons.check,
+                                      color: Colors.white, size: 14),
                                 ),
                               ),
-                              child: const Icon(Icons.check,
-                                  color: Colors.white, size: 14),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 15),
-                      currentUser == null
-                          ? const CircularProgressIndicator()
-                          : Text(
-                              currentUser!.name,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.normal,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.color,
-                              ),
-                            ),
-
-                      currentUser == null
-                          ? const CircularProgressIndicator()
-                          : Text(
-                              currentUser!.email ?? '',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.normal,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.color,
-                              ),
-                            ),
-
-                      const SizedBox(height: 5),
-
-                      const SizedBox(height: 30),
-
-                      _buildPreferencesCard(context),
-                      const SizedBox(height: 10),
-                      // Carte Preferences intégrée
-                      _buildProfileInformationsCard(context),
-                      const SizedBox(height: 10),
-
-                      _buildTermssCard(context),
-                      // Item Logout
-
-                      const SizedBox(height: 10),
-                      // Item Logout
-                     _buildMenuItem(
-  context,
-  icon: Icons.logout,
-  title: AppLocalizations.of(context).translate('logout'),
-  onTap: () async {
-    // Show confirmation dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        final dialogWidth = MediaQuery.of(context).size.width * 0.8;
-        final dialogHeight = MediaQuery.of(context).size.height * 0.3;
-        
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          child: Container(
-            width: dialogWidth,
-            height: dialogHeight,
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.8),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.2),
-                width: 1,
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                      AppLocalizations.of(context).translate("logout"),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: dialogWidth * 0.06,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: dialogHeight * 0.1),
-                Text(
-                      AppLocalizations.of(context).translate("logoutmsg"),
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: dialogWidth * 0.05,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: dialogHeight * 0.15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: dialogWidth * 0.35,
-                      height: dialogHeight * 0.15,
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(
-                            color: Color(0xFF29E33C),
-                            width: 2,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          padding: EdgeInsets.zero,
-                        ),
-                        child: Text(
-                      AppLocalizations.of(context).translate("cancel"),
-                          style: TextStyle(
-                            color: const Color(0xFF29E33C),
-                            fontSize: dialogWidth * 0.06,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                          const SizedBox(height: 15),
+                          currentUser == null
+                              ? const CircularProgressIndicator()
+                              : Text(
+                                  currentUser!.name,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.normal,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.color,
+                                  ),
+                                ),
+                    
+                          currentUser == null
+                              ? const CircularProgressIndicator()
+                              : Text(
+                                  currentUser!.email ?? '',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.normal,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.color,
+                                  ),
+                                ),
+                    
+                          const SizedBox(height: 5),
+                    
+                          const SizedBox(height: 30),
+                    
+                          _buildPreferencesCard(context),
+                          const SizedBox(height: 10),
+                          // Carte Preferences intégrée
+                          _buildProfileInformationsCard(context),
+                          const SizedBox(height: 10),
+                    
+                          _buildTermssCard(context),
+                          // Item Logout
+                    
+                          const SizedBox(height: 10),
+                          // Item Logout
+                         _buildMenuItem(
+                      context,
+                      icon: Icons.logout,
+                      title: AppLocalizations.of(context).translate('logout'),
+                      onTap: () async {
+                        // Show confirmation dialog
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            final dialogWidth = MediaQuery.of(context).size.width * 0.8;
+                            final dialogHeight = MediaQuery.of(context).size.height * 0.2;
+                            
+                            return Dialog(
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+                              child: Container(
+                                width: dialogWidth,
+                                height: dialogHeight,
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.8),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                    color: Colors.white.withOpacity(0.2),
+                    width: 1,
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                    Text(
+                          AppLocalizations.of(context).translate("logout"),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: dialogWidth * 0.06,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(width: dialogWidth * 0.04),
-                    SizedBox(
-                      width: dialogWidth * 0.35,
-                      height: dialogHeight * 0.15,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFF29E33C),
-                              Color.fromARGB(255, 9, 128, 25)
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            Navigator.pop(context); // Close dialog
-                            final sessionManager = SessionManager();
-                            
-                            // Clear the session
-                            await sessionManager.clearSession();
-                            
-                            // Navigate to welcome page and clear all previous routes
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) => LoginView()
+                    SizedBox(height: dialogHeight * 0.1),
+                    Text(
+                          AppLocalizations.of(context).translate("logoutmsg"),
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.7),
+                        fontSize: dialogWidth * 0.05,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: dialogHeight * 0.1),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: dialogWidth * 0.35,
+                          height: dialogHeight * 0.25,
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(
+                                color: Color(0xFF29E33C),
+                                width: 2,
                               ),
-                              (route) => false, // This removes all previous routes
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            padding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              padding: EdgeInsets.zero,
+                            ),
+                            child: Text(
+                          AppLocalizations.of(context).translate("cancel"),
+                              style: TextStyle(
+                                color: const Color(0xFF29E33C),
+                                fontSize: dialogWidth * 0.06,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: dialogWidth * 0.04),
+                        SizedBox(
+                          width: dialogWidth * 0.35,
+                          height: dialogHeight * 0.25,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color(0xFF29E33C),
+                                  Color.fromARGB(255, 9, 128, 25)
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
                               borderRadius: BorderRadius.circular(20),
                             ),
-                          ),
-                          child: Text(
-                      AppLocalizations.of(context).translate("logout"),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: dialogWidth * 0.06,
-                              fontWeight: FontWeight.bold,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                Navigator.pop(context); // Close dialog
+                                final sessionManager = SessionManager();
+                                
+                                // Clear the session
+                                await sessionManager.clearSession();
+                                
+                                // Navigate to welcome page and clear all previous routes
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder: (context) => LoginView()
+                                  ),
+                                  (route) => false, // This removes all previous routes
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                padding: EdgeInsets.zero,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: Text(
+                          AppLocalizations.of(context).translate("logout"),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: dialogWidth * 0.06,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  },
-),
-const SizedBox(height: 30),
-                    ],
-                  ),
-                ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 30),
+                        ],
+                      ),
+                  );
+       } ),
+        ),
               ),
             ],
           ),
