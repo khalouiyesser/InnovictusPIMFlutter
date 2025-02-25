@@ -39,6 +39,8 @@ class AppLocalizations {
     'logout': 'Logout',
     'logoutmsg' : 'Do you really want to log out?',
     'cancel' : 'Cancel',
+        'footerText': 'GreenEnergyChain. All rights reserved.',
+
      // Terms and Conditions Screen
     'termsTitle': 'Terms and Conditions',
     'understand': 'I Understand',
@@ -173,6 +175,36 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
   "back_to_home": "Back to Home",
     'setEnergySalePercentage': 'Set the percentage of your energy reserved for sale',
 
+
+"view_all_packs_offers": "View all packs & offers",
+   "energy_intro_1": "For too long, energy has been controlled by ",
+  "energy_intro_2": "monopoly.",
+
+  // Deuxième paragraphe
+  "energy_what_if_1": "What if ",
+  "energy_what_if_2": "YOU",
+  "energy_what_if_3": " could ",
+  "energy_what_if_4": "produce, sell, trade",
+  "energy_what_if_5": " renewable energy ",
+  "energy_what_if_6": "freely and securely ?",
+
+  // Troisième paragraphe
+  "green_energy_tagline": "⚡ GreenEnergy makes it possible ! ",
+
+  // Quatrième paragraphe
+  "tech_description_1": "With ",
+  "tech_description_2": "smart grids + blockchain ",
+  "tech_description_3": ", we are ",
+  "tech_description_4": "decentralizing ",
+  "tech_description_5": "Tunisia's energy market, empowering individuals and businesses to ",
+  "tech_description_6": "take control.",
+  "feature_steg": "No more reliance on STEG.",
+  "feature_selling": "Sell your excess solar energy directly to others.",
+  "feature_ai_iot": "AI + IoT optimize energy flow in real-time.",
+  "feature_blockchain": "Blockchain ensures 100% secure & transparent transactions.",
+  "feature_green_impact": "Earn certified proof of your green impact & reduce carbon emissions."
+
+
   },
 
   'fr': {
@@ -204,6 +236,7 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
     'logout': 'Déconnexion',
     'logoutmsg' : 'Voulez-vous vraiment vous déconnecter?',
     'cancel' : 'Annuler',
+    'footerText': 'GreenEnergyChain. Tous droits réservés.',
 
         // Terms and Conditions Screen
  'termsTitle': 'Conditions Générales',
@@ -340,6 +373,34 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
   "energy_generating": "Votre énergie est en cours de génération...",
   "back_to_home": "Retour à l'Accueil",
     'setEnergySalePercentage': 'Définissez le pourcentage de votre énergie réservé à la vente',
+
+    "view_all_packs_offers": "Voir tous les packs et offres",
+  "energy_intro_1": "Pendant trop longtemps, l'énergie a été contrôlée par un ",
+  "energy_intro_2": "monopole.",
+
+  // Deuxième paragraphe
+  "energy_what_if_1": "Et si ",
+  "energy_what_if_2": "VOUS",
+  "energy_what_if_3": " pouviez ",
+  "energy_what_if_4": "produire, vendre, échanger",
+  "energy_what_if_5": " de l'énergie renouvelable ",
+  "energy_what_if_6": "librement et en toute sécurité ?",
+
+  // Troisième paragraphe
+  "green_energy_tagline": "⚡ GreenEnergy rend cela possible ! ",
+
+  // Quatrième paragraphe
+  "tech_description_1": "Avec les ",
+  "tech_description_2": "réseaux intelligents + la blockchain ",
+  "tech_description_3": ", nous ",
+  "tech_description_4": "décentralisons ",
+  "tech_description_5": "le marché de l'énergie en Tunisie, permettant aux individus et aux entreprises de ",
+  "tech_description_6": "prendre le contrôle.",
+ "feature_steg": "Plus de dépendance à la STEG.",
+  "feature_selling": "Vendez votre excédent d'énergie solaire directement à d'autres.",
+  "feature_ai_iot": "L'IA + l'IoT optimisent le flux d'énergie en temps réel.",
+  "feature_blockchain": "La blockchain garantit des transactions 100% sécurisées et transparentes.",
+  "feature_green_impact": "Obtenez une preuve certifiée de votre impact écologique et réduisez les émissions de carbone.",
 
   },
 };
