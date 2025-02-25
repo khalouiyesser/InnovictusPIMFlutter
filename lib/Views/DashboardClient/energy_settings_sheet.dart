@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
+import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:provider/provider.dart';
 
 class EnergySettingsSheet extends StatefulWidget {
@@ -46,6 +48,9 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider =
+        Provider.of<LanguageProvider>(context, listen: false);
+  
     final theme = Theme.of(context);
 
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -96,11 +101,13 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Set Your Energy Sale Percentage',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontSize: screenWidth * 0.05,
+                        AppLocalizations.of(context).translate("setEnergySalePercentage"),
+                        textAlign:TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontSize: screenWidth * 0.05,
+              ),
             ),
-          ),
+          
 
           SizedBox(height: screenHeight * 0.03), // 3% de la hauteur de l'écran
           Row(
@@ -116,9 +123,9 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
                 ),
                 onPressed: () {
                   setState(() {
-                    if (_energyPercentage < 100) {
-                      _energyPercentage -= 5;
-                    }
+                     if (_energyPercentage > 0) {
+        _energyPercentage -= 5;
+      }
                   });
                 },
               ),

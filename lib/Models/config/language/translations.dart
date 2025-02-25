@@ -170,6 +170,8 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
   "purchased_amount": "You have purchased {amount} kWh of solar energy.",
   "energy_generating": "Your energy is being generated...",
   "back_to_home": "Back to Home",
+    'setEnergySalePercentage': 'Set the percentage of your energy reserved for sale',
+
   },
 
   'fr': {
@@ -334,7 +336,9 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
   "purchase_successful": "Achat Réussi",
   "purchased_amount": "Vous avez acheté {amount} kWh d'énergie solaire.",
   "energy_generating": "Votre énergie est en cours de génération...",
-  "back_to_home": "Retour à l'Accueil"
+  "back_to_home": "Retour à l'Accueil",
+    'setEnergySalePercentage': 'Définissez le pourcentage de votre énergie réservé à la vente',
+
   },
 };
 
