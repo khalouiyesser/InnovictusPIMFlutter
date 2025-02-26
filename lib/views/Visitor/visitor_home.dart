@@ -232,13 +232,12 @@ class _VisitorPageState extends State<VisitorPage> {
                         color: Colors.transparent,
                         child: InkWell(
                           customBorder: const CircleBorder(),
-                          onTap: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LoginView()),
-                            );
-                          },
+                         onTap: () {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => LoginView()),
+  );
+},
                           child: const Center(
                             child: Icon(
                               Icons.login,

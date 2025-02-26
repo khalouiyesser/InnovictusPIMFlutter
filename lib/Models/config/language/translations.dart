@@ -240,7 +240,20 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
   "solar_panels": "Solar Panels",
   "pack_details_every": "Everything about {title}!",
   "search_hint": "Search Packs & Offers ...",
-  "no_results": "No results found"
+  "no_results": "No results found",
+   'login': 'Login',
+      'forgotPassword': 'Forgot Password?',
+      'loginWithGoogle': 'Login with Google',
+      'noAccountYet': 'You don\'t have an account yet?',
+      'signUp': 'sign up',
+      // Error Messages
+      'emailRequired': 'Email is required',
+      'emailInvalid': 'Invalid email format',
+      'passwordRequired': 'Password is required',
+      'passwordTooShort': 'Password must be at least 6 characters',
+      'loginFailed': 'Login failed',
+      'checkCredentials': 'Check your credentials',
+      'connectionError': 'Connection error',
 
 
 
@@ -484,7 +497,20 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
  "search_hint": "Rechercher des Packs et Offres ...",
   "no_results": "Aucun résultat trouvé",
     "titleall": "Tous nos Packs et Offres",
-
+'login': 'Connexion',
+      'forgotPassword': 'Mot de passe oublié?',
+      'loginWithGoogle': 'Connexion avec Google',
+      'noAccountYet': 'Vous n\'avez pas encore de compte?',
+      'signUp': 's\'inscrire',
+      
+      // Error Messages
+      'emailRequired': 'L\'email est requis',
+      'emailInvalid': 'Format d\'email invalide',
+      'passwordRequired': 'Le mot de passe est requis',
+      'passwordTooShort': 'Le mot de passe doit contenir au moins 6 caractères',
+      'loginFailed': 'Échec de la connexion',
+      'checkCredentials': 'Vérifiez vos identifiants',
+      'connectionError': 'Erreur de connexion',
 
 },
 };
