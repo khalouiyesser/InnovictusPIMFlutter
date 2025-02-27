@@ -315,7 +315,10 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
   "verifyCode": "Verify the code",
   "codeNotReceived": "You have not received the code?",
   "resend": "Resend",
-  "incorrectCode": "Incorrect code, please try again."
+  "incorrectCode": "Incorrect code, please try again.",
+   "enterNewPassword": "Enter New Password",
+  "passwordsDoNotMatch": "Passwords do not match!",
+  "passwordRequireNumber": "Password must contain at least one number!",
 
 
 
@@ -639,7 +642,10 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
   "verifyCode": "Vérifier le code",
   "codeNotReceived": "Vous n'avez pas reçu le code ?",
   "resend": "Renvoyer",
-  "incorrectCode": "Code incorrect, veuillez réessayer."
+  "incorrectCode": "Code incorrect, veuillez réessayer.",
+  "enterNewPassword": "Entrer le nouveau mot de passe",
+  "passwordsDoNotMatch": "Les mots de passe ne correspondent pas !",
+  "passwordRequireNumber": "Le mot de passe doit contenir au moins un chiffre !"
 
 },
 };
