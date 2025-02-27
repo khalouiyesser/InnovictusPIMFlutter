@@ -585,13 +585,14 @@ class _RegisterViewState extends State<RegisterView>
     bool obscureText = false,
     required double screenWidth,
   }) {
-    bool isPassword = hintText.toLowerCase().contains('password');
-
+     bool isPassword = hintText.toLowerCase().contains(
+      AppLocalizations.of(context).translate('password').toLowerCase()
+    );
     return TextField(
       controller: controller,
       onChanged: onChanged,
       obscureText: isPassword
-          ? (hintText == "Password"
+          ? (hintText == AppLocalizations.of(context).translate('password')
               ? !_isPasswordVisible
               : !_isConfirmPasswordVisible)
           : false,
@@ -637,7 +638,7 @@ class _RegisterViewState extends State<RegisterView>
         suffixIcon: isPassword
             ? IconButton(
                 icon: Icon(
-                  hintText == "Password"
+                  hintText == AppLocalizations.of(context).translate('password')
                       ? (_isPasswordVisible
                           ? Icons.visibility
                           : Icons.visibility_off)
@@ -648,7 +649,7 @@ class _RegisterViewState extends State<RegisterView>
                 ),
                 onPressed: () {
                   setState(() {
-                    if (hintText == "Password") {
+                    if (hintText == AppLocalizations.of(context).translate('password')) {
                       _isPasswordVisible = !_isPasswordVisible;
                     } else {
                       _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
