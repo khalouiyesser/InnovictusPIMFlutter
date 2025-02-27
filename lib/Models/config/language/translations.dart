@@ -302,7 +302,15 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
       'panelsCount': 'panels',
       'energyGain': 'energy gain',
       'co2Saved': 'CO2 saved',
-
+ "enterEmail": "Enter your email",
+  "enterPhone": "Enter your phone number",
+  "sendOtpSms": "Send OTP via SMS",
+  "sendOtpEmail": "Send OTP via Email",
+  "continueButton": "Continue",
+  "backToLogin": "Back To Login",
+  "invalidEmail1": "Invalid email format",
+  "invalidPhone": "Invalid phone number",
+  "missingData": "Missing data"
 
 
 
@@ -615,6 +623,15 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
       'panelsCount': 'panneaux',
       'energyGain': 'gain d\'énergie',
       'co2Saved': 'CO2 économisé',
+      "enterEmail": "Entrez votre email",
+  "enterPhone": "Entrez votre numéro de téléphone",
+  "sendOtpSms": "Envoyer OTP par SMS",
+  "sendOtpEmail": "Envoyer OTP par Email",
+  "continueButton": "Continuer",
+  "backToLogin": "Retour à la connexion",
+  "invalidEmail1": "Format d'email invalide",
+  "invalidPhone": "Numéro de téléphone invalide",
+  "missingData": "Données manquantes"
 
 },
 };
