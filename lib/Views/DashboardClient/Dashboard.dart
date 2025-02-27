@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:piminnovictus/Models/User.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
+import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/DashboardClient/Wallet.dart';
 import 'package:piminnovictus/Views/DashboardClient/energy_settings_sheet.dart';
@@ -99,6 +101,8 @@ class _DashboardPageState extends State<DashboardPage> {
     final theme = Theme.of(context);
     // On récupère le provider pour pouvoir l'utiliser si besoin
     final themeProvider = Provider.of<ThemeProvider>(context);
+  final languageProvider =
+        Provider.of<LanguageProvider>(context, listen: false);
 
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
@@ -133,17 +137,17 @@ class _DashboardPageState extends State<DashboardPage> {
                               shape: BoxShape.circle,
                               border: Border.all(
                                 color: theme.colorScheme.primary,
-                                width: screenWidth * 0.008,
+                                width: screenWidth * 0.005,
                               ),
                             ),
                             child: Consumer<ProfileSwitcherViewModel>(
                               builder: (context, viewModel, child) {
                                 if (viewModel.isLoading) {
                                   return SizedBox(
-                                    width: screenWidth * 0.12,
-                                    height: screenWidth * 0.12,
+                                    width: screenWidth * 0.10,
+                                    height: screenWidth * 0.10,
                                     child: CircularProgressIndicator(
-                                      strokeWidth: 2,
+                                      strokeWidth: 0,
                                       color: theme.colorScheme.primary,
                                     ),
                                   );
@@ -152,7 +156,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 return ProfileSwitcherDropdown(
                                   customRadius: screenWidth * 0.06,
                                   borderColor: theme.colorScheme.primary,
-                                  borderWidth: screenWidth * 0.008,
+                                  borderWidth: screenWidth * 0.006,
                                 );
                               },
                             ),
@@ -163,7 +167,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Welcome Back!',
+  AppLocalizations.of(context).translate('welcomeBack'),
                                   style: theme.textTheme.titleMedium
                                       ?.copyWith(fontSize: screenWidth * 0.04),
                                 ),
@@ -191,6 +195,8 @@ class _DashboardPageState extends State<DashboardPage> {
                       BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
                         builder: (context, state) {
                           if (state is WeatherBlocSuccess) {
+                                                              final translations = AppLocalizations.of(context);
+
                             return Padding(
                               padding:
                                   EdgeInsets.symmetric(horizontal: padding),
@@ -237,6 +243,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
                         builder: (context, state) {
                           if (state is WeatherBlocSuccess) {
+
                             return Padding(
                               padding:
                                   EdgeInsets.symmetric(horizontal: padding),
@@ -281,7 +288,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               children: [
                                 SizedBox(height: screenHeight * 0.02),
                                 Text(
-                                  'Energy Usages',
+  AppLocalizations.of(context).translate('energyUsages'),
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     fontSize: 16,
                                     color: theme.textTheme.titleMedium?.color
@@ -332,13 +339,20 @@ class _DashboardPageState extends State<DashboardPage> {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           children: [
-                            _buildInfoCard(context, 'Total Energy', '36.2 Kwh',
+                            _buildInfoCard(context, AppLocalizations.of(context).translate('totalEnergy'), 
+  '36.2 ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.lightbulb),
-                            _buildInfoCard(context, 'Consumed', '28.2 Kwh',
-                                Icons.flash_on),
-                            _buildInfoCard(context, 'Capacity', '42.0 Kwh',
+                            _buildInfoCard(
+  context, 
+  AppLocalizations.of(context).translate('consumed'), 
+  '28.2 ${AppLocalizations.of(context).translate('kwh')}',
+  Icons.flash_on
+),
+                            _buildInfoCard(context,  AppLocalizations.of(context).translate('capacity'), 
+  '42.0 ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.battery_full),
-                            _buildInfoCard(context, 'CO2 Reduction', '28.2 Kwh',
+                            _buildInfoCard(context,  AppLocalizations.of(context).translate('co2Reduction'), 
+  '28.2 ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.eco),
                           ],
                         ),
@@ -443,7 +457,7 @@ class _DashboardPageState extends State<DashboardPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Electricity Generated by Solar",
+  AppLocalizations.of(context).translate('electricityGenerated'),
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 // import 'package:visibility_detector/visibility_detector.dart';
 
@@ -50,8 +51,8 @@ class _AchievementSectionState extends State<AchievementSection> {
             ),
             child: Column(
               children: [
-                const Text(
-                  "Our GreenEnergyChain Community and Achievements",
+                 Text(
+AppLocalizations.of(context)!.translate("achievement_section_title"),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,
@@ -68,10 +69,14 @@ class _AchievementSectionState extends State<AchievementSection> {
                   mainAxisSpacing: 20,
                   childAspectRatio: 3 / 2,
                   children: [
-                    AchievementCard(count: 520, label: "Regular Users", isVisible: _isVisible),
-                    AchievementCard(count: 120, label: "Enterprise Users", isVisible: _isVisible),
-                    AchievementCard(count: 100, label: "Carbon Footprint Certified", isVisible: _isVisible),
-                    AchievementCard(count: 10000, label: "Installed Solar Panels", isVisible: _isVisible),
+                    AchievementCard(count: 520, label: AppLocalizations.of(context)!.translate("regular_users"),
+ isVisible: _isVisible),
+                    AchievementCard(count: 120, label:AppLocalizations.of(context)!.translate("enterprise_users"),
+ isVisible: _isVisible),
+                    AchievementCard(count: 100, label: AppLocalizations.of(context)!.translate("carbon_footprint_certified"),
+ isVisible: _isVisible),
+                    AchievementCard(count: 10000, label: AppLocalizations.of(context)!.translate("installed_solar_panels"),
+ isVisible: _isVisible),
                   ],
                 ),
               ],

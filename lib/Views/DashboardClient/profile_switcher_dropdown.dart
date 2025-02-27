@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/ClientModels/profile.dart';
 import 'package:piminnovictus/Models/User.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
+import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/DashboardClient/all_profiles_view.dart';
 import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
@@ -169,10 +171,8 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundImage: profile.imageUrl != null
-                ? NetworkImage(profile.imageUrl!)
-                : const AssetImage('assets/user.jpg') as ImageProvider,
-          ),
+             backgroundImage: AssetImage('assets/user.jpg'),
+),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -222,9 +222,8 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
           children: [
             CircleAvatar(
               radius: 20,
-              backgroundImage: profile.imageUrl != null
-                  ? NetworkImage(profile.imageUrl!)
-                  : const AssetImage('assets/user.jpg') as ImageProvider,
+                           backgroundImage: AssetImage('assets/user.jpg'),
+
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -257,6 +256,9 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
   }
 
   Widget _buildViewAllProfilesButton(BuildContext context, bool isDark) {
+      final languageProvider =
+        Provider.of<LanguageProvider>(context, listen: false);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -279,7 +281,7 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Text(
-              'Voir tous les profils',
+AppLocalizations.of(context).translate('viewAllProfiles'),
               style: TextStyle(
                 fontSize: 16,
                 color: MyThemes.primaryColor,

@@ -282,7 +282,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:piminnovictus/Models/ClientModels/packs.dart';
-import 'package:piminnovictus/Services/payment_service.dart';
+import 'package:piminnovictus/Services/payment_service%20.dart';
 import 'package:piminnovictus/Views/Visitor/card_content.dart';
 import 'package:piminnovictus/Views/Visitor/flip_card.dart';
 import 'package:piminnovictus/Views/stripe.dart';
@@ -304,7 +304,7 @@ class SubscriptionCarousel extends StatefulWidget {
 class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
   final List<Pack> packs = [
     Pack(
-      id: '67bbcb92c538c6915580df58',
+      id: '67bf583d11b99e1b6875689f',
       title: 'Basic Pack',
       image: 'assets/panel.png',
       description: 'Unlock energy potential...',
@@ -315,7 +315,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       certification: 'ISO Certified',
     ),
     Pack(
-      id: '67bbcb92c538c6915580df58',
+      id: '67bf583d11b99e1b6875689f',
       title: 'Advanced Pack',
       image: 'assets/background.jpg',
       description: 'Track energy live.',
@@ -326,7 +326,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       certification: 'ISO Certified',
     ),
     Pack(
-      id: '67bbcb92c538c6915580df58',
+      id: '67bf583d11b99e1b6875689f',
       title: 'Advanced Pack',
       image: 'assets/background.jpg',
       description: 'Track energy live.',
@@ -337,7 +337,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       certification: 'ISO Certified',
     ),
     Pack(
-      id: '67bbcb92c538c6915580df58',
+      id: '67bf583d11b99e1b6875689f',
       title: 'Advanced Pack',
       image: 'assets/background.jpg',
       description: 'Track energy live.',
@@ -416,7 +416,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
         final success = await _viewModel.updatePackForPendingSignup();
 
         if (success) {
-          String packId = "67bbcbabc538c6915580df5a";
+          String packId = "67bf583d11b99e1b6875689f";
           String pendingSignupId = widget.pendingSignupId;
           PaymentService.openPayment(context, packId, pendingSignupId);
         } else {

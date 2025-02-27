@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Views/AuthViews/login_view.dart';
 import 'package:piminnovictus/Views/Visitor/Sections/packs_section.dart';
@@ -42,7 +43,7 @@ class IntroductionSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 
-                SizedBox(height: screenWidth * 0.06),
+                SizedBox(height: screenWidth * 0.04),
 
                 Center(
                   child: InkWell(
@@ -60,7 +61,7 @@ class IntroductionSection extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        "View all packs & offers",
+  AppLocalizations.of(context).translate("view_all_packs_offers"),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: contentFontSize,
@@ -76,7 +77,7 @@ class IntroductionSection extends StatelessWidget {
                 // Main Title
                 Center(
                   child: Text(
-                    'The Energy Revolution Starts Now !',
+  AppLocalizations.of(context).translate("energy_revolution_title"),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
@@ -103,7 +104,7 @@ class IntroductionSection extends StatelessWidget {
                       // Rich Text Content
                       Text.rich(
                         TextSpan(
-                          children: _buildResponsiveTextSpans(contentFontSize),
+                          children: _buildResponsiveTextSpans(context ,contentFontSize),
                         ),
                       ),
 
@@ -126,7 +127,7 @@ class IntroductionSection extends StatelessWidget {
                       SizedBox(height: screenWidth * 0.04),
 
                       // Feature List
-                      _buildFeatureList(screenWidth),
+                      _buildFeatureList(context,screenWidth),
                     ],
                   ),
                 ),
@@ -172,14 +173,14 @@ Widget _buildLanguageDropdown(BuildContext context) {
     },
   );
 }
-  List<TextSpan> _buildResponsiveTextSpans(double fontSize) {
+  List<TextSpan> _buildResponsiveTextSpans(BuildContext context, double fontSize) {
     return [
       TextSpan(
-        text: 'For too long, energy has been controlled by ',
+      text: AppLocalizations.of(context).translate("energy_intro_1"),
         style: TextStyle(color: Colors.white, fontSize: fontSize, height: 1.1),
       ),
       TextSpan(
-        text: 'monopoly.\n',
+      text: AppLocalizations.of(context).translate("energy_intro_2") + "\n",
         style: TextStyle(
           color: Colors.white,
           fontSize: fontSize,
@@ -187,11 +188,11 @@ Widget _buildLanguageDropdown(BuildContext context) {
         ),
       ),
       TextSpan(
-        text: 'What if ',
+      text: AppLocalizations.of(context).translate("energy_what_if_1"),
         style: TextStyle(color: Colors.white, fontSize: fontSize),
       ),
       TextSpan(
-        text: 'YOU',
+      text: AppLocalizations.of(context).translate("energy_what_if_2"),
         style: TextStyle(
           color: Colors.white,
           fontSize: fontSize,
@@ -199,11 +200,11 @@ Widget _buildLanguageDropdown(BuildContext context) {
         ),
       ),
       TextSpan(
-        text: ' could ',
+      text: AppLocalizations.of(context).translate("energy_what_if_3"),
         style: TextStyle(color: Colors.white, fontSize: fontSize),
       ),
       TextSpan(
-        text: 'produce, sell, trade',
+      text: AppLocalizations.of(context).translate("energy_what_if_4"),
         style: TextStyle(
           color: Colors.white,
           fontSize: fontSize,
@@ -211,11 +212,11 @@ Widget _buildLanguageDropdown(BuildContext context) {
         ),
       ),
       TextSpan(
-        text: ' renewable energy ',
+      text: AppLocalizations.of(context).translate("energy_what_if_5"),
         style: TextStyle(color: Colors.white, fontSize: fontSize),
       ),
       TextSpan(
-        text: 'freely and securely ?\n',
+      text: AppLocalizations.of(context).translate("energy_what_if_6") + "\n",
         style: TextStyle(
           color: Colors.white,
           fontSize: fontSize,
@@ -223,7 +224,7 @@ Widget _buildLanguageDropdown(BuildContext context) {
         ),
       ),
       TextSpan(
-        text: '⚡ GreenEnergy makes it possible ! ',
+      text: AppLocalizations.of(context).translate("green_energy_tagline"),
         style: TextStyle(
           color: Colors.white,
           fontSize: fontSize,
@@ -235,11 +236,11 @@ Widget _buildLanguageDropdown(BuildContext context) {
         style: TextStyle(color: Colors.white, fontSize: fontSize),
       ),
       TextSpan(
-        text: 'With ',
+      text: AppLocalizations.of(context).translate("tech_description_1"),
         style: TextStyle(color: Colors.white, fontSize: fontSize),
       ),
       TextSpan(
-        text: 'smart grids + blockchain ',
+      text: AppLocalizations.of(context).translate("tech_description_2"),
         style: TextStyle(
           color: Colors.white,
           fontSize: fontSize,
@@ -247,11 +248,11 @@ Widget _buildLanguageDropdown(BuildContext context) {
         ),
       ),
       TextSpan(
-        text: ', we are ',
+      text: AppLocalizations.of(context).translate("tech_description_3"),
         style: TextStyle(color: Colors.white, fontSize: fontSize),
       ),
       TextSpan(
-        text: 'decentralizing ',
+      text: AppLocalizations.of(context).translate("tech_description_4"),
         style: TextStyle(
           color: Colors.white,
           fontSize: fontSize,
@@ -259,12 +260,12 @@ Widget _buildLanguageDropdown(BuildContext context) {
         ),
       ),
       TextSpan(
-        text:
-            'Tunisia’s energy market, empowering individuals and businesses to ',
+        
+      text: AppLocalizations.of(context).translate("tech_description_5"),
         style: TextStyle(color: Colors.white, fontSize: fontSize),
       ),
       TextSpan(
-        text: 'take control.',
+      text: AppLocalizations.of(context).translate("tech_description_6"),
         style: TextStyle(
           color: Colors.white,
           fontSize: fontSize,
@@ -274,7 +275,7 @@ Widget _buildLanguageDropdown(BuildContext context) {
     ];
   }
 
-  Widget _buildFeatureList(double screenWidth) {
+  Widget _buildFeatureList(BuildContext context, double screenWidth) {
     final iconSize = screenWidth * 0.055; // Taille des icônes responsive
     final fontSize = screenWidth * 0.04; // Taille du texte responsive
     final spacing = screenWidth * 0.02; // Espacement responsive
@@ -285,7 +286,7 @@ Widget _buildLanguageDropdown(BuildContext context) {
         // Feature 1: Energy independence
         _buildFeatureRow(
           Icons.power_off,
-          "No more reliance on STEG.",
+        AppLocalizations.of(context).translate("feature_steg"),
           iconSize,
           fontSize,
         ),
@@ -294,7 +295,7 @@ Widget _buildLanguageDropdown(BuildContext context) {
         // Feature 2: Selling energy
         _buildFeatureRow(
           Icons.attach_money,
-          "Sell your excess solar energy directly to others.",
+        AppLocalizations.of(context).translate("feature_selling"),
           iconSize,
           fontSize,
         ),
@@ -303,7 +304,7 @@ Widget _buildLanguageDropdown(BuildContext context) {
         // Feature 3: AI + IoT
         _buildFeatureRow(
           Icons.memory,
-          "AI + IoT optimize energy flow in real-time.",
+        AppLocalizations.of(context).translate("feature_ai_iot"),
           iconSize,
           fontSize,
         ),
@@ -312,7 +313,7 @@ Widget _buildLanguageDropdown(BuildContext context) {
         // Feature 4: Blockchain security
         _buildFeatureRow(
           Icons.lock,
-          "Blockchain ensures 100% secure & transparent transactions.",
+        AppLocalizations.of(context).translate("feature_blockchain"),
           iconSize,
           fontSize,
         ),
@@ -321,7 +322,7 @@ Widget _buildLanguageDropdown(BuildContext context) {
         // Feature 5: Green impact
         _buildFeatureRow(
           Icons.eco,
-          "Earn certified proof of your green impact & reduce carbon emissions.",
+        AppLocalizations.of(context).translate("feature_green_impact"),
           iconSize,
           fontSize,
         ),

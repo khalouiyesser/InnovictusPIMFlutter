@@ -225,6 +225,7 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/ClientModels/packs.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Views/AuthViews/RegisterView.dart';
 
 class PackDetails extends StatelessWidget {
@@ -238,7 +239,9 @@ class PackDetails extends StatelessWidget {
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(
-          "${pack.title} Details",
+AppLocalizations.of(context)!
+    .translate("pack_details")
+    .replaceAll("{title}", pack.title),
           style: TextStyle(
             color: Colors.white,
             fontSize: 20, // Fixed size for app bar title
@@ -313,7 +316,8 @@ class PackDetails extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildButton(
-                      text: "Get it",
+                      text:AppLocalizations.of(context)!.translate("subscribe"),
+
                       width: buttonWidth,
                       height: buttonHeight,
                       color: Colors.transparent,
@@ -343,8 +347,9 @@ class PackDetails extends StatelessWidget {
                   padding: EdgeInsets.only(bottom: basePadding * 0.5),
                   child: Center(
                     child: Text(
-                      "Everything about ${pack.title} !",
-                      textAlign: TextAlign.center,
+AppLocalizations.of(context)!
+    .translate("pack_details_every")
+    .replaceAll("{title}", pack.title),
                       style: TextStyle(
                         fontSize: titleFontSize * 0.8,
                         fontWeight: FontWeight.bold,
@@ -364,20 +369,15 @@ class PackDetails extends StatelessWidget {
                     padding: EdgeInsets.all(basePadding),
                     child: Column(
                       children: [
-                        _buildTableRow("💰 Prix :", pack.price.toString(),
-                            descriptionFontSize),
+                        _buildTableRow("💰 ${AppLocalizations.of(context)!.translate("price")} :", pack.price.toString(), descriptionFontSize),
                         _buildDivider(),
-                        _buildTableRow("🔆 Panneaux Solaires :",
-                            pack.panelsCount, descriptionFontSize),
+                        _buildTableRow("🔆 ${AppLocalizations.of(context)!.translate("solar_panels")} :", pack.panelsCount, descriptionFontSize),
                         _buildDivider(),
-                        _buildTableRow("⚡ Énergie Gagnée :", pack.energyGain,
-                            descriptionFontSize),
+                        _buildTableRow( "⚡ ${AppLocalizations.of(context)!.translate("energy_gain")} :", pack.energyGain, descriptionFontSize),
                         _buildDivider(),
-                        _buildTableRow("🌍 Fossile Évitée :", pack.co2Saved,
-                            descriptionFontSize),
+                        _buildTableRow("🌍 ${AppLocalizations.of(context)!.translate("co2_saved")} :", pack.co2Saved, descriptionFontSize),
                         _buildDivider(),
-                        _buildTableRow("✅ Certification :", pack.certification,
-                            descriptionFontSize),
+                        _buildTableRow("✅ ${AppLocalizations.of(context)!.translate("certification")} :", pack.certification, descriptionFontSize),
                       ],
                     ),
                   ),

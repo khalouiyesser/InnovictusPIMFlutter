@@ -12,7 +12,7 @@ class SubscriptionViewModel extends ChangeNotifier {
 
   SubscriptionViewModel({required this.pendingSignupId}) : api = Const().url {
     // Initialize with static pack ID
-    selectedPackId = "67bbcb92c538c6915580df58";
+    selectedPackId = "67bf583d11b99e1b6875689f";
   }
 
   Future<bool> updatePackForPendingSignup() async {
@@ -21,8 +21,9 @@ class SubscriptionViewModel extends ChangeNotifier {
       notifyListeners();
 
       // Construct the URL properly without quotes around the packId
-      final url = '$api/auth/pending-signup/$pendingSignupId/pack/$selectedPackId';
-      
+      final url =
+          '$api/auth/pending-signup/$pendingSignupId/pack/$selectedPackId';
+
       // Debug print
       print('Making API call to URL: $url');
       print('Selected Pack ID: $selectedPackId');
@@ -40,11 +41,13 @@ class SubscriptionViewModel extends ChangeNotifier {
 
       final responseData = json.decode(response.body);
 
-      if (response.statusCode == 200 && responseData['message'] == 'Pack updated successfully') {
+      if (response.statusCode == 200 &&
+          responseData['message'] == 'Pack updated successfully') {
         error = null;
         return true;
       } else {
-        error = responseData['message'] ?? 'Failed to update pack. Please try again.';
+        error = responseData['message'] ??
+            'Failed to update pack. Please try again.';
         notifyListeners();
         return false;
       }
@@ -60,14 +63,14 @@ class SubscriptionViewModel extends ChangeNotifier {
   }
 
   void selectPack(String packId) {
-    selectedPackId = "67bbcb92c538c6915580df58";  // Always use static ID
+    selectedPackId = "67bf583d11b99e1b6875689f"; // Always use static ID
     print('Pack selected: $selectedPackId'); // Debug print
     error = null;
     notifyListeners();
   }
 
   bool isPackSelected(String packId) {
-    return selectedPackId == "67bbcb92c538c6915580df58";
+    return selectedPackId == "67bf583d11b99e1b6875689f";
   }
 
   void clearError() {

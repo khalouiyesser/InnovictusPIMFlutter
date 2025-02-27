@@ -345,6 +345,8 @@ class CircularProgressPainter extends CustomPainter {
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
+import 'package:piminnovictus/Providers/language_provider.dart';
 import 'dart:math';
 import 'package:piminnovictus/Views/DashboardClient/EnergyPurchaseConfirmation.dart';
 import 'package:piminnovictus/Views/bachground.dart';
@@ -365,6 +367,9 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider =
+        Provider.of<LanguageProvider>(context, listen: false);
+  
     // Récupérer le ThemeProvider
     final themeProvider = Provider.of<ThemeProvider>(context);
 
@@ -413,7 +418,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
     return Column(
       children: [
         Text(
-          "Power your home with clean energy!",
+          AppLocalizations.of(context).translate("power_home_title"),
           style: theme.textTheme.titleMedium?.copyWith(
             fontSize: screenWidth * 0.05,
           ),
@@ -429,7 +434,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
             Column(
               children: [
                 Text(
-                  "Total Energy",
+                  AppLocalizations.of(context).translate("total_energy"),
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontSize: 16,
                     color: theme.textTheme.titleMedium?.color?.withOpacity(0.7),
@@ -460,7 +465,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
     return Column(
       children: [
         Text(
-          "Get Started in 3 Steps",
+          AppLocalizations.of(context).translate("get_started_steps"),
           style: theme.textTheme.bodyLarge?.copyWith(
             fontSize: screenWidth * 0.04,
           ),
@@ -524,7 +529,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
     return Column(
       children: [
         Text(
-          'Enter Energy Quantity',
+          AppLocalizations.of(context).translate("enter_energy_quantity"),
           style: theme.textTheme.titleMedium
               ?.copyWith(fontSize: screenWidth * 0.04),
         ),
@@ -545,7 +550,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               border: InputBorder.none,
-              hintText: "Enter quantity en KW",
+              hintText: AppLocalizations.of(context).translate("enter_quantity_hint"),
               hintStyle: theme.textTheme.bodyLarge?.copyWith(
                 fontSize: screenWidth * 0.03,
               ),
@@ -559,8 +564,11 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
           ),
         ),
         const SizedBox(height: 15),
+        
         Text(
-          "Equivalent in Coins: $_coin",
+           AppLocalizations.of(context)
+              .translate("equivalent_coins").replaceAll("{coin}", _coin.toString()),
+
           style: theme.textTheme.titleMedium
               ?.copyWith(fontSize: screenWidth * 0.04),
         ),
@@ -574,8 +582,9 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
     return Column(
       children: [
         Text(
-          'Enter your Code ',
-          style: theme.textTheme.titleMedium
+ AppLocalizations.of(context)
+              .translate("enter_code"),
+                        style: theme.textTheme.titleMedium
               ?.copyWith(fontSize: screenWidth * 0.04),
         ),
         SizedBox(height: 10),
@@ -624,14 +633,14 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
     return Column(
       children: [
         Text(
-          "Your payment with coins has been successfully processed. Thank you for choosing clean solar energy!",
-          style: theme.textTheme.titleMedium?.copyWith(
+ AppLocalizations.of(context).translate("payment_success"),
+         style: theme.textTheme.titleMedium?.copyWith(
             fontSize: screenWidth * 0.04,
           ),
         ),
         const SizedBox(height: 10),
         Text(
-          "Check your email for the details!",
+ AppLocalizations.of(context).translate("check_email"),
           style: TextStyle(color: const Color(0xFF29E33C)),
         ),
       ],
@@ -654,7 +663,8 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
                   backgroundColor: Colors.grey,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 40, vertical: 15)),
-              child: const Text("Back",
+              child: Text( AppLocalizations.of(context).translate("back"),
+
                   style: TextStyle(color: Colors.white, fontSize: 16)),
             ),
           ),
@@ -678,7 +688,9 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
                 backgroundColor: const Color(0xFF29E33C),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 40, vertical: 15)),
-            child: const Text("Next",
+            child:  Text( 
+              AppLocalizations.of(context)
+              .translate("next"),
                 style: TextStyle(color: Colors.white, fontSize: 16)),
           ),
         ],

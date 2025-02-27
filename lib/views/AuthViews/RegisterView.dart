@@ -17,6 +17,7 @@ class RegisterView extends StatefulWidget {
 
 class _RegisterViewState extends State<RegisterView>
     with WidgetsBindingObserver {
+
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController PhoneNumberController = TextEditingController();
@@ -39,7 +40,7 @@ class _RegisterViewState extends State<RegisterView>
   String? _PhoneNumberError;
 
   AuthController auth = AuthController();
-  void _showErrorDialog(String message) {
+ void _showErrorDialog(String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -69,15 +70,14 @@ class _RegisterViewState extends State<RegisterView>
       },
     );
   }
-
-  Future<void> _handleSignup() async {
+ Future<void> _handleSignup() async {
     try {
       final signupResponse = await auth.signupSimple(
         name: fullNameController.text,
         email: emailController.text,
         password: passwordController.text,
         phoneNumber: PhoneNumberController.text,
-        packId: "67bbcb92c538c6915580df58", // Make sure to handle null packId
+        packId: "67bf583d11b99e1b6875689f", // Make sure to handle null packId
       );
 
       // Handle successful signup
@@ -204,7 +204,7 @@ class _RegisterViewState extends State<RegisterView>
     });
   }
 
-  void _submitForm() async {
+   void _submitForm() async {
     if (!_acceptedTerms) {
       showDialog(
         context: context,
@@ -254,6 +254,7 @@ class _RegisterViewState extends State<RegisterView>
         _emailError == null &&
         _fullNameError == null &&
         _PhoneNumberError == null) {
+      
       setState(() {
         _isLoading = true;
       });
@@ -261,7 +262,6 @@ class _RegisterViewState extends State<RegisterView>
       await _handleSignup();
     }
   }
-
   void _showTermsDialog() {
     showDialog(
       context: context,

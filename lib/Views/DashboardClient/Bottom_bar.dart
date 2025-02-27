@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
+import 'package:piminnovictus/Views/DashboardClient/ConnectWallet.dart';
 import 'package:piminnovictus/Views/DashboardClient/Dashboard.dart';
 import 'package:piminnovictus/Views/DashboardClient/Wallet.dart';
 import 'package:piminnovictus/Views/Users/EditProfile.dart';
@@ -22,9 +23,8 @@ class MyApp extends StatelessWidget {
 }
 
 class BottomNavBarExample extends StatefulWidget {
-    final String? googleId; // Paramètre googleId ajouté
-      const BottomNavBarExample({Key? key, this.googleId}) : super(key: key);
-
+  final String? googleId; // Paramètre googleId ajouté
+  const BottomNavBarExample({Key? key, this.googleId}) : super(key: key);
 
   @override
   _BottomNavBarExampleState createState() => _BottomNavBarExampleState();
@@ -39,7 +39,7 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
 
   final List _pages = [
     DashboardPage(),
-    WalletPage(),
+    ConnectWalletPage(),
     BuyEnergiePage(),
     Container(),
     EditProfile(),

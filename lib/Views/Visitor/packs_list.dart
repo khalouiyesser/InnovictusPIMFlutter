@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/ClientModels/packs.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
 // import 'package:piminnovictus/views/Visitor/pack_details.dart';
 import 'package:piminnovictus/views/background.dart';
 
@@ -90,7 +91,7 @@ class _PacksListState extends State<PacksList> {
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(
-          'All our Packs and Offers',
+AppLocalizations.of(context)!.translate("titleall"),
           style: TextStyle(
             fontSize: titleFontSize,
             fontWeight: FontWeight.bold,
@@ -117,7 +118,8 @@ class _PacksListState extends State<PacksList> {
                   child: TextField(
                     controller: searchController,
                     decoration: InputDecoration(
-                      hintText: "Search Packs & Offers ...",
+                      hintText: AppLocalizations.of(context)!.translate("search_hint"),
+
                       hintStyle: TextStyle(
                         color: Colors.white70,
                         fontSize: packDescriptionSize,
