@@ -254,6 +254,41 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
       'loginFailed': 'Login failed',
       'checkCredentials': 'Check your credentials',
       'connectionError': 'Connection error',
+// Register View
+      'createAccount': 'Create An Account',
+      'fullName': 'Full Name',
+      'phoneNumber': 'Phone Number',
+      'iAccept': 'I accept ',
+      'and': ' and ',
+      'signUpWithGoogle': 'Sign up with Google',
+      'haveAccount': 'You have an account? ',
+
+      // Error messages
+      'fullNameEmpty': 'Full Name cannot be empty',
+      'fullNameTooShort': 'Full Name should be at least 3 characters',
+      'emailEmpty': 'Email cannot be empty',
+      'invalidEmail': 'Enter a valid email',
+      'passwordEmpty': 'Password cannot be empty',
+      'confirmPasswordEmpty': 'Confirm password cannot be empty',
+      'passwordsDontMatch': 'Passwords don\'t match',
+      'phoneNumberEmpty': 'Phone number cannot be empty',
+      'invalidPhoneNumber': 'Phone must start with 2, 5 or 9 and have 8 digits',
+      
+      // Dialog messages
+      'error': 'Error',
+      'ok': 'OK',
+      'termsRequired': 'Terms & Conditions Required',
+      'pleaseAcceptTerms': 'Please accept the terms and conditions to continue.',
+      'close': 'Close',
+
+
+
+
+
+
+
+
+
 
 
 
@@ -511,6 +546,32 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
       'loginFailed': 'Échec de la connexion',
       'checkCredentials': 'Vérifiez vos identifiants',
       'connectionError': 'Erreur de connexion',
+
+      'createAccount': 'Créer un compte',
+      'fullName': 'Nom complet',
+      'phoneNumber': 'Numéro de téléphone',
+      'iAccept': 'J\'accepte les ',
+      'and': ' et la ',
+      'signUpWithGoogle': 'S\'inscrire avec Google',
+      'haveAccount': 'Vous avez déjà un compte ? ',
+
+      // Error messages
+      'fullNameEmpty': 'Le nom complet ne peut pas être vide',
+      'fullNameTooShort': 'Le nom complet doit comporter au moins 3 caractères',
+      'emailEmpty': 'L\'email ne peut pas être vide',
+      'invalidEmail': 'Entrez un email valide',
+      'passwordEmpty': 'Le mot de passe ne peut pas être vide',
+      'confirmPasswordEmpty': 'La confirmation du mot de passe ne peut pas être vide',
+      'passwordsDontMatch': 'Les mots de passe ne correspondent pas',
+      'phoneNumberEmpty': 'Le numéro de téléphone ne peut pas être vide',
+      'invalidPhoneNumber': 'Le téléphone doit commencer par 2, 5 ou 9 et avoir 8 chiffres',
+      
+      // Dialog messages
+      'error': 'Erreur',
+      'ok': 'OK',
+      'termsRequired': 'Conditions Générales',
+      'pleaseAcceptTerms': 'Veuillez accepter les termes et conditions pour continuer.',
+      'close': 'Fermer',
 
 },
 };

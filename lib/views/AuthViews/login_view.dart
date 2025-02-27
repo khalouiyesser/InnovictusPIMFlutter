@@ -164,7 +164,7 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                     decoration: InputDecoration(
                       errorText: _emailError,
                       errorStyle: TextStyle(color: Colors.red),
-                      hintText: "Email",
+                        hintText: AppLocalizations.of(context).translate('email'),
                       hintStyle: TextStyle(
                         color: AuthScreenThemeDetector.isSystemDarkMode()
                             ? _theme.hintTextColor
