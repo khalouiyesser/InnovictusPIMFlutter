@@ -280,7 +280,28 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
       'termsRequired': 'Terms & Conditions Required',
       'pleaseAcceptTerms': 'Please accept the terms and conditions to continue.',
       'close': 'Close',
-
+'selectPack': 'Select the pack you want to buy',
+      'flipCardInstruction': 'Flip a pack card to see more details',
+      'clickSelectInstruction': 'Click the "Select" button to choose a pack',
+      'borderIndicationInstruction': 'Selected pack will have a green border',
+      'proceedToPayment': 'Proceed to Payment',
+      
+      // Dialogs
+      'noPackSelected': 'No Pack Selected',
+      'selectPackPrompt': 'You must select a pack before proceeding to payment.',
+      'packNotFound': 'Selected pack not found in available packs.',
+      'emailConfirmation': 'Email Confirmation',
+      'emailVerificationRequired': 'Your email is not verified. Please check your inbox and activate your account before proceeding to payment.',
+      'genericError': 'An error occurred',
+      
+      // Pack descriptions
+      'basicPack': 'Basic Pack',
+      'advancedPack': 'Advanced Pack',
+      'basicDescription': 'Unlock energy potential...',
+      'advancedDescription': 'Track energy live.',
+      'panelsCount': 'panels',
+      'energyGain': 'energy gain',
+      'co2Saved': 'CO2 saved',
 
 
 
@@ -572,6 +593,28 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
       'termsRequired': 'Conditions Générales',
       'pleaseAcceptTerms': 'Veuillez accepter les termes et conditions pour continuer.',
       'close': 'Fermer',
+      // Subscription Carousel
+      'selectPack': 'Sélectionnez le pack que vous souhaitez acheter',
+      'flipCardInstruction': 'Retournez une carte pour voir plus de détails',
+      'clickSelectInstruction': 'Cliquez sur le bouton "Sélectionner" pour choisir un pack',
+      'borderIndicationInstruction': 'Le pack sélectionné aura une bordure verte',
+      'proceedToPayment': 'Procéder au paiement',
+      // Dialogs
+      'noPackSelected': 'Aucun Pack Sélectionné',
+      'selectPackPrompt': 'Vous devez sélectionner un pack avant de procéder au paiement.',
+      'packNotFound': 'Le pack sélectionné n\'a pas été trouvé dans les packs disponibles.',
+      'emailConfirmation': 'Confirmation d\'Email',
+      'emailVerificationRequired': 'Votre email n\'est pas vérifié. Veuillez vérifier votre boîte de réception et activer votre compte avant de procéder au paiement.',
+      'genericError': 'Une erreur s\'est produite',
+      
+      // Pack descriptions
+      'basicPack': 'Pack Basique',
+      'advancedPack': 'Pack Avancé',
+      'basicDescription': 'Débloquez le potentiel énergétique...',
+      'advancedDescription': 'Suivez l\'énergie en direct.',
+      'panelsCount': 'panneaux',
+      'energyGain': 'gain d\'énergie',
+      'co2Saved': 'CO2 économisé',
 
 },
 };
