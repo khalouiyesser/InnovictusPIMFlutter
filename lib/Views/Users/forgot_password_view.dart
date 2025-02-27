@@ -299,16 +299,16 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
                                 print("Email: ${emailController.text}");
                                 print("ResetToken: $resetToken");
                                 print("Code: $code");
-
-                                await Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (context) => OTPPage(
+Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OTPPage(
                                       email: emailController.text,
                                       resetToken: resetToken,
                                       code: code,
                                     ),
-                                  ),
-                                );
+                        ),);
+
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(

@@ -310,9 +310,12 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
   "backToLogin": "Back To Login",
   "invalidEmail1": "Invalid email format",
   "invalidPhone": "Invalid phone number",
-  "missingData": "Missing data"
-
-
+  "missingData": "Missing data",
+ "enterOtpCode": "Enter OTP Code",
+  "verifyCode": "Verify the code",
+  "codeNotReceived": "You have not received the code?",
+  "resend": "Resend",
+  "incorrectCode": "Incorrect code, please try again."
 
 
 
@@ -631,7 +634,12 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
   "backToLogin": "Retour à la connexion",
   "invalidEmail1": "Format d'email invalide",
   "invalidPhone": "Numéro de téléphone invalide",
-  "missingData": "Données manquantes"
+  "missingData": "Données manquantes",
+  "enterOtpCode": "Entrez le code OTP",
+  "verifyCode": "Vérifier le code",
+  "codeNotReceived": "Vous n'avez pas reçu le code ?",
+  "resend": "Renvoyer",
+  "incorrectCode": "Code incorrect, veuillez réessayer."
 
 },
 };
