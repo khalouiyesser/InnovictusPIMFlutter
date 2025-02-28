@@ -112,6 +112,7 @@ class SessionManager {
   Future<void> updateUserData(String key, dynamic value) async {
     final userData = await getUserData() ?? {};
     userData[key] = value;
+    print("helooooooooooooooooooooooooooooooooooooooo ");
     await _storage.write(key: _keyUser, value: json.encode(userData));
   }
 
@@ -160,5 +161,8 @@ class SessionManager {
     return [];
   }
 
-  saveUser(User updatedUser) {}
+  Future<void> saveUser(User user) async {
+    await _storage.write(key: _keyUser, value: jsonEncode(user));
+    await _storage.write(key: _keyUserId, value: user.id);
+  }
 }

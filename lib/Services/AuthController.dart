@@ -78,6 +78,33 @@ final responseData = json.decode(response.body);
     }
   }
 
+  Future<Map<String, dynamic>?> updateUser(
+      String userId, String name, String email, String phoneNumber) async {
+    try {
+      final response = await http.patch(
+        Uri.parse("$api/auth/update-user"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'id': userId,
+          'name': name,
+          'email': email,
+          'phoneNumber': phoneNumber,
+        }),
+      );
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to update user: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Error updating user: $e');
+    }
+  }
+
   Future<Map<String, dynamic>> loginSimple(
       String email, String password) async {
     try {
@@ -115,9 +142,7 @@ final responseData = json.decode(response.body);
     }
   }
 
-
-
- Future<SignupResponse> signupSimple({
+  Future<SignupResponse> signupSimple({
     required String name,
     required String email,
     required String password,
@@ -147,9 +172,6 @@ final responseData = json.decode(response.body);
       throw Exception('Error during signup: $e');
     }
   }
-
-
-
 
 /*
   /// Fonction pour signupSimple de mot de passe
@@ -317,10 +339,9 @@ final responseData = json.decode(response.body);
       // Démarrer le processus de connexion Google
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
+      print(
+          "11111111111111111111111111111111111111111111111111111 $googleUser");
 
-      print("11111111111111111111111111111111111111111111111111111 $googleUser");
-
-      
       if (googleUser == null) {
         print("❌ Connexion Google annulée par l'utilisateur.");
         return null;
@@ -350,7 +371,7 @@ final responseData = json.decode(response.body);
               Uri.parse("$api/auth/loginGoogle"),
               headers: {'Content-Type': 'application/json'},
               body: json.encode({
-                'email' : googleUser.email,
+                'email': googleUser.email,
                 'googleId': googleUser.id,
               }),
             );

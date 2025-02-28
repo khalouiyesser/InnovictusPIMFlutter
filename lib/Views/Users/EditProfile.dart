@@ -13,6 +13,8 @@ import 'package:provider/provider.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:http/http.dart' as http;
 
+import '../../Services/AuthController.dart';
+
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
 
@@ -50,6 +52,11 @@ class _EditProfileState extends State<EditProfile> {
   bool isNewPasswordValid = false;
   bool isConfirmPasswordMatch = false;
 
+  //String userId = _sessionManager._keyUserId;
+
+  AuthController auth = AuthController();
+
+  String? userId;
   @override
   void initState() {
     _currentPasswordController.addListener(_checkPasswordFields);
@@ -58,6 +65,8 @@ class _EditProfileState extends State<EditProfile> {
 
     super.initState();
     _loadUserData();
+    Future<String?> userId = _sessionManager.getUserId();
+    print("userrrrrrc  $userId");
   }
 
   // Update validation method to return validation state
@@ -95,6 +104,7 @@ class _EditProfileState extends State<EditProfile> {
 
   Future<void> _loadUserData() async {
     final user = await _sessionManager.getCurrentUser();
+    userId = await _sessionManager.getUserId();
     if (user != null) {
       setState(() {
         currentUser = user;
@@ -278,9 +288,9 @@ class _EditProfileState extends State<EditProfile> {
       );
       return;
     }
-
     // Create Const instance for API URL
     final constInstance = Const();
+    // Pour le développement local avec émulateur, utilisez 10.0.2.2 au lieu de 192.168.1.13
     final url = '${constInstance.url}/auth/update-user';
 
     try {
@@ -288,6 +298,25 @@ class _EditProfileState extends State<EditProfile> {
       setState(() {
         isSaveButtonEnabled = false;
       });
+
+      // Afficher un dialogue de chargement
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Row(
+              children: [
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF29E33C)),
+                ),
+                SizedBox(width: 20),
+                Text("Mise à jour en cours..."),
+              ],
+            ),
+          );
+        },
+      );
 
       // Prepare data to update - only include fields that changed
       final updateData = {
@@ -299,15 +328,25 @@ class _EditProfileState extends State<EditProfile> {
           'phoneNumber': _phoneController.text,
       };
 
-      // Send PATCH request
-      final response = await http.patch(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(updateData),
-      );
+      // Debug prints
+      print("URL: $url");
+      print("Token: $token");
+      print("Update data: ${jsonEncode(updateData)}");
+
+      // Send PATCH request with increased timeout
+      final response = await http
+          .patch(
+            Uri.parse(url),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(updateData),
+          )
+          .timeout(const Duration(seconds: 30));
+
+      // Fermer le dialogue de chargement
+      Navigator.of(context).pop();
 
       if (response.statusCode == 200) {
         // Successful update
@@ -357,9 +396,23 @@ class _EditProfileState extends State<EditProfile> {
         );
       }
     } catch (error) {
+      // Fermer le dialogue de chargement si une erreur se produit
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
+      String errorMessage = "Erreur de connexion";
+      if (error.toString().contains("SocketException") ||
+          error.toString().contains("Connection timed out")) {
+        errorMessage =
+            "Impossible de se connecter au serveur. Vérifiez votre connexion réseau et l'URL du serveur.";
+      } else {
+        errorMessage = "Erreur de connexion : $error";
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Erreur de connexion : $error"),
+          content: Text(errorMessage),
           backgroundColor: Colors.red,
         ),
       );
@@ -489,7 +542,9 @@ class _EditProfileState extends State<EditProfile> {
                                       width: dialogWidth,
                                       height: dialogHeight,
                                       decoration: BoxDecoration(
-                                        color: Colors.black.withOpacity(0.8),
+                                        color: Theme.of(context)
+                                            .cardColor
+                                            .withOpacity(0.90),
                                         borderRadius: BorderRadius.circular(20),
                                         border: Border.all(
                                           color: Colors.white.withOpacity(0.2),
@@ -503,21 +558,25 @@ class _EditProfileState extends State<EditProfile> {
                                           Text(
                                             AppLocalizations.of(context)
                                                 .translate("logout"),
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: dialogWidth * 0.06,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleLarge
+                                                ?.copyWith(
+                                                  fontSize: dialogWidth * 0.06,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                           ),
                                           SizedBox(height: dialogHeight * 0.1),
                                           Text(
                                             AppLocalizations.of(context)
                                                 .translate("logoutmsg"),
-                                            style: TextStyle(
-                                              color:
-                                                  Colors.white.withOpacity(0.7),
-                                              fontSize: dialogWidth * 0.05,
-                                            ),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleLarge
+                                                ?.copyWith(
+                                                  fontSize: dialogWidth * 0.05,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                             textAlign: TextAlign.center,
                                           ),
                                           SizedBox(height: dialogHeight * 0.1),
@@ -903,7 +962,17 @@ class _EditProfileState extends State<EditProfile> {
                           children: [
                             ElevatedButton(
                               onPressed: isSaveButtonEnabled
-                                  ? _updateUserProfile
+                                  ? () async {
+                                      print(11);
+                                      print(userId);
+                                      // ✅ Fonction anonyme correcte
+                                      await auth.updateUser(
+                                        userId!,
+                                        _nameController.text,
+                                        _emailController.text,
+                                        _phoneController.text,
+                                      );
+                                    }
                                   : null,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: isSaveButtonEnabled
