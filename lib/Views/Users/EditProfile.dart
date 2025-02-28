@@ -1,14 +1,17 @@
+import 'dart:convert';
 import 'dart:ui'; // Pour le BackdropFilter
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/User.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
+import 'package:piminnovictus/Services/Const.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/AuthViews/login_view.dart';
 import 'package:piminnovictus/Views/AuthViews/privacy_policy.dart';
 import 'package:piminnovictus/Views/AuthViews/terms_and_conditions.dart';
 import 'package:provider/provider.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
+import 'package:http/http.dart' as http;
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -22,6 +25,14 @@ class _EditProfileState extends State<EditProfile> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _currentPasswordController =
+      TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  bool _isPasswordVisible = false;
+  bool isSaveButtonEnabled = false;
+
   final SessionManager _sessionManager = SessionManager();
   User? currentUser;
   bool isPreferencesExpanded = false;
@@ -33,17 +44,52 @@ class _EditProfileState extends State<EditProfile> {
   String selectedLanguage = 'en';
   bool isTermsExpanded = false;
 
+  bool isSavePasswordButtonEnabled = false;
+  // Ajout de variables pour la validation des champs de mot de passe
+  bool isCurrentPasswordCorrect = false;
+  bool isNewPasswordValid = false;
+  bool isConfirmPasswordMatch = false;
+
   @override
   void initState() {
+    _currentPasswordController.addListener(_checkPasswordFields);
+    _newPasswordController.addListener(_checkPasswordFields);
+    _confirmPasswordController.addListener(_checkPasswordFields);
+
     super.initState();
     _loadUserData();
   }
+
+  // Update validation method to return validation state
+  bool _validatePassword(String password) {
+    // Vérifie si le mot de passe a au moins 6 caractères
+    if (password.length < 6) {
+      return false;
+    }
+    // Vérifie si le mot de passe contient au moins un caractère spécial
+    RegExp specialChar = RegExp(r'[!@#$%^&*(),.?":{}|<>]');
+    return specialChar.hasMatch(password);
+  }
+
+  bool _isCurrentPasswordCorrect(String password) {
+    // Simulation - À remplacer par votre logique de validation réelle
+    if (currentUser != null) {
+      // Exemple: Dans un cas réel, vous feriez une vérification avec le backend
+      return password.isNotEmpty; // Validation simplifiée pour l'exemple
+    }
+    return false;
+  }
+
+  // Duplicate method removed
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+    _currentPasswordController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -55,6 +101,272 @@ class _EditProfileState extends State<EditProfile> {
         _nameController.text = user.name;
         _emailController.text = user.email ?? '';
         _phoneController.text = user.phoneNumber ?? '';
+      });
+    }
+  }
+
+  void _checkPasswordFields() {
+    setState(() {
+      // Vérifier si le mot de passe actuel est correct
+      isCurrentPasswordCorrect =
+          _isCurrentPasswordCorrect(_currentPasswordController.text);
+
+      // Vérifier si le nouveau mot de passe est valide
+      isNewPasswordValid = _validatePassword(_newPasswordController.text);
+
+      // Vérifier si la confirmation correspond au nouveau mot de passe
+      isConfirmPasswordMatch =
+          _newPasswordController.text == _confirmPasswordController.text;
+
+      // Activer ou désactiver le bouton de sauvegarde en fonction des validations
+      isSavePasswordButtonEnabled =
+          _currentPasswordController.text.isNotEmpty &&
+              _newPasswordController.text.isNotEmpty &&
+              _confirmPasswordController.text.isNotEmpty &&
+              isCurrentPasswordCorrect &&
+              isNewPasswordValid &&
+              isConfirmPasswordMatch;
+    });
+  }
+
+  Future<void> _changePassword() async {
+    // Vérifier si les champs sont vides
+    if (_currentPasswordController.text.isEmpty ||
+        _newPasswordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              AppLocalizations.of(context).translate('fillAllFields') ??
+                  "Veuillez remplir tous les champs"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    // Vérifier si le nouveau mot de passe est valide
+    if (!isNewPasswordValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)
+                  .translate('passwordRequirements') ??
+              "Le mot de passe doit contenir au moins 6 caractères et un caractère spécial"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Vérifier si la confirmation correspond
+    if (!isConfirmPasswordMatch) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Les mots de passe ne correspondent pas"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Utilisateur introuvable"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    String userId = currentUser!.id;
+    String currentPassword = _currentPasswordController.text;
+    String newPassword = _newPasswordController.text;
+    String confirmPassword = _confirmPasswordController.text;
+
+// Crée une instance de la classe Const
+    final constInstance = Const();
+
+// Utilise la constante url de cette instance
+    final url = '${constInstance.url}/auth/change-password';
+
+    try {
+      final response = await http.put(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'userId': userId,
+          'oldPassword': currentPassword,
+          'newPassword': newPassword,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Mot de passe modifié avec succès"),
+            backgroundColor: Colors.green,
+          ),
+        );
+        _currentPasswordController.clear();
+        _newPasswordController.clear();
+        _confirmPasswordController.clear();
+        setState(() {
+          isCurrentPasswordCorrect = false;
+          isNewPasswordValid = false;
+          isConfirmPasswordMatch = false;
+          isSavePasswordButtonEnabled = false;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Erreur : ${response.body}"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Erreur de connexion : $error"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _updateUserProfile() async {
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              AppLocalizations.of(context).translate('userNotFound') ??
+                  "Utilisateur introuvable"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Check if any changes were made
+    if (_nameController.text == currentUser!.name &&
+        _emailController.text == currentUser!.email &&
+        _phoneController.text == currentUser!.phoneNumber) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).translate('noChanges') ??
+              "Aucune modification détectée"),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    // Retrieve authentication token
+    final token = await _sessionManager.getToken();
+    if (token == null || token.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              AppLocalizations.of(context).translate('sessionExpired') ??
+                  "Session expirée, veuillez vous reconnecter"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      // Rediriger vers la page de connexion
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => LoginView()),
+        (route) => false,
+      );
+      return;
+    }
+
+    // Create Const instance for API URL
+    final constInstance = Const();
+    final url = '${constInstance.url}/auth/update-user';
+
+    try {
+      // Show loading indicator
+      setState(() {
+        isSaveButtonEnabled = false;
+      });
+
+      // Prepare data to update - only include fields that changed
+      final updateData = {
+        if (_nameController.text != currentUser!.name)
+          'name': _nameController.text,
+        if (_emailController.text != currentUser!.email)
+          'email': _emailController.text,
+        if (_phoneController.text != currentUser!.phoneNumber)
+          'phoneNumber': _phoneController.text,
+      };
+
+      // Send PATCH request
+      final response = await http.patch(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(updateData),
+      );
+
+      if (response.statusCode == 200) {
+        // Successful update
+        final updatedUserData = jsonDecode(response.body);
+        final updatedUser = User(
+          id: currentUser!.id,
+          name: updatedUserData['name'] ?? currentUser!.name,
+          email: updatedUserData['email'] ?? currentUser!.email,
+          phoneNumber:
+              updatedUserData['phoneNumber'] ?? currentUser!.phoneNumber,
+        );
+
+        // Update user session
+        await _sessionManager.saveUser(updatedUser);
+
+        // Update UI state
+        setState(() {
+          currentUser = updatedUser;
+          _nameController.text = updatedUser.name;
+          _emailController.text = updatedUser.email ?? '';
+          _phoneController.text = updatedUser.phoneNumber ?? '';
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                AppLocalizations.of(context).translate('profileUpdated') ??
+                    "Profil mis à jour avec succès"),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        // Handle errors
+        Map<String, dynamic> errorData = {};
+        try {
+          errorData = jsonDecode(response.body);
+        } catch (_) {}
+
+        String errorMessage = errorData['message'] ??
+            "Erreur lors de la mise à jour du profil (${response.statusCode})";
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Erreur de connexion : $error"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      // Re-enable save button
+      setState(() {
+        isSaveButtonEnabled = true;
       });
     }
   }
@@ -77,11 +389,11 @@ class _EditProfileState extends State<EditProfile> {
               BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
                 child: SafeArea(
-                  child: LayoutBuilder(
-                  builder: (context, constraints) {   
-                                     physics: const AlwaysScrollableScrollPhysics();
+                  child: LayoutBuilder(builder: (context, constraints) {
+                    physics:
+                    const AlwaysScrollableScrollPhysics();
 
- return SingleChildScrollView(
+                    return SingleChildScrollView(
                       child: Column(
                         children: [
                           const SizedBox(height: 70),
@@ -125,7 +437,7 @@ class _EditProfileState extends State<EditProfile> {
                                         ?.color,
                                   ),
                                 ),
-                    
+
                           currentUser == null
                               ? const CircularProgressIndicator()
                               : Text(
@@ -139,164 +451,202 @@ class _EditProfileState extends State<EditProfile> {
                                         ?.color,
                                   ),
                                 ),
-                    
+
                           const SizedBox(height: 5),
-                    
+
                           const SizedBox(height: 30),
-                    
+
                           _buildPreferencesCard(context),
                           const SizedBox(height: 10),
                           // Carte Preferences intégrée
                           _buildProfileInformationsCard(context),
                           const SizedBox(height: 10),
-                    
+
                           _buildTermssCard(context),
                           // Item Logout
-                    
+
                           const SizedBox(height: 10),
                           // Item Logout
-                         _buildMenuItem(
-                      context,
-                      icon: Icons.logout,
-                      title: AppLocalizations.of(context).translate('logout'),
-                      onTap: () async {
-                        // Show confirmation dialog
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            final dialogWidth = MediaQuery.of(context).size.width * 0.8;
-                            final dialogHeight = MediaQuery.of(context).size.height * 0.2;
-                            
-                            return Dialog(
-                              backgroundColor: Colors.transparent,
-                              elevation: 0,
-                              child: Container(
-                                width: dialogWidth,
-                                height: dialogHeight,
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.8),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                    color: Colors.white.withOpacity(0.2),
-                    width: 1,
-                                  ),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                    Text(
-                          AppLocalizations.of(context).translate("logout"),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: dialogWidth * 0.06,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: dialogHeight * 0.1),
-                    Text(
-                          AppLocalizations.of(context).translate("logoutmsg"),
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
-                        fontSize: dialogWidth * 0.05,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: dialogHeight * 0.1),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: dialogWidth * 0.35,
-                          height: dialogHeight * 0.25,
-                          child: OutlinedButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(
-                                color: Color(0xFF29E33C),
-                                width: 2,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              padding: EdgeInsets.zero,
-                            ),
-                            child: Text(
-                          AppLocalizations.of(context).translate("cancel"),
-                              style: TextStyle(
-                                color: const Color(0xFF29E33C),
-                                fontSize: dialogWidth * 0.06,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                          _buildMenuItem(
+                            context,
+                            icon: Icons.logout,
+                            title: AppLocalizations.of(context)
+                                .translate('logout'),
+                            onTap: () async {
+                              // Show confirmation dialog
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  final dialogWidth =
+                                      MediaQuery.of(context).size.width * 0.8;
+                                  final dialogHeight =
+                                      MediaQuery.of(context).size.height * 0.2;
+
+                                  return Dialog(
+                                    backgroundColor: Colors.transparent,
+                                    elevation: 0,
+                                    child: Container(
+                                      width: dialogWidth,
+                                      height: dialogHeight,
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withOpacity(0.8),
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: Colors.white.withOpacity(0.2),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            AppLocalizations.of(context)
+                                                .translate("logout"),
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: dialogWidth * 0.06,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          SizedBox(height: dialogHeight * 0.1),
+                                          Text(
+                                            AppLocalizations.of(context)
+                                                .translate("logoutmsg"),
+                                            style: TextStyle(
+                                              color:
+                                                  Colors.white.withOpacity(0.7),
+                                              fontSize: dialogWidth * 0.05,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          SizedBox(height: dialogHeight * 0.1),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              SizedBox(
+                                                width: dialogWidth * 0.35,
+                                                height: dialogHeight * 0.25,
+                                                child: OutlinedButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  style:
+                                                      OutlinedButton.styleFrom(
+                                                    side: const BorderSide(
+                                                      color: Color(0xFF29E33C),
+                                                      width: 2,
+                                                    ),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                    ),
+                                                    padding: EdgeInsets.zero,
+                                                  ),
+                                                  child: Text(
+                                                    AppLocalizations.of(context)
+                                                        .translate("cancel"),
+                                                    style: TextStyle(
+                                                      color: const Color(
+                                                          0xFF29E33C),
+                                                      fontSize:
+                                                          dialogWidth * 0.06,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                  width: dialogWidth * 0.04),
+                                              SizedBox(
+                                                width: dialogWidth * 0.35,
+                                                height: dialogHeight * 0.25,
+                                                child: DecoratedBox(
+                                                  decoration: BoxDecoration(
+                                                    gradient:
+                                                        const LinearGradient(
+                                                      colors: [
+                                                        Color(0xFF29E33C),
+                                                        Color.fromARGB(
+                                                            255, 9, 128, 25)
+                                                      ],
+                                                      begin: Alignment.topLeft,
+                                                      end:
+                                                          Alignment.bottomRight,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                  ),
+                                                  child: ElevatedButton(
+                                                    onPressed: () async {
+                                                      Navigator.pop(
+                                                          context); // Close dialog
+                                                      final sessionManager =
+                                                          SessionManager();
+
+                                                      // Clear the session
+                                                      await sessionManager
+                                                          .clearSession();
+
+                                                      // Navigate to welcome page and clear all previous routes
+                                                      Navigator.of(context)
+                                                          .pushAndRemoveUntil(
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                LoginView()),
+                                                        (route) =>
+                                                            false, // This removes all previous routes
+                                                      );
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      backgroundColor:
+                                                          Colors.transparent,
+                                                      shadowColor:
+                                                          Colors.transparent,
+                                                      padding: EdgeInsets.zero,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20),
+                                                      ),
+                                                    ),
+                                                    child: Text(
+                                                      AppLocalizations.of(
+                                                              context)
+                                                          .translate("logout"),
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize:
+                                                            dialogWidth * 0.06,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
                           ),
-                        ),
-                        SizedBox(width: dialogWidth * 0.04),
-                        SizedBox(
-                          width: dialogWidth * 0.35,
-                          height: dialogHeight * 0.25,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xFF29E33C),
-                                  Color.fromARGB(255, 9, 128, 25)
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                Navigator.pop(context); // Close dialog
-                                final sessionManager = SessionManager();
-                                
-                                // Clear the session
-                                await sessionManager.clearSession();
-                                
-                                // Navigate to welcome page and clear all previous routes
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                    builder: (context) => LoginView()
-                                  ),
-                                  (route) => false, // This removes all previous routes
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                padding: EdgeInsets.zero,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
-                              child: Text(
-                          AppLocalizations.of(context).translate("logout"),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: dialogWidth * 0.06,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 30),
+                          const SizedBox(height: 30),
                         ],
                       ),
-                  );
-       } ),
-        ),
+                    );
+                  }),
+                ),
               ),
             ],
           ),
@@ -387,6 +737,7 @@ class _EditProfileState extends State<EditProfile> {
       onTap: () {
         setState(() {
           isProfileInformationsExpanded = !isProfileInformationsExpanded;
+
           // Réinitialiser l'expansion des sous-cartes lors de la fermeture
           if (!isProfileInformationsExpanded) {
             isPersonalInfoExpanded = false;
@@ -484,6 +835,16 @@ class _EditProfileState extends State<EditProfile> {
                         const SizedBox(height: 15),
                         TextField(
                           controller: _nameController,
+                          onChanged: (value) {
+                            setState(() {
+                              isSaveButtonEnabled = value.isNotEmpty &&
+                                  (value != currentUser?.name ||
+                                      _emailController.text !=
+                                          currentUser?.email ||
+                                      _phoneController.text !=
+                                          currentUser?.phoneNumber);
+                            });
+                          },
                           decoration: InputDecoration(
                             labelText: AppLocalizations.of(context)
                                 .translate('username'),
@@ -496,6 +857,16 @@ class _EditProfileState extends State<EditProfile> {
                         const SizedBox(height: 15),
                         TextField(
                           controller: _emailController,
+                          onChanged: (value) {
+                            setState(() {
+                              isSaveButtonEnabled = value.isNotEmpty &&
+                                  (value != currentUser?.email ||
+                                      _nameController.text !=
+                                          currentUser?.name ||
+                                      _phoneController.text !=
+                                          currentUser?.phoneNumber);
+                            });
+                          },
                           decoration: InputDecoration(
                             labelText:
                                 AppLocalizations.of(context).translate('email'),
@@ -508,6 +879,14 @@ class _EditProfileState extends State<EditProfile> {
                         const SizedBox(height: 15),
                         TextField(
                           controller: _phoneController,
+                          onChanged: (value) {
+                            setState(() {
+                              isSaveButtonEnabled = _nameController.text !=
+                                      currentUser?.name ||
+                                  _emailController.text != currentUser?.email ||
+                                  value != currentUser?.phoneNumber;
+                            });
+                          },
                           decoration: InputDecoration(
                             labelText:
                                 AppLocalizations.of(context).translate('phone'),
@@ -523,17 +902,13 @@ class _EditProfileState extends State<EditProfile> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             ElevatedButton(
-                              onPressed: () async {
-                                // Logique de sauvegarde
-                                final updatedUser = User(
-                                  id: currentUser!.id,
-                                  name: _nameController.text,
-                                  email: _emailController.text,
-                                  phoneNumber: _phoneController.text,
-                                );
-                              },
+                              onPressed: isSaveButtonEnabled
+                                  ? _updateUserProfile
+                                  : null,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF29E33C),
+                                backgroundColor: isSaveButtonEnabled
+                                    ? const Color(0xFF29E33C)
+                                    : Colors.grey,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -598,52 +973,215 @@ class _EditProfileState extends State<EditProfile> {
                       if (isPasswordExpanded) ...[
                         const SizedBox(height: 15),
                         TextField(
-                          obscureText: true,
+                          controller: _currentPasswordController,
+                          obscureText: !_isPasswordVisible,
                           decoration: InputDecoration(
                             hintText: AppLocalizations.of(context)
                                 .translate('currentPassword'),
+                            filled: true,
+                            fillColor: Theme.of(context)
+                                .inputDecorationTheme
+                                .fillColor,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(width: 0.5),
+                              borderSide:
+                                  BorderSide(color: Colors.white, width: 1),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color:
+                                    _currentPasswordController.text.isNotEmpty
+                                        ? (isCurrentPasswordCorrect
+                                            ? Colors.green
+                                            : Colors.red)
+                                        : Theme.of(context).primaryColor,
+                                width: 0.5,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: _currentPasswordController
+                                        .text.isNotEmpty
+                                    ? Colors.red
+                                    : _currentPasswordController.text.isNotEmpty
+                                        ? Theme.of(context).primaryColor
+                                        : Colors.white,
+                                width: 0.5,
+                              ),
+                            ),
+                            contentPadding: EdgeInsets.only(left: 20),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
                             ),
                           ),
+                          onChanged: (value) {
+                            setState(() {
+                              isCurrentPasswordCorrect =
+                                  _isCurrentPasswordCorrect(value);
+                            });
+                            _checkPasswordFields();
+                          },
                         ),
+
                         const SizedBox(height: 15),
                         TextField(
-                          obscureText: true,
+                          controller: _newPasswordController,
+                          obscureText: !_isPasswordVisible,
                           decoration: InputDecoration(
                             hintText: AppLocalizations.of(context)
                                 .translate('newPassword'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(width: 0.5),
+                              borderSide: BorderSide(
+                                color: _newPasswordController.text.isNotEmpty
+                                    ? (isNewPasswordValid
+                                        ? Colors.green
+                                        : Colors.red)
+                                    : Colors.white,
+                                width: 0.5,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: _newPasswordController.text.isNotEmpty
+                                    ? (isNewPasswordValid
+                                        ? Colors.green
+                                        : Colors.red)
+                                    : Theme.of(context).primaryColor,
+                                width: 1.5,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: _newPasswordController.text.isNotEmpty
+                                    ? (isNewPasswordValid
+                                        ? Colors.green
+                                        : Colors.red)
+                                    : Colors.white,
+                                width: 0.5,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.only(left: 20),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
                             ),
                           ),
+                          onChanged: (value) {
+                            setState(() {
+                              isNewPasswordValid = _validatePassword(value);
+                              // Vérifier si le mot de passe de confirmation correspond
+                              if (_confirmPasswordController.text.isNotEmpty) {
+                                isConfirmPasswordMatch =
+                                    value == _confirmPasswordController.text;
+                              }
+                            });
+                            _checkPasswordFields();
+                          },
                         ),
                         const SizedBox(height: 15),
                         TextField(
-                          obscureText: true,
+                          controller: _confirmPasswordController,
+                          obscureText: !_isPasswordVisible,
                           decoration: InputDecoration(
                             hintText: AppLocalizations.of(context)
                                 .translate('confirmPassword'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(width: 0.5),
+                              borderSide: BorderSide(
+                                color:
+                                    _confirmPasswordController.text.isNotEmpty
+                                        ? (isConfirmPasswordMatch
+                                            ? Colors.green
+                                            : Colors.red)
+                                        : Colors.white,
+                                width: 0.5,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color:
+                                    _confirmPasswordController.text.isNotEmpty
+                                        ? (isConfirmPasswordMatch
+                                            ? Colors.green
+                                            : Colors.red)
+                                        : Theme.of(context).primaryColor,
+                                width: 1.5,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color:
+                                    _confirmPasswordController.text.isNotEmpty
+                                        ? (isConfirmPasswordMatch
+                                            ? Colors.green
+                                            : Colors.red)
+                                        : Colors.white,
+                                width: 0.5,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.only(left: 20),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
                             ),
                           ),
+                          onChanged: (value) {
+                            setState(() {
+                              isConfirmPasswordMatch =
+                                  value == _newPasswordController.text;
+                            });
+                            _checkPasswordFields();
+                          },
                         ),
                         const SizedBox(height: 20),
+                        // Bouton "Save" aligné à droite
                         // Bouton "Save" aligné à droite
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             ElevatedButton(
-                              onPressed: () {
-                                // Logique de sauvegarde
-                                print("Preferences saved");
-                              },
+                              onPressed: isSavePasswordButtonEnabled
+                                  ? _changePassword
+                                  : null,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF29E33C),
+                                backgroundColor: isSavePasswordButtonEnabled
+                                    ? const Color(0xFF29E33C)
+                                    : Colors.grey,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),

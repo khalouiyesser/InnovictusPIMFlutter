@@ -395,7 +395,7 @@ class _DashboardPageState extends State<DashboardPage> {
         color: theme.cardColor.withOpacity(0.70),
         border: Border.all(
           color: theme.colorScheme.primary.withOpacity(0.11) ??
-              MyThemes.primaryColor.withOpacity(0.11),
+              const Color.fromRGBO(41, 227, 60, 1).withOpacity(0.11),
           width: 1,
         ),
         borderRadius: BorderRadius.circular(15),
