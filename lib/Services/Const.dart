@@ -1,5 +1,6 @@
 class Const {
-  final String url = "http://10.0.2.2:3000";
+  final String url = "http://172.16.0.144:3009";
+  final String urlSocket = "http://172.16.0.144:3000";
 }
 
 class SessionConstants {
