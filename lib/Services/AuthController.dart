@@ -199,6 +199,25 @@ final responseData = json.decode(response.body);
     }
   }
 
+  /// Fonction pour supprimer user
+  Future deleteUserWithProfiles(String userId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse("$api/auth/deleteUser/$userId"),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode >= 199 && response.statusCode < 300) {
+        print(response.body);
+        return "user deleted";
+      } else {
+        throw Exception('Échec de suppression de user : ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Erreur lors de l\'envoi de requete: $e');
+    }
+  }
+
   /// Fonction pour resetPassword de mot de passe
   Future<Map<String, dynamic>> resetPassword(
       String resetToken, String newPassword) async {
@@ -316,6 +335,11 @@ final responseData = json.decode(response.body);
 
       // Démarrer le processus de connexion Google
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+
+      print("11111111111111111111111111111111111111111111111111111 $googleUser");
+
+
       if (googleUser == null) {
         print("❌ Connexion Google annulée par l'utilisateur.");
         return null;
@@ -345,6 +369,7 @@ final responseData = json.decode(response.body);
               Uri.parse("$api/auth/loginGoogle"),
               headers: {'Content-Type': 'application/json'},
               body: json.encode({
+                'email' : googleUser.email,
                 'googleId': googleUser.id,
               }),
             );
