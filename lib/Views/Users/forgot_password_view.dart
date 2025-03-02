@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Services/AuthController.dart';
 import '../AuthViews/login_view.dart';
 import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
@@ -103,7 +104,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          "Forgot Password?",
+                          AppLocalizations.of(context).translate("forgotPassword"),
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -195,7 +196,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
                           ? TextField(
                               controller: emailController,
                               decoration: InputDecoration(
-                                hintText: "Enter your email",
+                                hintText: AppLocalizations.of(context).translate("enterEmail"),
                                 hintStyle:
                                     TextStyle(color: _theme.hintTextColor),
                                 prefixIcon:
@@ -250,7 +251,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
                                         color: Colors.white), // Icône email
                                     SizedBox(width: 10),
                                     Text(
-                                      "Send OTP via Email",
+                                      AppLocalizations.of(context).translate("sendOtpEmail"),
                                       style: TextStyle(
                                           color: _theme.textColor,
                                           fontSize: 16),
@@ -263,7 +264,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
                       const SizedBox(height: 80),
 
                       buildActionButton(
-                        text: "Continue",
+                        text: AppLocalizations.of(context).translate("continueButton"),
                         backgroundColor: Color(0xFF29E33C),
                         textColor: const Color.fromARGB(255, 251, 251, 251),
                         onTap: () async {
@@ -298,27 +299,27 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
                                 print("Email: ${emailController.text}");
                                 print("ResetToken: $resetToken");
                                 print("Code: $code");
-
-                                await Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (context) => OTPPage(
+Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OTPPage(
                                       email: emailController.text,
                                       resetToken: resetToken,
                                       code: code,
                                     ),
-                                  ),
-                                );
+                        ),);
+
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                       content: Text(
-                                          "Erreur : ${response['message'] ?? 'Données manquantes'}")),
+                                          "${AppLocalizations.of(context).translate("connectionError")} : ${response['message'] ?? AppLocalizations.of(context).translate("missingData")}")),
                                 );
                               }
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                    content: Text("Erreur de connexion : $e")),
+                                    content: Text("${AppLocalizations.of(context).translate("connectionError")} : $e")),
                               );
                             }
                           }
@@ -328,7 +329,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
                       const SizedBox(height: 15),
 
                       buildActionButton(
-                        text: "Back To Login",
+                        text: AppLocalizations.of(context).translate("backToLogin"),
                         backgroundColor: Colors.transparent,
                         textColor: _theme.textColor, // Remplacement ici
                         borderColor: Color(0xFF29E33C),

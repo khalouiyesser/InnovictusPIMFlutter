@@ -1,5 +1,7 @@
 class Const {
-  final String url = "http://10.0.2.2:3000";
+  final String url = "http://192.168.1.122:3000"; // kahwetkom 1
+  //final String url = "http://192.168.1.20:3000"; //dar shayma
+
 }
 
 class SessionConstants {

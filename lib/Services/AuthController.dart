@@ -335,11 +335,6 @@ final responseData = json.decode(response.body);
 
       // Démarrer le processus de connexion Google
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-
-
-      print("11111111111111111111111111111111111111111111111111111 $googleUser");
-
-
       if (googleUser == null) {
         print("❌ Connexion Google annulée par l'utilisateur.");
         return null;
@@ -369,7 +364,6 @@ final responseData = json.decode(response.body);
               Uri.parse("$api/auth/loginGoogle"),
               headers: {'Content-Type': 'application/json'},
               body: json.encode({
-                'email' : googleUser.email,
                 'googleId': googleUser.id,
               }),
             );
