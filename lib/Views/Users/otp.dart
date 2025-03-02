@@ -218,6 +218,7 @@ class _OTPPageState extends State<OTPPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     _updateTheme();
+    // S'enregistre pour écouter les changements de luminosité du système
     WidgetsBinding.instance.addObserver(this);
 
     focusNodes = List.generate(6, (index) => FocusNode());
