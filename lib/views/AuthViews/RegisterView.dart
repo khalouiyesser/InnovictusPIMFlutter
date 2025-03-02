@@ -6,6 +6,7 @@ import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Services/AuthController.dart';
 import 'package:piminnovictus/Views/AuthViews/privacy_policy.dart';
 import 'package:piminnovictus/Views/AuthViews/terms_and_conditions.dart';
+import '../../Models/Auth/signup_response.dart';
 import '../plan_subscription.dart';
 import 'login_view.dart';
 
@@ -105,6 +106,46 @@ class _RegisterViewState extends State<RegisterView>
       }
     }
   }
+
+  Future<void> _handleSignupGoogle() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      print("🚀 Début du processus d'inscription avec Google...");
+      final SignupResponse? signupResponse = await auth.signUpWithGoogle(context);
+
+      if (!mounted) return; // Vérifie si le widget est encore actif
+
+      if (signupResponse != null && signupResponse.pendingSignupId.isNotEmpty) {
+        print("✅ Inscription Google réussie, redirection vers SubscriptionCarousel...");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SubscriptionCarousel(
+              preselectedPackId: "67c3a54219a227df76c6b67c",
+              pendingSignupId: signupResponse.pendingSignupId,
+            ),
+          ),
+        );
+      } else {
+        print("❌ Échec de l'inscription Google, réponse invalide.");
+        _showErrorDialog("L'inscription avec Google a échoué. Veuillez réessayer.");
+      }
+    } catch (e) {
+      if (!mounted) return;
+      print("❌ Erreur lors de l'inscription Google: $e");
+      _showErrorDialog("Une erreur est survenue : ${e.toString()}");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
 
   @override
   void initState() {
@@ -512,8 +553,7 @@ class _RegisterViewState extends State<RegisterView>
                             backgroundColor: Colors.transparent,
                           ),
                           onPressed: () {
-                            auth.signUpWithGoogle(context);
-                            // print('Google sign-in pressed');
+                            _handleSignupGoogle();
                           },
                         ),
                       ),

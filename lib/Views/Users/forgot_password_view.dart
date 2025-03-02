@@ -299,7 +299,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
                                 print("Email: ${emailController.text}");
                                 print("ResetToken: $resetToken");
                                 print("Code: $code");
-Navigator.pushReplacement(
+                          Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => OTPPage(
