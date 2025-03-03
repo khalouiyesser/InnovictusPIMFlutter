@@ -256,8 +256,7 @@ class AuthController {
     }
   }
 
-  /// Signup with google
-  Future<SignupResponse?> loginWithGoogle(BuildContext context) async {
+/*  Future<SignupResponse?> loginWithGoogle(BuildContext context) async {
     try {
       print("🔄 Déconnexion des sessions existantes...");
       await _googleSignIn.signOut();
@@ -310,7 +309,77 @@ class AuthController {
       );
       return null;
     }
+  }*/
+ Future<Map<String, dynamic>> loginWithGoogle(BuildContext context) async {
+  try {
+    print("🔄 Déconnexion des sessions existantes...");
+    await _googleSignIn.signOut();
+    await FirebaseAuth.instance.signOut();
+    await Future.delayed(Duration(seconds: 1));
+
+    print("🚀 Tentative de connexion avec Google...");
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+    if (googleUser == null) {
+      print("❌ Connexion Google annulée par l'utilisateur.");
+      return {};
+    }
+
+    // Envoi des données au backend
+    final response = await http.post(
+      Uri.parse("$api/auth/loginGoogle"),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'email': googleUser.email,
+        'idGoogle': googleUser.id,
+      }),
+    );
+
+    print("📩 Réponse brute du backend : ${response.body}");
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final responseData = json.decode(response.body);
+      
+      // Based on your response, we need to create a proper userData map
+      // The response doesn't have accessToken or userId like simple login
+      await _sessionManager.saveSession(
+        // Since token is not provided in the Google response, we'll use a placeholder
+        // You may need to adjust your backend to provide tokens or implement another approach
+        token: 'google_auth_${responseData['_id']}', // Using _id as a fallback
+        userData: {
+          'email': responseData['email'],
+          'userId': responseData['_id'], // Using _id from response as userId
+          'refreshToken': 'google_auth_refresh', // Placeholder
+          'name': responseData['name'],
+          'idGoogle': responseData['idGoogle'],
+          // Add other fields as needed
+        },
+      );
+      
+      // Navigate to BottomNavBarExample
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => 
+              BottomNavBarExample(),
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
+        ),
+      );
+      
+      return responseData;
+    } else {
+      throw Exception('❌ Échec de la connexion Google : ${response.body}');
+    }
+  } catch (e, stackTrace) {
+    print("❌ Erreur lors de la connexion Google: $e");
+    print(stackTrace);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Erreur de connexion: ${e.toString()}")),
+    );
+    return {};
   }
+}
 
   Future<Map<String, dynamic>?> updateUser(
       String userId, String name, String email, String phoneNumber) async {

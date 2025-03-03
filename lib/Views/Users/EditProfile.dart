@@ -45,6 +45,7 @@ class _EditProfileState extends State<EditProfile> {
   bool isLanguageExpanded = false;
   String selectedLanguage = 'en';
   bool isTermsExpanded = false;
+  bool isAccountExpanded = false;
 
   bool isSavePasswordButtonEnabled = false;
   // Ajout de variables pour la validation des champs de mot de passe
@@ -516,6 +517,9 @@ class _EditProfileState extends State<EditProfile> {
                           const SizedBox(height: 10),
 
                           _buildTermssCard(context),
+
+                          _buildAccountCard(context),
+
                           // Item Logout
 
                           const SizedBox(height: 10),
@@ -1626,6 +1630,420 @@ class _EditProfileState extends State<EditProfile> {
                           Text(
                             AppLocalizations.of(context)
                                 .translate('privacyPolicy'),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  Theme.of(context).textTheme.bodyMedium?.color,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Icon(
+                        Icons.chevron_right,
+                        color: Colors.grey,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAccountCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          isAccountExpanded = !isAccountExpanded;
+          // Reset sub-cards expansion when closing
+          if (!isAccountExpanded) {
+            isDarkModeExpanded = false;
+            isLanguageExpanded = false;
+          }
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(17),
+          border: Border.all(
+            color: const Color(0xFF29E33C),
+            width: 0,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Account Management card header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.account_balance,
+                        color: Theme.of(context).iconTheme.color),
+                    const SizedBox(width: 10),
+                    Text(
+                      AppLocalizations.of(context)
+                          .translate('Account Management'),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
+                      ),
+                    ),
+                  ],
+                ),
+                Icon(
+                  isAccountExpanded ? Icons.expand_more : Icons.chevron_right,
+                  color: Colors.grey,
+                ),
+              ],
+            ),
+            if (isAccountExpanded) ...[
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: () {
+                  // Navigate to profile creation screen
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => const CreateProfileScreen(),
+                  //   ),
+                  // );
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: const Color(0xFF29E33C),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.person_add,
+                              color: Theme.of(context).iconTheme.color),
+                          const SizedBox(width: 10),
+                          Text(
+                            AppLocalizations.of(context)
+                                .translate('Create Profile'),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  Theme.of(context).textTheme.bodyMedium?.color,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Icon(
+                        Icons.chevron_right,
+                        color: Colors.grey,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+
+              // Delete Account card
+              GestureDetector(
+                onTap: () {
+                  // Show delete account confirmation dialog
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      final dialogWidth =
+                          MediaQuery.of(context).size.width * 0.8;
+                      final dialogHeight =
+                          MediaQuery.of(context).size.height * 0.2;
+
+                      return Dialog(
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        child: Container(
+                          width: dialogWidth,
+                          height: dialogHeight,
+                          decoration: BoxDecoration(
+                            color:
+                                Theme.of(context).cardColor.withOpacity(0.90),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context)
+                                    .translate("Delete Account"),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                      fontSize: dialogWidth * 0.06,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                              SizedBox(height: dialogHeight * 0.1),
+                              Text(
+                                AppLocalizations.of(context).translate(
+                                    "Are you sure you want to delete your account?"),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                      fontSize: dialogWidth * 0.05,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: dialogHeight * 0.1),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: dialogWidth * 0.35,
+                                    height: dialogHeight * 0.25,
+                                    child: OutlinedButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      style: OutlinedButton.styleFrom(
+                                        side: const BorderSide(
+                                          color: Color(0xFF29E33C),
+                                          width: 2,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                      child: Text(
+                                        AppLocalizations.of(context)
+                                            .translate("cancel"),
+                                        style: TextStyle(
+                                          color: const Color(0xFF29E33C),
+                                          fontSize: dialogWidth * 0.06,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: dialogWidth * 0.04),
+                                  SizedBox(
+                                    width: dialogWidth * 0.35,
+                                    height: dialogHeight * 0.25,
+                                    child: DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          colors: [
+                                            Colors.red,
+                                            Color.fromARGB(255, 128, 9, 9)
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: ElevatedButton(
+                                        onPressed: () async {
+                                          // Close dialog first
+                                          Navigator.pop(context);
+
+                                          // Get the current user's ID
+                                          final sessionManager =
+                                              SessionManager();
+                                          final userId =
+                                              await sessionManager.getUserId();
+
+                                          if (userId != null) {
+                                            try {
+                                              // Show loading indicator
+                                              showDialog(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return Dialog(
+                                                    backgroundColor:
+                                                        Colors.transparent,
+                                                    elevation: 0,
+                                                    child: Container(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              16),
+                                                      decoration: BoxDecoration(
+                                                        color: Theme.of(context)
+                                                            .cardColor
+                                                            .withOpacity(0.9),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20),
+                                                      ),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          const CircularProgressIndicator(
+                                                            valueColor:
+                                                                AlwaysStoppedAnimation<
+                                                                        Color>(
+                                                                    Color(
+                                                                        0xFF29E33C)),
+                                                          ),
+                                                          const SizedBox(
+                                                              height: 16),
+                                                          Text(
+                                                            AppLocalizations.of(
+                                                                    context)
+                                                                .translate(
+                                                                    "Deleting account..."),
+                                                            style: TextStyle(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodyMedium
+                                                                  ?.color,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              );
+
+                                              // Call the method to delete user
+                                              final authController =
+                                                  AuthController();
+                                              await authController
+                                                  .deleteUserWithProfiles(
+                                                      userId);
+
+                                              // Close loading dialog
+                                              Navigator.pop(context);
+
+                                              // Show success message
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(AppLocalizations
+                                                          .of(context)
+                                                      .translate(
+                                                          "Account successfully deleted")),
+                                                  backgroundColor: Colors.green,
+                                                ),
+                                              );
+
+                                              // Clear session
+                                              await sessionManager
+                                                  .clearSession();
+
+                                              // Navigate to login screen
+                                              Navigator.of(context)
+                                                  .pushAndRemoveUntil(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        LoginView()),
+                                                (route) => false,
+                                              );
+                                            } catch (e) {
+                                              // Close loading dialog if open
+                                              Navigator.of(context,
+                                                      rootNavigator: true)
+                                                  .pop();
+
+                                              // Show error message
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                      "${AppLocalizations.of(context).translate("Error deleting account")}: $e"),
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                              );
+                                            }
+                                          } else {
+                                            // Show error message if user ID is not available
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(AppLocalizations
+                                                        .of(context)
+                                                    .translate(
+                                                        "User session not found")),
+                                                backgroundColor: Colors.red,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.transparent,
+                                          shadowColor: Colors.transparent,
+                                          padding: EdgeInsets.zero,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          AppLocalizations.of(context)
+                                              .translate("Delete"),
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: dialogWidth * 0.06,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Color(0xFF29E33C), // Changed from green to red
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.delete_forever,
+                              color: const Color.fromARGB(255, 255, 255,
+                                  255)), // Changed from white to red
+                          const SizedBox(width: 10),
+                          Text(
+                            AppLocalizations.of(context)
+                                .translate('Delete Account'),
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,

@@ -327,9 +327,16 @@ AppLocalizations.of(context).translate("login"),                  style: TextSty
               width: MediaQuery.of(context).size.width * 0.8,
               height: 50,
               child: ElevatedButton.icon(
-                onPressed: () {
-                  auth.loginWithGoogle(context);
-                },
+  onPressed: () async {
+    try {
+      Map<String, dynamic> response = await auth.loginWithGoogle(context);
+      // Navigation is now handled inside the loginWithGoogle function
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).translate("connectionError"))),
+      );
+    }
+  },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AuthScreenThemeDetector.isSystemDarkMode()
                       ? Color(0xFF2C2E2F).withOpacity(0.1)
