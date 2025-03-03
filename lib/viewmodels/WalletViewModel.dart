@@ -15,7 +15,7 @@ class WalletViewModel extends ChangeNotifier {
     notifyListeners();
 
     //const String apiUrl = "http://192.168.1.12:5000/connectProfile"; 
-    const String apiUrl = "http://10.0.2.2:5000/connectProfile"; 
+    const String apiUrl = "http://192.168.93.132:5000/connectProfile";
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
@@ -50,7 +50,7 @@ class WalletViewModel extends ChangeNotifier {
 
   Future<void> fetchTokenBalance(String accountId) async {
     try {
-      final response = await http.get(Uri.parse("http://10.0.2.2:5000/tokenBalance/$accountId"));
+      final response = await http.get(Uri.parse("http://192.168.93.132:5000/tokenBalance/$accountId"));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

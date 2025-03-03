@@ -6,12 +6,13 @@ import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
-import 'package:piminnovictus/ViewModels/WalletViewModel.dart';
-import 'package:piminnovictus/Views/DashboardClient/WalletPage.dart';
 import 'package:piminnovictus/Views/bachground.dart';
+import 'package:piminnovictus/views/DashboardClient/WalletPage.dart';
 import 'package:provider/provider.dart';
 // Import correct pour la classe User personnalisée
 import 'package:piminnovictus/Models/User.dart';
+
+import '../../viewmodels/WalletViewModel.dart';
 
 const kGreen = Color(0xFF29E33C);
 const double padding = 16.0;

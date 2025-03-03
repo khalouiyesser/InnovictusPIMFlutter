@@ -79,7 +79,7 @@ class _RegisterViewState extends State<RegisterView>
         email: emailController.text,
         password: passwordController.text,
         phoneNumber: PhoneNumberController.text,
-        packId: "67bbcbabc538c6915580df5a", // Make sure to handle null packId
+        packId: "67c3a54219a227df76c6b67c", // Make sure to handle null packId
       );
 
       // Handle successful signup

@@ -12,7 +12,7 @@ class SubscriptionViewModel extends ChangeNotifier {
 
   SubscriptionViewModel({required this.pendingSignupId}) : api = Const().url {
     // Initialize with static pack ID
-    selectedPackId = "67bbcbabc538c6915580df5a";
+    selectedPackId = "67c3a54219a227df76c6b67c";
   }
 /*
   Future<bool> updatePackForPendingSignup() async {
@@ -105,14 +105,14 @@ Future<bool> updatePackForPendingSignup() async {
   }
 }
   void selectPack(String packId) {
-    selectedPackId = "67bbcbabc538c6915580df5a";  // Always use static ID
+    selectedPackId = "67c3a54219a227df76c6b67c";  // Always use static ID
     print('Pack selected: $selectedPackId'); // Debug print
     error = null;
     notifyListeners();
   }
 
   bool isPackSelected(String packId) {
-    return selectedPackId == "67bbcbabc538c6915580df5a";
+    return selectedPackId == "67c3a54219a227df76c6b67c";
   }
 
   void clearError() {
