@@ -230,10 +230,7 @@ import 'package:piminnovictus/Views/AuthViews/RegisterView.dart';
 
 class PackDetails extends StatelessWidget {
   final Pack pack;
-  const PackDetails({
-    Key? key,
-    required this.pack
-  }) : super(key: key);
+  const PackDetails({Key? key, required this.pack}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -259,13 +256,17 @@ AppLocalizations.of(context)!
 
           // Responsive Sizing
           final basePadding = screenWidth * 0.05; // Responsive padding
-          final titleFontSize = screenWidth * 0.06; // Responsive title font size
-          final descriptionFontSize = screenWidth * 0.04; // Responsive description font size
-          final buttonFontSize = screenWidth * 0.045; // Responsive button font size
+          final titleFontSize =
+              screenWidth * 0.06; // Responsive title font size
+          final descriptionFontSize =
+              screenWidth * 0.04; // Responsive description font size
+          final buttonFontSize =
+              screenWidth * 0.045; // Responsive button font size
           final buttonWidth = screenWidth * 0.4; // Responsive button width
           final buttonHeight = screenWidth * 0.12; // Responsive button height
           final imageHeight = screenWidth * 0.55; // Responsive image height
-          final imageWidth = imageHeight * 1.4; // Responsive image width (maintain aspect ratio)
+          final imageWidth = imageHeight *
+              1.4; // Responsive image width (maintain aspect ratio)
 
           return SingleChildScrollView(
             padding: EdgeInsets.all(basePadding),
@@ -328,9 +329,10 @@ AppLocalizations.of(context)!
 
                         Navigator.of(context).push(
                           PageRouteBuilder(
-
-                            pageBuilder: (context, animation, secondaryAnimation) =>
-                                RegisterView(packId: pack.id),                            transitionDuration: Duration.zero,
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    RegisterView(packId: pack.id),
+                            transitionDuration: Duration.zero,
                             reverseTransitionDuration: Duration.zero,
                           ),
                         );
@@ -402,7 +404,10 @@ AppLocalizations.of(context)!
               ),
               TextSpan(
                 text: value,
-                style: TextStyle(color: Colors.white, fontSize: fontSize, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -439,7 +444,9 @@ AppLocalizations.of(context)!
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(25),
-          border: borderColor != null ? Border.all(color: borderColor, width: 2) : null,
+          border: borderColor != null
+              ? Border.all(color: borderColor, width: 2)
+              : null,
         ),
         child: Text(
           text,

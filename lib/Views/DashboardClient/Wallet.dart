@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
+import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:provider/provider.dart';
+// Import pour la classe User personnalisée
+import 'package:piminnovictus/Models/User.dart';
 
 // N'oublie pas d'ajouter table_calendar dans ton pubspec.yaml
 import 'package:table_calendar/table_calendar.dart';
@@ -12,18 +15,40 @@ import 'package:table_calendar/table_calendar.dart';
 const kGreen = Color(0xFF29E33C);
 const double padding = 16.0;
 
-class WalletPage extends StatelessWidget {
+class WalletPage extends StatefulWidget {
   const WalletPage({Key? key}) : super(key: key);
-  
+
+  @override
+  State<WalletPage> createState() => _WalletPageState();
+}
+
+class _WalletPageState extends State<WalletPage> {
+  final SessionManager _sessionManager = SessionManager();
+  User? currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final user = await _sessionManager.getCurrentUser();
+    if (user != null) {
+      setState(() {
+        currentUser = user;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
- final languageProvider =
+    final languageProvider =
         Provider.of<LanguageProvider>(context, listen: false);
-  
-    
+
     final theme = Theme.of(context);
     final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -32,7 +57,7 @@ class WalletPage extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            // Fond d’écran flouté
+            // Fond d'écran flouté
             BlurredRadialBackground(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -54,12 +79,17 @@ class WalletPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Text(
-                          'Khaled Guedria',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontSize: screenWidth * 0.05,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Expanded(
+                          child: currentUser == null
+                              ? const CircularProgressIndicator()
+                              : Text(
+                                  currentUser!.name,
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    fontSize: screenWidth * 0.05,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                         ),
                       ],
                     ),
@@ -103,7 +133,8 @@ class WalletPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         _ActionButton(
-  label: AppLocalizations.of(context).translate('listOfTransaction'),
+                          label: AppLocalizations.of(context)
+                              .translate('listOfTransaction'),
                           icon: Icons.send_rounded,
                           onTap: () {},
                         ),
@@ -114,7 +145,8 @@ class WalletPage extends StatelessWidget {
 
                     // Coins Activity Tracking (Titre + Calendrier)
                     Text(
-  AppLocalizations.of(context).translate('coinsActivityTracking'),
+                      AppLocalizations.of(context)
+                          .translate('coinsActivityTracking'),
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontSize: screenWidth * 0.05,
                         fontWeight: FontWeight.bold,
@@ -143,7 +175,7 @@ class WalletPage extends StatelessWidget {
 }
 
 // -----------------------------------------------------------------------------
-// Bouton d’action (sent, receive, buy)
+// Bouton d'action (sent, receive, buy)
 // -----------------------------------------------------------------------------
 class _ActionButton extends StatelessWidget {
   final String label;
@@ -229,7 +261,7 @@ class _ChartSection extends StatelessWidget {
         children: [
           // Titre de la section "Wallet"
           Text(
-  AppLocalizations.of(context).translate('walletOverview'),
+            AppLocalizations.of(context).translate('walletOverview'),
             style: theme.textTheme.titleLarge?.copyWith(
               fontSize: screenWidth * 0.05,
               fontWeight: FontWeight.bold,
@@ -270,13 +302,13 @@ class _ChartSection extends StatelessWidget {
                       reservedSize: 20,
                       getTitlesWidget: (value, meta) {
                         List<String> days = [
-                         AppLocalizations.of(context).translate('mon'),
-  AppLocalizations.of(context).translate('tue'),
-  AppLocalizations.of(context).translate('wed'),
-  AppLocalizations.of(context).translate('thu'),
-  AppLocalizations.of(context).translate('fri'),
-  AppLocalizations.of(context).translate('sat'),
-  AppLocalizations.of(context).translate('sun')
+                          AppLocalizations.of(context).translate('mon'),
+                          AppLocalizations.of(context).translate('tue'),
+                          AppLocalizations.of(context).translate('wed'),
+                          AppLocalizations.of(context).translate('thu'),
+                          AppLocalizations.of(context).translate('fri'),
+                          AppLocalizations.of(context).translate('sat'),
+                          AppLocalizations.of(context).translate('sun')
                         ];
                         return Text(
                           days[value.toInt() % days.length],
@@ -390,12 +422,15 @@ class _CalendarWithTrackingState extends State<CalendarWithTracking> {
                 _calendarFormat = format;
               });
             },
-  locale: Provider.of<LanguageProvider>(context).locale.languageCode,
- availableCalendarFormats: {
-    CalendarFormat.month: AppLocalizations.of(context).translate('month'),
-    CalendarFormat.twoWeeks: AppLocalizations.of(context).translate('twoWeeks'),
-    CalendarFormat.week: AppLocalizations.of(context).translate('week'),
-  },
+            locale: Provider.of<LanguageProvider>(context).locale.languageCode,
+            availableCalendarFormats: {
+              CalendarFormat.month:
+                  AppLocalizations.of(context).translate('month'),
+              CalendarFormat.twoWeeks:
+                  AppLocalizations.of(context).translate('twoWeeks'),
+              CalendarFormat.week:
+                  AppLocalizations.of(context).translate('week'),
+            },
             selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
             onDaySelected: (selectedDay, focusedDay) {
               setState(() {
@@ -454,7 +489,7 @@ class _CalendarWithTrackingState extends State<CalendarWithTracking> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Text(
-  AppLocalizations.of(context).translate('less'),
+              AppLocalizations.of(context).translate('less'),
               style: TextStyle(
                 color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                 fontSize: 12,
@@ -471,7 +506,7 @@ class _CalendarWithTrackingState extends State<CalendarWithTracking> {
             ),
             const SizedBox(width: 16),
             Text(
-  AppLocalizations.of(context).translate('more'),
+              AppLocalizations.of(context).translate('more'),
               style: TextStyle(
                 color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                 fontSize: 12,

@@ -256,60 +256,6 @@ class AuthController {
     }
   }
 
-/*  Future<SignupResponse?> loginWithGoogle(BuildContext context) async {
-    try {
-      print("🔄 Déconnexion des sessions existantes...");
-      await _googleSignIn.signOut();
-      await FirebaseAuth.instance.signOut(); // Utilisez directement l'instance
-      await Future.delayed(Duration(seconds: 1));
-
-      print("🚀 Tentative de connexion avec Google...");
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-
-      if (googleUser == null) {
-        print("❌ Connexion Google annulée par l'utilisateur.");
-        return null;
-      }
-
-
-      // Envoi des données au backend
-      final response = await http.post(
-        Uri.parse("$api/auth/loginGoogle"),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'email': googleUser.email,
-          'idGoogle': googleUser.id,
-        }),
-      );
-
-
-      print("📩 Réponse brute du backend : ${response.body}");
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        final responseData = json.decode(response.body);
-
-        if (responseData is List && responseData.isNotEmpty) {
-          print("✅ Inscription réussie sur le backend !");
-          return SignupResponse.fromJson(responseData[0]);
-        } else if (responseData is Map<String, dynamic>) {
-          return SignupResponse.fromJson(responseData);
-        } else {
-          print("❌ Réponse inattendue du backend.");
-        }
-      } else {
-        throw Exception('❌ Échec de l\'inscription Google : ${response.body}');
-      }
-
-    } catch (e, stackTrace) {
-      print("❌ Erreur lors de la connexion Google: $e");
-      print(stackTrace);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erreur: ${e.toString()}")),
-      );
-      return null;
-    }
-  }*/
  Future<Map<String, dynamic>> loginWithGoogle(BuildContext context) async {
   try {
     print("🔄 Déconnexion des sessions existantes...");
@@ -325,6 +271,7 @@ class AuthController {
       return {};
     }
 
+    print("11111111111111111111111111111111111111111111111111111111111 $googleUser");
     // Envoi des données au backend
     final response = await http.post(
       Uri.parse("$api/auth/loginGoogle"),

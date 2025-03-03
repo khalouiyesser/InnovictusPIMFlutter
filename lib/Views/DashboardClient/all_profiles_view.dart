@@ -32,10 +32,9 @@ class _AllProfilesViewState extends State<AllProfilesView> {
     try {
       _currentUserId = await _sessionManager.getUserId();
       final users = await _sessionManager.getRecentUsers();
-      final filteredUsers = users.where((user) => 
-        user['userId'] != _currentUserId
-      ).toList();
-      
+      final filteredUsers =
+          users.where((user) => user['userId'] != _currentUserId).toList();
+
       setState(() {
         _recentUsers = filteredUsers;
         _isLoadingRecentUsers = false;
@@ -313,10 +312,10 @@ Future<void> _showSwitchProfileDialog(BuildContext context, String profileName, 
   
   String _formatLastSeen(DateTime? lastSeen) {
     if (lastSeen == null) return 'Inconnue';
-    
+
     final now = DateTime.now();
     final difference = now.difference(lastSeen);
-    
+
     if (difference.inDays > 0) {
       return 'Il y a ${difference.inDays} jour${difference.inDays > 1 ? 's' : ''}';
     } else if (difference.inHours > 0) {
