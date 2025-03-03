@@ -23,7 +23,7 @@ class SubscriptionCarousel extends StatefulWidget {
 class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
   final List<Pack> packs = [
     Pack(
-      id: '67bbcb92c538c6915580df58',
+      id: '67bbcbabc538c6915580df5a',
       title: 'Basic Pack',
       image: 'assets/panel.png',
       description: 'Unlock energy potential...',
@@ -34,7 +34,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       certification: 'ISO Certified',
     ),
     Pack(
-      id: '67bbcb92c538c6915580df58',
+      id: '67bbcbabc538c6915580df5a',
       title: 'Advanced Pack',
       image: 'assets/background.jpg',
       description: 'Track energy live.',
@@ -45,7 +45,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       certification: 'ISO Certified',
     ),
     Pack(
-      id: '67bbcb92c538c6915580df58',
+      id: '67bbcbabc538c6915580df5a',
       title: 'Advanced Pack',
       image: 'assets/background.jpg',
       description: 'Track energy live.',
@@ -56,7 +56,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       certification: 'ISO Certified',
     ),
     Pack(
-      id: '67bbcb92c538c6915580df58',
+      id: '67bbcbabc538c6915580df5a',
       title: 'Advanced Pack',
       image: 'assets/background.jpg',
       description: 'Track energy live.',

@@ -223,7 +223,7 @@ class AuthController {
           'name': googleUser.displayName,
           'idGoogle': googleUser.id,
           'photoUrl': googleUser.photoUrl,
-          'packId': "67c3a54219a227df76c6b67c",
+          'packId': "67bbcbabc538c6915580df5a",
         }),
       );
 
@@ -312,7 +312,32 @@ class AuthController {
     }
   }
 
+  Future<Map<String, dynamic>?> updateUser(
+      String userId, String name, String email, String phoneNumber) async {
+    try {
+      final response = await http.patch(
+        Uri.parse("$api/auth/update-user"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'id': userId,
+          'name': name,
+          'email': email,
+          'phoneNumber': phoneNumber,
+        }),
+      );
 
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to update user: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Error updating user: $e');
+    }
+  }
   Future<String?> createPaymentIntent(int amount, String currency) async {
     try {
       final response = await http.post(

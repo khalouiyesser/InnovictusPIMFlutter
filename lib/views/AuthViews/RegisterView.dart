@@ -79,7 +79,7 @@ class _RegisterViewState extends State<RegisterView>
         email: emailController.text,
         password: passwordController.text,
         phoneNumber: PhoneNumberController.text,
-        packId: "67bbcb92c538c6915580df58", // Make sure to handle null packId
+        packId: "67bbcbabc538c6915580df5a", // Make sure to handle null packId
       );
 
       // Handle successful signup
@@ -124,7 +124,7 @@ class _RegisterViewState extends State<RegisterView>
           context,
           MaterialPageRoute(
             builder: (context) => SubscriptionCarousel(
-              preselectedPackId: "67c3a54219a227df76c6b67c",
+              preselectedPackId: "67bbcbabc538c6915580df5a",
               pendingSignupId: signupResponse.pendingSignupId,
             ),
           ),
