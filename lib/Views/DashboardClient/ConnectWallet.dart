@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
+import 'package:piminnovictus/ViewModels/WalletViewModel.dart';
+import 'package:piminnovictus/Views/DashboardClient/WalletPage.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:provider/provider.dart';
 // Import correct pour la classe User personnalisée
@@ -25,6 +28,9 @@ class _ConnectWalletPageState extends State<ConnectWalletPage> {
   User? currentUser;
   final TextEditingController _apiKeyController = TextEditingController();
   final TextEditingController _secretKeyController = TextEditingController();
+
+  //ajbouni
+  final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
   @override
   void initState() {
@@ -48,40 +54,35 @@ class _ConnectWalletPageState extends State<ConnectWalletPage> {
     }
   }
 
-  void _showConnectWalletModal() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setModalState) {
-            return Container(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    spreadRadius: 5,
+
+void _showConnectWalletModal(BuildContext context) {
+  final TextEditingController _accountIdController = TextEditingController();
+  final TextEditingController _privateKeyController = TextEditingController();
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setModalState) {
+          return Consumer<WalletViewModel>(
+            builder: (context, walletViewModel, child) {
+              return Container(
+                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
                   ),
-                ],
-              ),
-              child: SingleChildScrollView(
-                child: Padding(
+                ),
+                child: SingleChildScrollView(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Header avec titre
+                      // Header
                       Center(
                         child: Container(
                           width: 50,
@@ -93,169 +94,115 @@ class _ConnectWalletPageState extends State<ConnectWalletPage> {
                         ),
                       ),
                       const SizedBox(height: 20),
+
+                      // Title
                       Center(
                         child: Text(
                           "Connect Your Wallet",
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
-                              ?.copyWith(
-                                color: kGreen,
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                color: Colors.green,
                                 fontWeight: FontWeight.bold,
                               ),
                         ),
                       ),
                       const SizedBox(height: 30),
 
-                      // Champ API Key
-                      Text(
-                        "API Key",
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
+                      // Account ID Input
+                      Text("Profile ID", style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 8),
                       TextField(
-                        controller: _apiKeyController,
+                        controller: _accountIdController,
                         decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Theme.of(context).colorScheme.surface,
+                          hintText: "Enter your Profile Id",
+                          prefixIcon: const Icon(Icons.account_circle),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withOpacity(0.2),
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withOpacity(0.2),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: kGreen,
-                              width: 2,
-                            ),
-                          ),
-                          hintText: "Enter your API key",
-                          prefixIcon: Icon(
-                            Icons.vpn_key_rounded,
-                            color: Theme.of(context)
-                                .iconTheme
-                                .color
-                                ?.withOpacity(0.7),
                           ),
                         ),
                       ),
                       const SizedBox(height: 20),
 
-                      // Champ Secret Key
-                      Text(
-                        "Secret Key",
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
+                      // Private Key Input
+                      Text("Private Key", style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 8),
                       TextField(
-                        controller: _secretKeyController,
+                        controller: _privateKeyController,
                         obscureText: true,
                         decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Theme.of(context).colorScheme.surface,
+                          hintText: "Enter your Private key",
+                          prefixIcon: const Icon(Icons.vpn_key),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withOpacity(0.2),
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withOpacity(0.2),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: kGreen,
-                              width: 2,
-                            ),
-                          ),
-                          hintText: "Enter your secret key",
-                          prefixIcon: Icon(
-                            Icons.lock_rounded,
-                            color: Theme.of(context)
-                                .iconTheme
-                                .color
-                                ?.withOpacity(0.7),
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 30),
 
-                      // Bouton de confirmation
+                      // Connect Wallet Button
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            // Ajouter ici la logique de connexion au wallet
-                            // Vous pouvez traiter _apiKeyController.text et _secretKeyController.text
-                            Navigator.pop(context);
+                          onPressed: walletViewModel.isLoading
+                              ? null
+                              : () async {
+                                  final accountId = _accountIdController.text.trim();
+                                  final privateKey = _privateKeyController.text.trim();
 
-                            // Afficher un snackbar de confirmation
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Wallet successfully connected!'),
-                                backgroundColor: kGreen,
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            );
-                          },
+                                  if (accountId.isEmpty || privateKey.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text("Please fill in both fields."),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                    return;
+                                  }
+
+                                  await walletViewModel.connectWallet(accountId, privateKey);
+
+                                  if (walletViewModel.errorMessage != null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(walletViewModel.errorMessage!),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  } else {
+                                    //ajbouni
+                                    // Securely store credentials 
+                                    await secureStorage.write(key: 'privateKey', value: privateKey);
+                                    await secureStorage.write(key: 'accountId', value: accountId);
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => WalletPage()),
+                                      );
+                                  }
+                                },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: kGreen,
-                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.green,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            elevation: 0,
                           ),
-                          child: const Text(
-                            "Confirm",
-                            style: TextStyle(
-                              backgroundColor: const Color(0xFF29E33C),
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: walletViewModel.isLoading
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : const Text("Confirm", style: TextStyle(fontSize: 16,color: Colors.white, fontWeight: FontWeight.bold)),
                         ),
                       ),
                       const SizedBox(height: 10),
                     ],
                   ),
                 ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
+              );
+            },
+          );
+        },
+      );
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -337,47 +284,46 @@ class _ConnectWalletPageState extends State<ConnectWalletPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    InkWell(
-                      borderRadius: BorderRadius.circular(25),
-                      onTap:
-                          _showConnectWalletModal, // Appel de la fonction pour afficher le modal
-                      child: Column(
-                        children: [
-                          Container(
-                            width: screenWidth * 0.7,
-                            padding: const EdgeInsets.all(25),
-                            decoration: BoxDecoration(
-                              color: theme.cardColor.withOpacity(0.70),
-                              border: Border.all(
-                                color:
-                                    theme.colorScheme.primary.withOpacity(0.11),
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(30),
+                  InkWell(
+                    borderRadius: BorderRadius.circular(25),
+                    onTap: () {
+                      _showConnectWalletModal(context); // Corrected: passing a function reference
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          width: screenWidth * 0.7,
+                          padding: const EdgeInsets.all(25),
+                          decoration: BoxDecoration(
+                            color: theme.cardColor.withOpacity(0.70),
+                            border: Border.all(
+                              color: theme.colorScheme.primary.withOpacity(0.11),
+                              width: 2,
                             ),
-                            child: Center(
-                              child: Text(
-                                "Connect To The Wallet",
-                                style: TextStyle(
-                                  color: kGreen,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "Connect To The Wallet",
+                              style: TextStyle(
+                                color: kGreen,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            "",
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              fontSize: screenWidth * 0.04,
-                              color: theme.textTheme.titleMedium?.color
-                                  ?.withOpacity(0.7),
-                            ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "",
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontSize: screenWidth * 0.04,
+                            color: theme.textTheme.titleMedium?.color?.withOpacity(0.7),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                  ),
                   ],
                 ),
 

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Views/DashboardClient/ConnectWallet.dart';
 import 'package:piminnovictus/Views/DashboardClient/Dashboard.dart';
-import 'package:piminnovictus/Views/DashboardClient/Wallet.dart';
+import 'package:piminnovictus/Views/DashboardClient/WalletPage.dart';
 import 'package:piminnovictus/Views/Users/EditProfile.dart';
 import 'package:provider/provider.dart';
 import 'buyEnergie.dart';
@@ -45,6 +46,27 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
     EditProfile(),
   ];
 
+
+//ajbouni
+  final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
+  Future<void> _loadWalletData() async {
+    String? privateKey = await secureStorage.read(key: 'privateKey');
+    String? accountId = await secureStorage.read(key: 'accountId');
+
+    if (accountId != null && privateKey != null) {
+      print('-****************AAA***********************-');
+      print('Account ID: $accountId');
+      print('Private Key: $privateKey');
+      // If wallet data is available, replace ConnectWalletPage with WalletPage
+      setState(() {
+        _pages[1] = WalletPage();  // Change ConnectWalletPage to WalletPage
+      });
+    } else {
+      print('-****************AAA***********************-');
+      print('No stored wallet credentials found.');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -61,6 +83,7 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
     );
 
     _startLoopAnimation();
+    _loadWalletData();
   }
 
   void _startLoopAnimation() {
