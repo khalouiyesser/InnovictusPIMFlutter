@@ -16,6 +16,9 @@ import 'package:piminnovictus/Views/DashboardClient/profile_switcher_dropdown.da
 
 import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:fl_chart/fl_chart.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import '../../Services/socket_service.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -27,6 +30,21 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final SessionManager _sessionManager = SessionManager();
   User? currentUser;
+
+late WebSocketChannel channel;
+  
+  final SocketService _socketService = SocketService();
+
+
+
+  int batteryLevel =0;
+  double totalEnergy = 0.0;
+  double capacity = 0.0;
+  double co2Reduction = 0.0;
+  double consumedEnergy=0.0;
+
+
+
   Widget getWeatherIcon(int code, {double size = 24.0}) {
     switch (code) {
       case >= 200 && < 300:
@@ -87,6 +105,23 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
     _loadUserData();
+
+
+_socketService.connectToSocket((data) {
+      if (mounted) {
+        setState(() {
+          totalEnergy = data['totalEnergy'] is num ? (data['totalEnergy'] as num).toDouble() : 0.0;
+          capacity = data['capacity'] is num ? (data['capacity'] as num).toDouble() : 0.0;
+          co2Reduction = data['co2Reduction'] is num ? (data['co2Reduction'] as num).toDouble() : 0.0;
+          batteryLevel = data['batterylevel'] is int ? data['batterylevel'] : 0;
+          consumedEnergy = data['consumed'] is num 
+              ? double.parse((data['consumed'] as num).toStringAsFixed(2)) 
+              : 0.0;
+        });
+      }
+    });
+
+
   }
 
   Future<void> _loadUserData() async {
@@ -277,7 +312,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             CustomPaint(
                               size: Size(screenWidth * 0.5, screenWidth * 0.5),
                               painter: CircularProgressPainter(
-                                0.85,
+                                this.batteryLevel * 0.01,
                                 progressColor: progressColor,
                                 progressBackgroundColor:
                                     progressBackgroundColor,
@@ -297,7 +332,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 ),
                                 const SizedBox(height: 1),
                                 Text(
-                                  '85%',
+                                  this.batteryLevel.toString()+"%",
                                   style:
                                       theme.textTheme.headlineLarge?.copyWith(
                                     fontSize: screenWidth * 0.1,
@@ -339,20 +374,19 @@ class _DashboardPageState extends State<DashboardPage> {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           children: [
-                            _buildInfoCard(context, AppLocalizations.of(context).translate('totalEnergy'), 
-  '36.2 ${AppLocalizations.of(context).translate('kwh')}',
+                            _buildInfoCard(context, AppLocalizations.of(context).translate('totalEnergy'), '${this.totalEnergy} ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.lightbulb),
                             _buildInfoCard(
   context, 
   AppLocalizations.of(context).translate('consumed'), 
-  '28.2 ${AppLocalizations.of(context).translate('kwh')}',
+  '${this.consumedEnergy} ${AppLocalizations.of(context).translate('kwh')}',
   Icons.flash_on
 ),
                             _buildInfoCard(context,  AppLocalizations.of(context).translate('capacity'), 
   '42.0 ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.battery_full),
                             _buildInfoCard(context,  AppLocalizations.of(context).translate('co2Reduction'), 
-  '28.2 ${AppLocalizations.of(context).translate('kwh')}',
+  '${this.co2Reduction} ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.eco),
                           ],
                         ),

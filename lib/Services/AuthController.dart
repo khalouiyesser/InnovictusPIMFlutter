@@ -428,4 +428,23 @@ final responseData = json.decode(response.body);
       return null;
     }
   }
+
+  /// Fonction pour supprimer user
+  Future deleteUserWithProfiles(String userId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse("$api/auth/deleteUser/$userId"),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode >= 199 && response.statusCode < 300) {
+        print(response.body);
+        return "user deleted";
+      } else {
+        throw Exception('Échec de suppression de user : ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Erreur lors de l\'envoi de requete: $e');
+    }
+  }
 }

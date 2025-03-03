@@ -297,7 +297,7 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                     }
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Echec de connexion")),
+                      SnackBar(content: Text(e.toString())),
                     );
                   }
                 },

@@ -35,7 +35,8 @@ dependencies:
   webview_flutter: ^4.4.4 
   flutter_stripe: ^10.0.0  # Mets la dernière version
   firebase_core: ^2.32.0  # Dernière version compatible
-
+  web_socket_channel: ^2.4.0  # Replace with the latest version
+  socket_io_client: ^2.0.3    # Replace with the latest version
 
 dev_dependencies:
   flutter_test:
