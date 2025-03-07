@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/ClientModels/profile.dart';
-import 'package:piminnovictus/Models/User.dart';
+import 'package:piminnovictus/Models/User.dart' as custom_user;
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Services/Const.dart';
 import 'package:http/http.dart' as http;
@@ -10,7 +11,7 @@ import 'dart:convert';
 class ProfileSwitcherViewModel with ChangeNotifier {
   List<ProfileModel> _profiles = [];
   ProfileModel? _currentProfile;
-  List<User> _recentUsers = [];
+  List<firebase_auth.User> _recentUsers = [];
   bool _isLoading = false;
   final SessionManager _sessionManager = SessionManager();
   final String _baseUrl;
@@ -18,7 +19,7 @@ class ProfileSwitcherViewModel with ChangeNotifier {
   List<ProfileModel> get profiles => _profiles;
   ProfileModel? get currentProfile => _currentProfile;
   bool get isLoading => _isLoading;
-  List<User> get recentUsers => _recentUsers;
+  List<firebase_auth.User> get recentUsers => _recentUsers;
   Map<String, dynamic>? get currentProfileData => _currentProfileData;
 
   void _setLoading(bool loading) {

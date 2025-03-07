@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:piminnovictus/Models/Auth/SignupRes.dart';
 import 'package:piminnovictus/Services/Const.dart';
 import 'package:http/http.dart' as http;
@@ -84,7 +86,9 @@ class AuthController {
     }
   }
 
-  Future<SignupResponse> signupSimple({
+
+
+ Future<SignupResponse> signupSimple({
     required String name,
     required String email,
     required String password,
@@ -114,6 +118,10 @@ class AuthController {
       throw Exception('Error during signup: $e');
     }
   }
+
+
+
+
 
   /// Fonction pour l'oubli de mot de passe
   Future<Map<String, dynamic>> forgotPassword(String email) async {
@@ -213,7 +221,7 @@ class AuthController {
           'name': googleUser.displayName,
           'idGoogle': googleUser.id,
           'photoUrl': googleUser.photoUrl,
-          'packId': "67bbcbabc538c6915580df5a",
+          'packId': "67c3a54219a227df76c6b67c",
         }),
       );
 
@@ -244,58 +252,77 @@ class AuthController {
     }
   }
 
-  /// Signup with google
-  Future<SignupResponse?> loginWithGoogle(BuildContext context) async {
-    try {
-      print("🔄 Déconnexion des sessions existantes...");
-      await _googleSignIn.signOut();
-      await FirebaseAuth.instance.signOut(); // Utilisez directement l'instance
-      await Future.delayed(Duration(seconds: 1));
+ Future<Map<String, dynamic>> loginWithGoogle(BuildContext context) async {
+  try {
+    print("🔄 Déconnexion des sessions existantes...");
+    await _googleSignIn.signOut();
+    await FirebaseAuth.instance.signOut();
+    await Future.delayed(Duration(seconds: 1));
 
-      print("🚀 Tentative de connexion avec Google...");
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    print("🚀 Tentative de connexion avec Google...");
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
-      if (googleUser == null) {
-        print("❌ Connexion Google annulée par l'utilisateur.");
-        return null;
-      }
-
-      // Envoi des données au backend
-      final response = await http.post(
-        Uri.parse("$api/auth/loginGoogle"),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'email': googleUser.email,
-          'idGoogle': googleUser.id,
-        }),
-      );
-
-      print("📩 Réponse brute du backend : ${response.body}");
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        final responseData = json.decode(response.body);
-
-        if (responseData is List && responseData.isNotEmpty) {
-          print("✅ Inscription réussie sur le backend !");
-          return SignupResponse.fromJson(responseData[0]);
-        } else if (responseData is Map<String, dynamic>) {
-          return SignupResponse.fromJson(responseData);
-        } else {
-          print("❌ Réponse inattendue du backend.");
-        }
-      } else {
-        throw Exception('❌ Échec de l\'inscription Google : ${response.body}');
-      }
-    } catch (e, stackTrace) {
-      print("❌ Erreur lors de la connexion Google: $e");
-      print(stackTrace);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erreur: ${e.toString()}")),
-      );
-      return null;
+    if (googleUser == null) {
+      print("❌ Connexion Google annulée par l'utilisateur.");
+      return {};
     }
+
+    print("11111111111111111111111111111111111111111111111111111111111 $googleUser");
+    // Envoi des données au backend
+    final response = await http.post(
+      Uri.parse("$api/auth/loginGoogle"),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'email': googleUser.email,
+        'idGoogle': googleUser.id,
+      }),
+    );
+
+    print("📩 Réponse brute du backend : ${response.body}");
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final responseData = json.decode(response.body);
+      
+      // Based on your response, we need to create a proper userData map
+      // The response doesn't have accessToken or userId like simple login
+      await _sessionManager.saveSession(
+        // Since token is not provided in the Google response, we'll use a placeholder
+        // You may need to adjust your backend to provide tokens or implement another approach
+        token: 'google_auth_${responseData['_id']}', // Using _id as a fallback
+        userData: {
+          'email': responseData['email'],
+          'userId': responseData['_id'], // Using _id from response as userId
+          'refreshToken': 'google_auth_refresh', // Placeholder
+          'name': responseData['name'],
+          'idGoogle': responseData['idGoogle'],
+          // Add other fields as needed
+        },
+      );
+      
+      // Navigate to BottomNavBarExample
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => 
+              BottomNavBarExample(),
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
+        ),
+      );
+      
+      return responseData;
+    } else {
+      throw Exception('❌ Échec de la connexion Google : ${response.body}');
+    }
+  } catch (e, stackTrace) {
+    print("❌ Erreur lors de la connexion Google: $e");
+    print(stackTrace);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Erreur de connexion: ${e.toString()}")),
+    );
+    return {};
   }
+}
 
   Future<Map<String, dynamic>?> updateUser(
       String userId, String name, String email, String phoneNumber) async {

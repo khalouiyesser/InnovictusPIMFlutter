@@ -79,7 +79,7 @@ class _RegisterViewState extends State<RegisterView>
         email: emailController.text,
         password: passwordController.text,
         phoneNumber: PhoneNumberController.text,
-        packId: "67bbcbabc538c6915580df5a", // Make sure to handle null packId
+        packId: "67c3a54219a227df76c6b67c", // Make sure to handle null packId
       );
 
       // Handle successful signup
@@ -115,7 +115,7 @@ class _RegisterViewState extends State<RegisterView>
     try {
       print("🚀 Début du processus d'inscription avec Google...");
       final SignupResponse? signupResponse =
-          await auth.signUpWithGoogle(context);
+          (await auth.signUpWithGoogle(context)) as SignupResponse?;
 
       if (!mounted) return; // Vérifie si le widget est encore actif
 

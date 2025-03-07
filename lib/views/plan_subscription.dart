@@ -23,7 +23,7 @@ class SubscriptionCarousel extends StatefulWidget {
 class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
   final List<Pack> packs = [
     Pack(
-      id: '67bbcbabc538c6915580df5a',
+      id: '67c3a54219a227df76c6b67c',
       title: 'Basic Pack',
       image: 'assets/panel.png',
       description: 'Unlock energy potential...',
@@ -34,7 +34,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       certification: 'ISO Certified',
     ),
     Pack(
-      id: '67bbcbabc538c6915580df5a',
+      id: '67c3a54219a227df76c6b67c',
       title: 'Advanced Pack',
       image: 'assets/background.jpg',
       description: 'Track energy live.',
@@ -45,7 +45,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       certification: 'ISO Certified',
     ),
     Pack(
-      id: '67bbcbabc538c6915580df5a',
+      id: '67c3a54219a227df76c6b67c',
       title: 'Advanced Pack',
       image: 'assets/background.jpg',
       description: 'Track energy live.',
@@ -56,7 +56,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
       certification: 'ISO Certified',
     ),
     Pack(
-      id: '67bbcbabc538c6915580df5a',
+      id: '67c3a54219a227df76c6b67c',
       title: 'Advanced Pack',
       image: 'assets/background.jpg',
       description: 'Track energy live.',
@@ -135,7 +135,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
         final success = await _viewModel.updatePackForPendingSignup();
 
         if (success) {
-          String packId = "67bbcbabc538c6915580df5a";
+          String packId = "67c3a54219a227df76c6b67c";
           String pendingSignupId = widget.pendingSignupId;
           PaymentService.openPayment(context, packId, pendingSignupId);
         } else {

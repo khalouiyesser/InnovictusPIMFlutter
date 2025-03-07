@@ -6,7 +6,7 @@ import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
-import 'package:piminnovictus/Views/DashboardClient/Wallet.dart';
+// import 'package:piminnovictus/Views/DashboardClient/WalletPage.dart';
 import 'package:piminnovictus/Views/DashboardClient/energy_settings_sheet.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:piminnovictus/viewmodels/WeatherAPI/bloc/weather_bloc_bloc.dart';
@@ -120,6 +120,8 @@ _socketService.connectToSocket((data) {
         });
       }
     });
+
+
 
 
   }
