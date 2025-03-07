@@ -1,137 +1,6 @@
-// import 'package:flutter/material.dart';
-// import 'package:piminnovictus/Services/AuthController.dart';
-// import 'dart:ui';
-//
-// import 'package:piminnovictus/Views/bachground.dart';
-//
-// class NewPasswordPage extends StatefulWidget {
-//   const NewPasswordPage({super.key, required this.resetToken});
-//   final String resetToken;
-//
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//
-//   }
-//
-//   @override
-//   _NewPasswordPageState createState() => _NewPasswordPageState();
-// }
-//
-// class _NewPasswordPageState extends State<NewPasswordPage> {
-//   bool _obscurePassword = true;
-//   bool _obscureConfirmPassword = true;
-//
-//   AuthController authController = AuthController();
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: BlurredRadialBackground(
-//         child: SafeArea(
-//           child: Padding(
-//             padding: const EdgeInsets.symmetric(horizontal: 20.0),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 const SizedBox(height: 40),
-//                 const Text(
-//                   "Enter New Password",
-//                   style: TextStyle(
-//                     fontSize: 22,
-//                     fontWeight: FontWeight.bold,
-//                     color: Colors.white,
-//                   ),
-//                 ),
-//                 const SizedBox(height: 80),
-//
-//                 // Password Field
-//                 _buildPasswordField("Password", _obscurePassword, () {
-//                   setState(() {
-//                     _obscurePassword = !_obscurePassword;
-//                   });
-//                 }),
-//
-//                 const SizedBox(height: 15),
-//
-//                 // Confirm Password Field
-//                 _buildPasswordField("Confirm Password", _obscureConfirmPassword,
-//                     () {
-//                   setState(() {
-//                     _obscureConfirmPassword = !_obscureConfirmPassword;
-//                   });
-//                 }),
-//
-//                 const SizedBox(height: 40),
-//
-//                 // Save Button
-//                 SizedBox(
-//                   width: double.infinity,
-//                   height: 50,
-//                   child: ElevatedButton(
-//                     onPressed: () {
-//
-//                       authController.resetPassword(resetToken, newPassword);
-//
-//                       // Action à exécuter lors de la validation du mot de passe
-//                     },
-//                     style: ElevatedButton.styleFrom(
-//                       backgroundColor:
-//                           const Color(0xFF29E33C), // ✅ Couleur verte (29E33C)
-//                       shape: RoundedRectangleBorder(
-//                         borderRadius: BorderRadius.circular(30),
-//                       ),
-//                     ),
-//                     child: const Text(
-//                       "Save",
-//                       style: TextStyle(
-//                         color: Colors.white,
-//                         fontSize: 18,
-//                         fontWeight: FontWeight.bold,
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   Widget _buildPasswordField(
-//       String hint, bool obscureText, VoidCallback toggleVisibility) {
-//     return TextField(
-//       obscureText: obscureText,
-//       style: const TextStyle(color: Colors.white),
-//       decoration: InputDecoration(
-//         filled: true,
-//         fillColor: Colors.grey[800],
-//         hintText: hint,
-//         hintStyle: const TextStyle(color: Colors.white70),
-//         suffixIcon: IconButton(
-//           icon: Icon(
-//             obscureText ? Icons.visibility_off : Icons.visibility,
-//             color: Colors.white70,
-//           ),
-//           onPressed: toggleVisibility,
-//         ),
-//         enabledBorder: OutlineInputBorder(
-//           borderRadius: BorderRadius.circular(30),
-//           borderSide: const BorderSide(color: Colors.transparent),
-//         ),
-//         focusedBorder: OutlineInputBorder(
-//           borderRadius: BorderRadius.circular(30),
-//           borderSide: const BorderSide(
-//               color: Color(0xFF29E33C), width: 1), // ✅ Bordure verte (29E33C)
-//         ),
-//       ),
-//     );
-//   }
-// }
+
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Services/AuthController.dart';
 import 'package:piminnovictus/Views/AuthViews/login_view.dart';
 import 'dart:ui';
@@ -166,19 +35,19 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
 
     // Vérification si les mots de passe sont identiques
     if (password != confirmPassword) {
-      _showErrorDialog("Passwords do not match!");
+      _showErrorDialog(AppLocalizations.of(context).translate("passwordsDoNotMatch"));
       return;
     }
 
     // Vérification de la longueur du mot de passe
     if (password.length < 6) {
-      _showErrorDialog("Password must be at least 6 characters long!");
+      _showErrorDialog(AppLocalizations.of(context).translate("passwordTooShort"));
       return;
     }
 
     // Vérification si le mot de passe contient au moins un chiffre
     if (!RegExp(r'^(?=.*[0-9])').hasMatch(password)) {
-      _showErrorDialog("Password must contain at least one number!");
+      _showErrorDialog(AppLocalizations.of(context).translate("passwordRequireNumber"));
       return;
     }
 
@@ -197,12 +66,12 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Error"),
+          title: Text(AppLocalizations.of(context).translate("error")),
           content: Text(message),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("OK"),
+              child: Text(AppLocalizations.of(context).translate("ok")),
             ),
           ],
         );
@@ -221,9 +90,9 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 40),
-                const Text(
-                  "Enter New Password",
-                  style: TextStyle(
+                 Text(
+                  AppLocalizations.of(context).translate("enterNewPassword"),
+                  style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -232,7 +101,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                 const SizedBox(height: 80),
 
                 // Password Field
-                _buildPasswordField("Password", passwordController, _obscurePassword, () {
+                _buildPasswordField(AppLocalizations.of(context).translate("password"), passwordController, _obscurePassword, () {
                   setState(() {
                     _obscurePassword = !_obscurePassword;
                   });
@@ -241,7 +110,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                 const SizedBox(height: 15),
 
                 // Confirm Password Field
-                _buildPasswordField("Confirm Password", confirmPasswordController, _obscureConfirmPassword, () {
+                _buildPasswordField(                  AppLocalizations.of(context).translate("confirmPassword"), confirmPasswordController, _obscureConfirmPassword, () {
                   setState(() {
                     _obscureConfirmPassword = !_obscureConfirmPassword;
                   });
@@ -261,9 +130,9 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text(
-                      "Save",
-                      style: TextStyle(
+                    child:  Text(
+                      AppLocalizations.of(context).translate("save"),
+                      style:const  TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

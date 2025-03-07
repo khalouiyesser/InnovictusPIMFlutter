@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
 import 'package:piminnovictus/viewmodels/WeatherAPI/bloc/weather_bloc_bloc.dart';
 import 'dart:ui';
+import 'package:piminnovictus/Models/config/language/translations.dart';
 
 import '../../Services/AuthController.dart';
 import '../DashboardClient/Bottom_bar.dart';
@@ -22,7 +23,6 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
   String? _passwordError = null;
   late AuthScreenTheme _theme;
   bool _isPasswordVisible = false;
-
   AuthController auth = AuthController();
 
   @override
@@ -103,10 +103,10 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
   void _validateEmail(String value) {
     setState(() {
       if (value.isEmpty) {
-        _emailError = "Email cannot be empty";
+      _emailError = AppLocalizations.of(context).translate("emailRequired");
       } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
           .hasMatch(value)) {
-        _emailError = "Enter a valid email";
+      _emailError = AppLocalizations.of(context).translate("emailInvalid");
       } else {
         _emailError = null;
       }
@@ -116,9 +116,9 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
   void _validatePassword(String value) {
     setState(() {
       if (value.isEmpty) {
-        _passwordError = "Password cannot be empty";
+      _passwordError = AppLocalizations.of(context).translate("passwordRequired");
       } else if (value.length < 6) {
-        _passwordError = "Password must be at least 6 characters";
+      _passwordError = AppLocalizations.of(context).translate("passwordTooShort");
       } else {
         _passwordError = null;
       }
@@ -164,7 +164,7 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                     decoration: InputDecoration(
                       errorText: _emailError,
                       errorStyle: TextStyle(color: Colors.red),
-                      hintText: "Email",
+                        hintText: AppLocalizations.of(context).translate('email'),
                       hintStyle: TextStyle(
                         color: AuthScreenThemeDetector.isSystemDarkMode()
                             ? _theme.hintTextColor
@@ -199,7 +199,8 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                     decoration: InputDecoration(
                       errorText: _passwordError,
                       errorStyle: TextStyle(color: Colors.red),
-                      hintText: "Password",
+                      hintText: AppLocalizations.of(context).translate("password"),
+
                       hintStyle: TextStyle(
                         color: AuthScreenThemeDetector.isSystemDarkMode()
                             ? _theme.hintTextColor
@@ -246,7 +247,7 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                         );
                       },
                       child: Text(
-                        "Forgot Password?",
+  AppLocalizations.of(context).translate("forgotPassword"),
                         style: TextStyle(
                           color: _theme.textColor,
                           fontSize: 14,
@@ -291,13 +292,12 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                            content: Text(
-                                "Échec de la connexion : ${response['message'] ?? 'Vérifiez vos identifiants'}")),
-                      );
+    content: Text(AppLocalizations.of(context).translate("loginFailed") + ": ${response['message'] ?? AppLocalizations.of(context).translate("checkCredentials")}")
+  ), );
                     }
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(e.toString())),
+  SnackBar(content: Text(AppLocalizations.of(context).translate("connectionError"))),
                     );
                   }
                 },
@@ -309,8 +309,7 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                   padding: EdgeInsets.symmetric(vertical: 15),
                 ),
                 child: Text(
-                  "Login",
-                  style: TextStyle(
+AppLocalizations.of(context).translate("login"),                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 15,
                   ),
@@ -328,9 +327,16 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
               width: MediaQuery.of(context).size.width * 0.8,
               height: 50,
               child: ElevatedButton.icon(
-                onPressed: () {
-                  auth.loginWithGoogle(context);
-                },
+  onPressed: () async {
+    try {
+      Map<String, dynamic> response = await auth.loginWithGoogle(context);
+      // Navigation is now handled inside the loginWithGoogle function
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).translate("connectionError"))),
+      );
+    }
+  },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AuthScreenThemeDetector.isSystemDarkMode()
                       ? Color(0xFF2C2E2F).withOpacity(0.1)
@@ -349,7 +355,7 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                   height: 24,
                 ),
                 label: Text(
-                  "Login with Google",
+  AppLocalizations.of(context).translate("loginWithGoogle"),
                   style: TextStyle(
                     color: Theme.of(context).brightness == Brightness.light
                         ? Colors.white
@@ -370,7 +376,7 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "You don't have an account yet? ",
+  AppLocalizations.of(context).translate("noAccountYet"),
                   style: TextStyle(
                     color: _theme.textColor,
                     fontSize: 14,
@@ -384,7 +390,7 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                     );
                   },
                   child: Text(
-                    "sign up",
+  AppLocalizations.of(context).translate("signUp"),
                     style: TextStyle(color: _theme.primaryColor, fontSize: 16),
                   ),
                 )
@@ -397,7 +403,7 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
             top: 80,
             left: 20,
             child: Text(
-              "Welcome back",
+  AppLocalizations.of(context).translate("welcomeBack"),
               style: TextStyle(
                 color: _theme.textColor,
                 fontSize: 30,
@@ -418,8 +424,7 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
             top: 120,
             left: 20,
             child: Text(
-              "Login",
-              style: TextStyle(
+              AppLocalizations.of(context).translate("login"),              style: TextStyle(
                 color: _theme.textColor,
                 fontSize: 27,
                 fontWeight: FontWeight.normal,

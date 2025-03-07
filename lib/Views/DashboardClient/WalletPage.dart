@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
@@ -11,6 +12,8 @@ import 'package:piminnovictus/Models/User.dart';
 
 // N'oublie pas d'ajouter table_calendar dans ton pubspec.yaml
 import 'package:table_calendar/table_calendar.dart';
+
+import '../../viewmodels/WalletViewModel.dart';
 
 const kGreen = Color(0xFF29E33C);
 const double padding = 16.0;
@@ -26,10 +29,33 @@ class _WalletPageState extends State<WalletPage> {
   final SessionManager _sessionManager = SessionManager();
   User? currentUser;
 
+  //ajbouni
+  final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
+  Future<void> _loadWalletData() async {
+    String? privateKey = await secureStorage.read(key: 'privateKey');
+    String? accountId = await secureStorage.read(key: 'accountId');
+
+    if (accountId != null && privateKey != null) {
+      print('-****************AAA***********************-');
+      print('Account ID: $accountId');
+      print('Private Key: $privateKey');
+      print('-****************AAA***********************-');
+    } else {
+      print('-****************AAA***********************-');
+      print('No stored wallet credentials found.');
+      print('-****************AAA***********************-');
+    }
+
+    final walletViewModel = Provider.of<WalletViewModel>(context, listen: false);
+    walletViewModel.fetchTokenBalance(accountId!);
+  }
+
+
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _loadWalletData();
   }
 
   Future<void> _loadUserData() async {
@@ -43,6 +69,8 @@ class _WalletPageState extends State<WalletPage> {
 
   @override
   Widget build(BuildContext context) {
+    final walletViewModel = Provider.of<WalletViewModel>(context);
+    
     final languageProvider =
         Provider.of<LanguageProvider>(context, listen: false);
 
@@ -102,7 +130,7 @@ class _WalletPageState extends State<WalletPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '0 Greeno',
+                            "${walletViewModel.tokenBalance} GREENO", // Concatenate values properly
                             style: TextStyle(
                               color: kGreen,
                               fontSize: screenWidth * 0.07,
@@ -114,7 +142,7 @@ class _WalletPageState extends State<WalletPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '\$0',
+                                '${(double.tryParse(walletViewModel.tokenBalance) ?? 0) * 0.25} DT ', 
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontSize: screenWidth * 0.04,
                                 ),
@@ -128,14 +156,24 @@ class _WalletPageState extends State<WalletPage> {
 
                     const SizedBox(height: 24),
 
-                    // Boutons (sent, receive, buy)
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        Expanded(  // Ensure text does not overflow
+                          child: Text(
+                            AppLocalizations.of(context).translate(
+                              'For every generated 1000KW \nyou\'ll get 1 GRE',
+                            ),
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontSize: screenWidth * 0.04,
+                              color: const Color.fromARGB(137, 255, 255, 255),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                         _ActionButton(
-                          label: AppLocalizations.of(context)
-                              .translate('listOfTransaction'),
-                          icon: Icons.send_rounded,
+                          label: AppLocalizations.of(context).translate('listOfTransaction'),
+                          icon: Icons.list_alt_rounded,
                           onTap: () {},
                         ),
                       ],

@@ -240,7 +240,90 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
   "solar_panels": "Solar Panels",
   "pack_details_every": "Everything about {title}!",
   "search_hint": "Search Packs & Offers ...",
-  "no_results": "No results found"
+  "no_results": "No results found",
+   'login': 'Login',
+      'forgotPassword': 'Forgot Password?',
+      'loginWithGoogle': 'Login with Google',
+      'noAccountYet': 'You don\'t have an account yet?',
+      'signUp': 'sign up',
+      // Error Messages
+      'emailRequired': 'Email is required',
+      'emailInvalid': 'Invalid email format',
+      'passwordRequired': 'Password is required',
+      'passwordTooShort': 'Password must be at least 6 characters',
+      'loginFailed': 'Login failed',
+      'checkCredentials': 'Check your credentials',
+      'connectionError': 'Connection error',
+// Register View
+      'createAccount': 'Create An Account',
+      'fullName': 'Full Name',
+      'phoneNumber': 'Phone Number',
+      'iAccept': 'I accept ',
+      'and': ' and ',
+      'signUpWithGoogle': 'Sign up with Google',
+      'haveAccount': 'You have an account? ',
+
+      // Error messages
+      'fullNameEmpty': 'Full Name cannot be empty',
+      'fullNameTooShort': 'Full Name should be at least 3 characters',
+      'emailEmpty': 'Email cannot be empty',
+      'invalidEmail': 'Enter a valid email',
+      'passwordEmpty': 'Password cannot be empty',
+      'confirmPasswordEmpty': 'Confirm password cannot be empty',
+      'passwordsDontMatch': 'Passwords don\'t match',
+      'phoneNumberEmpty': 'Phone number cannot be empty',
+      'invalidPhoneNumber': 'Phone must start with 2, 5 or 9 and have 8 digits',
+      
+      // Dialog messages
+      'error': 'Error',
+      'ok': 'OK',
+      'termsRequired': 'Terms & Conditions Required',
+      'pleaseAcceptTerms': 'Please accept the terms and conditions to continue.',
+      'close': 'Close',
+'selectPack': 'Select the pack you want to buy',
+      'flipCardInstruction': 'Flip a pack card to see more details',
+      'clickSelectInstruction': 'Click the "Select" button to choose a pack',
+      'borderIndicationInstruction': 'Selected pack will have a green border',
+      'proceedToPayment': 'Proceed to Payment',
+      
+      // Dialogs
+      'noPackSelected': 'No Pack Selected',
+      'selectPackPrompt': 'You must select a pack before proceeding to payment.',
+      'packNotFound': 'Selected pack not found in available packs.',
+      'emailConfirmation': 'Email Confirmation',
+      'emailVerificationRequired': 'Your email is not verified. Please check your inbox and activate your account before proceeding to payment.',
+      'genericError': 'An error occurred',
+      
+      // Pack descriptions
+      'basicPack': 'Basic Pack',
+      'advancedPack': 'Advanced Pack',
+      'basicDescription': 'Unlock energy potential...',
+      'advancedDescription': 'Track energy live.',
+      'panelsCount': 'panels',
+      'energyGain': 'energy gain',
+      'co2Saved': 'CO2 saved',
+ "enterEmail": "Enter your email",
+  "enterPhone": "Enter your phone number",
+  "sendOtpSms": "Send OTP via SMS",
+  "sendOtpEmail": "Send OTP via Email",
+  "continueButton": "Continue",
+  "backToLogin": "Back To Login",
+  "invalidEmail1": "Invalid email format",
+  "invalidPhone": "Invalid phone number",
+  "missingData": "Missing data",
+ "enterOtpCode": "Enter OTP Code",
+  "verifyCode": "Verify the code",
+  "codeNotReceived": "You have not received the code?",
+  "resend": "Resend",
+  "incorrectCode": "Incorrect code, please try again.",
+   "enterNewPassword": "Enter New Password",
+  "passwordsDoNotMatch": "Passwords do not match!",
+  "passwordRequireNumber": "Password must contain at least one number!",
+
+
+
+
+
 
 
 
@@ -484,7 +567,85 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
  "search_hint": "Rechercher des Packs et Offres ...",
   "no_results": "Aucun résultat trouvé",
     "titleall": "Tous nos Packs et Offres",
+'login': 'Connexion',
+      'forgotPassword': 'Mot de passe oublié?',
+      'loginWithGoogle': 'Connexion avec Google',
+      'noAccountYet': 'Vous n\'avez pas encore de compte?',
+      'signUp': 's\'inscrire',
+      
+      // Error Messages
+      'emailRequired': 'L\'email est requis',
+      'emailInvalid': 'Format d\'email invalide',
+      'passwordRequired': 'Le mot de passe est requis',
+      'passwordTooShort': 'Le mot de passe doit contenir au moins 6 caractères',
+      'loginFailed': 'Échec de la connexion',
+      'checkCredentials': 'Vérifiez vos identifiants',
+      'connectionError': 'Erreur de connexion',
 
+      'createAccount': 'Créer un compte',
+      'fullName': 'Nom complet',
+      'phoneNumber': 'Numéro de téléphone',
+      'iAccept': 'J\'accepte les ',
+      'and': ' et la ',
+      'signUpWithGoogle': 'S\'inscrire avec Google',
+      'haveAccount': 'Vous avez déjà un compte ? ',
+
+      // Error messages
+      'fullNameEmpty': 'Le nom complet ne peut pas être vide',
+      'fullNameTooShort': 'Le nom complet doit comporter au moins 3 caractères',
+      'emailEmpty': 'L\'email ne peut pas être vide',
+      'invalidEmail': 'Entrez un email valide',
+      'passwordEmpty': 'Le mot de passe ne peut pas être vide',
+      'confirmPasswordEmpty': 'La confirmation du mot de passe ne peut pas être vide',
+      'passwordsDontMatch': 'Les mots de passe ne correspondent pas',
+      'phoneNumberEmpty': 'Le numéro de téléphone ne peut pas être vide',
+      'invalidPhoneNumber': 'Le téléphone doit commencer par 2, 5 ou 9 et avoir 8 chiffres',
+      
+      // Dialog messages
+      'error': 'Erreur',
+      'ok': 'OK',
+      'termsRequired': 'Conditions Générales',
+      'pleaseAcceptTerms': 'Veuillez accepter les termes et conditions pour continuer.',
+      'close': 'Fermer',
+      // Subscription Carousel
+      'selectPack': 'Sélectionnez le pack que vous souhaitez acheter',
+      'flipCardInstruction': 'Retournez une carte pour voir plus de détails',
+      'clickSelectInstruction': 'Cliquez sur le bouton "Sélectionner" pour choisir un pack',
+      'borderIndicationInstruction': 'Le pack sélectionné aura une bordure verte',
+      'proceedToPayment': 'Procéder au paiement',
+      // Dialogs
+      'noPackSelected': 'Aucun Pack Sélectionné',
+      'selectPackPrompt': 'Vous devez sélectionner un pack avant de procéder au paiement.',
+      'packNotFound': 'Le pack sélectionné n\'a pas été trouvé dans les packs disponibles.',
+      'emailConfirmation': 'Confirmation d\'Email',
+      'emailVerificationRequired': 'Votre email n\'est pas vérifié. Veuillez vérifier votre boîte de réception et activer votre compte avant de procéder au paiement.',
+      'genericError': 'Une erreur s\'est produite',
+      
+      // Pack descriptions
+      'basicPack': 'Pack Basique',
+      'advancedPack': 'Pack Avancé',
+      'basicDescription': 'Débloquez le potentiel énergétique...',
+      'advancedDescription': 'Suivez l\'énergie en direct.',
+      'panelsCount': 'panneaux',
+      'energyGain': 'gain d\'énergie',
+      'co2Saved': 'CO2 économisé',
+      "enterEmail": "Entrez votre email",
+  "enterPhone": "Entrez votre numéro de téléphone",
+  "sendOtpSms": "Envoyer OTP par SMS",
+  "sendOtpEmail": "Envoyer OTP par Email",
+  "continueButton": "Continuer",
+  "backToLogin": "Retour à la connexion",
+  "invalidEmail1": "Format d'email invalide",
+  "invalidPhone": "Numéro de téléphone invalide",
+  "missingData": "Données manquantes",
+  "enterOtpCode": "Entrez le code OTP",
+  "verifyCode": "Vérifier le code",
+  "codeNotReceived": "Vous n'avez pas reçu le code ?",
+  "resend": "Renvoyer",
+  "incorrectCode": "Code incorrect, veuillez réessayer.",
+  "enterNewPassword": "Entrer le nouveau mot de passe",
+  "passwordsDoNotMatch": "Les mots de passe ne correspondent pas !",
+  "passwordRequireNumber": "Le mot de passe doit contenir au moins un chiffre !"
 
 },
 };

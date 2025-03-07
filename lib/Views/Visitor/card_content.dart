@@ -148,8 +148,8 @@ class CardContent extends StatelessWidget {
                 SizedBox(height: cardHeight * 0.01),
                 Center(
                   child: SizedBox(
-                    width: cardWidth * 0.35,
-                    height: cardHeight * 0.12,
+                    width: cardWidth * 0.58,
+                    height: cardHeight * 0.16,
                     child: OutlinedButton(
                       onPressed: onSelectPressed,
                       style: OutlinedButton.styleFrom(
