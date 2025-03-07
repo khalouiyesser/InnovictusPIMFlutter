@@ -426,7 +426,7 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   // Fonction pour afficher le pop-up de confirmation
-  void _showConfirmationDialog(BuildContext context) {
+  void _showConfirmationDialog(BuildContext context, Future<void> Function() changePassword) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
