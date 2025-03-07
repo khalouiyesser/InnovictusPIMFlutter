@@ -48,6 +48,7 @@ class PaymentService {
   }
 
   Future<void> finalizeSignup(String userId) async {
+    print("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 $userId");
     final String apiUrl = "${Const().url}/auth/finalize-signup/$userId"; // Corrected const() usage
     final response = await http.patch(
       Uri.parse(apiUrl),
@@ -55,14 +56,13 @@ class PaymentService {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        // Add any necessary data to send with the PATCH request
       }),
     );
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       // Handle successful response
-      print(responseData['message']); // Display success message
+      print("111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111$responseData['message']"); // Display success message
     } else {
       // Handle error response
       print('Error: ${response.statusCode}');

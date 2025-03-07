@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/ClientModels/profile.dart';
+import 'package:piminnovictus/Models/User.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Services/Const.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

@@ -24,8 +24,6 @@ dependencies:
   http : ^1.3.0
   table_calendar: ^3.0.8
   fl_chart: ^0.66.0  # Remplace par la dernière version disponible
-  firebase_auth: ^4.16.0
-  google_sign_in: ^6.2.2
   flutter_secure_storage: ^9.2.2
   geolocator: ^13.0.2
   weather: ^3.1.1
@@ -35,6 +33,7 @@ dependencies:
   webview_flutter: ^4.4.4 
   flutter_stripe: ^10.0.0  # Mets la dernière version
   firebase_core: ^2.32.0  # Dernière version compatible
+  firebase_auth: ^4.16.0
   web_socket_channel: ^2.4.0  # Replace with the latest version
   socket_io_client: ^2.0.3    # Replace with the latest version
 

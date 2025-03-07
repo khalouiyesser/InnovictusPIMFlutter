@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Services/AuthController.dart';
 import 'package:piminnovictus/Views/AuthViews/privacy_policy.dart';
 import 'package:piminnovictus/Views/AuthViews/terms_and_conditions.dart';
+import '../../Models/Auth/signup_response.dart';
 import '../plan_subscription.dart';
 import 'login_view.dart';
 
@@ -17,7 +19,6 @@ class RegisterView extends StatefulWidget {
 
 class _RegisterViewState extends State<RegisterView>
     with WidgetsBindingObserver {
-
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController PhoneNumberController = TextEditingController();
@@ -40,14 +41,14 @@ class _RegisterViewState extends State<RegisterView>
   String? _PhoneNumberError;
 
   AuthController auth = AuthController();
- void _showErrorDialog(String message) {
+  void _showErrorDialog(String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: const Color.fromARGB(255, 8, 16, 9),
-          title: const Text(
-            'Error',
+          title: Text(
+            AppLocalizations.of(context).translate('error'),
             style: TextStyle(color: Colors.white),
           ),
           content: Text(
@@ -59,9 +60,9 @@ class _RegisterViewState extends State<RegisterView>
               style: TextButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 31, 219, 59),
               ),
-              child: const Text(
-                'OK',
-                style: TextStyle(color: Colors.white),
+              child: Text(
+                AppLocalizations.of(context).translate('ok'),
+                style: const TextStyle(color: Colors.white),
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
@@ -70,14 +71,15 @@ class _RegisterViewState extends State<RegisterView>
       },
     );
   }
- Future<void> _handleSignup() async {
+
+  Future<void> _handleSignup() async {
     try {
       final signupResponse = await auth.signupSimple(
         name: fullNameController.text,
         email: emailController.text,
         password: passwordController.text,
         phoneNumber: PhoneNumberController.text,
-        packId: "67bf583d11b99e1b6875689f", // Make sure to handle null packId
+        packId: "67bbcbabc538c6915580df5a", // Make sure to handle null packId
       );
 
       // Handle successful signup
@@ -96,6 +98,48 @@ class _RegisterViewState extends State<RegisterView>
       if (mounted) {
         _showErrorDialog(e.toString());
       }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _handleSignupGoogle() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      print("🚀 Début du processus d'inscription avec Google...");
+      final SignupResponse? signupResponse =
+          await auth.signUpWithGoogle(context);
+
+      if (!mounted) return; // Vérifie si le widget est encore actif
+
+      if (signupResponse != null && signupResponse.pendingSignupId.isNotEmpty) {
+        print(
+            "✅ Inscription Google réussie, redirection vers SubscriptionCarousel...");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SubscriptionCarousel(
+              preselectedPackId: "67bbcbabc538c6915580df5a",
+              pendingSignupId: signupResponse.pendingSignupId,
+            ),
+          ),
+        );
+      } else {
+        print("❌ Échec de l'inscription Google, réponse invalide.");
+        _showErrorDialog(
+            "L'inscription avec Google a échoué. Veuillez réessayer.");
+      }
+    } catch (e) {
+      if (!mounted) return;
+      print("❌ Erreur lors de l'inscription Google: $e");
+      _showErrorDialog("Une erreur est survenue : ${e.toString()}");
     } finally {
       if (mounted) {
         setState(() {
@@ -151,9 +195,9 @@ class _RegisterViewState extends State<RegisterView>
   void _validatefullName(String value) {
     setState(() {
       _fullNameError = value.isEmpty
-          ? "FullName cannot be empty"
+          ? AppLocalizations.of(context).translate('fullNameEmpty')
           : value.length < 3
-              ? "FullName should be at least 6 characters"
+              ? AppLocalizations.of(context).translate('fullNameTooShort')
               : null;
     });
   }
@@ -162,9 +206,11 @@ class _RegisterViewState extends State<RegisterView>
   void _validataConfirmPassword(String value) {
     setState(() {
       if (value.isEmpty) {
-        _confirmPasswordError = "Confirm password cannot be empty";
+        _confirmPasswordError =
+            AppLocalizations.of(context).translate('confirmPasswordEmpty');
       } else if (value != passwordController.text) {
-        _confirmPasswordError = "Passwords don't match";
+        _confirmPasswordError =
+            AppLocalizations.of(context).translate('passwordsDontMatch');
       } else {
         _confirmPasswordError = null;
       }
@@ -174,10 +220,10 @@ class _RegisterViewState extends State<RegisterView>
   void _validateEmail(String value) {
     setState(() {
       _emailError = value.isEmpty
-          ? "Email cannot be empty"
+          ? AppLocalizations.of(context).translate('emailEmpty')
           : !RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
                   .hasMatch(value)
-              ? "Enter a valid email"
+              ? AppLocalizations.of(context).translate('invalidEmail')
               : null;
     });
   }
@@ -185,9 +231,9 @@ class _RegisterViewState extends State<RegisterView>
   void _validatePassword(String value) {
     setState(() {
       _passwordError = value.isEmpty
-          ? "Password cannot be empty"
+          ? AppLocalizations.of(context).translate('passwordEmpty')
           : value.length < 6
-              ? "Password must be at least 6 characters"
+              ? AppLocalizations.of(context).translate('passwordTooShort')
               : null;
     });
   }
@@ -195,28 +241,30 @@ class _RegisterViewState extends State<RegisterView>
   void _validatePhoneNumber(String value) {
     setState(() {
       if (value.isEmpty) {
-        _PhoneNumberError = "Phone number cannot be empty";
+        _PhoneNumberError =
+            AppLocalizations.of(context).translate('phoneNumberEmpty');
       } else if (!RegExp(r"^[259]\d{7}$").hasMatch(value)) {
-        _PhoneNumberError = "Phone must start with 2, 5 or 9 and have 8 digits";
+        _PhoneNumberError =
+            AppLocalizations.of(context).translate('invalidPhoneNumber');
       } else {
         _PhoneNumberError = null;
       }
     });
   }
 
-   void _submitForm() async {
+  void _submitForm() async {
     if (!_acceptedTerms) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             backgroundColor: const Color.fromARGB(255, 8, 16, 9),
-            title: const Text(
-              'Terms & Conditions Required',
+            title: Text(
+              AppLocalizations.of(context).translate('termsRequired'),
               style: TextStyle(color: Colors.white),
             ),
-            content: const Text(
-              'Please accept the terms and conditions to continue.',
+            content: Text(
+              AppLocalizations.of(context).translate('pleaseAcceptTerms'),
               style: TextStyle(color: Colors.white),
             ),
             actions: <Widget>[
@@ -224,8 +272,8 @@ class _RegisterViewState extends State<RegisterView>
                 style: TextButton.styleFrom(
                   backgroundColor: Color.fromARGB(255, 31, 219, 59),
                 ),
-                child: const Text(
-                  'OK',
+                child: Text(
+                  AppLocalizations.of(context).translate('ok'),
                   style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () => Navigator.of(context).pop(),
@@ -254,7 +302,6 @@ class _RegisterViewState extends State<RegisterView>
         _emailError == null &&
         _fullNameError == null &&
         _PhoneNumberError == null) {
-      
       setState(() {
         _isLoading = true;
       });
@@ -262,6 +309,7 @@ class _RegisterViewState extends State<RegisterView>
       await _handleSignup();
     }
   }
+
   void _showTermsDialog() {
     showDialog(
       context: context,
@@ -269,7 +317,7 @@ class _RegisterViewState extends State<RegisterView>
         return AlertDialog(
           backgroundColor: const Color.fromARGB(255, 8, 16, 9),
           title: Text(
-            'Terms & Conditions',
+            AppLocalizations.of(context).translate('termsAndConditions'),
             style: TextStyle(color: Colors.white),
           ),
           content: Text(
@@ -282,7 +330,7 @@ class _RegisterViewState extends State<RegisterView>
                 backgroundColor: Color.fromARGB(255, 31, 219, 59),
               ),
               child: Text(
-                'Close',
+                AppLocalizations.of(context).translate('close'),
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () => Navigator.of(context).pop(),
@@ -304,7 +352,7 @@ class _RegisterViewState extends State<RegisterView>
             style: TextStyle(color: Colors.white),
           ),
           content: Text(
-            'Your privacy policy text here...',
+            AppLocalizations.of(context).translate('privacyPolicy'),
             style: TextStyle(color: Colors.white),
           ),
           actions: [
@@ -313,7 +361,7 @@ class _RegisterViewState extends State<RegisterView>
                 backgroundColor: Color.fromARGB(255, 31, 219, 59),
               ),
               child: Text(
-                'Close',
+                AppLocalizations.of(context).translate('close'),
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () => Navigator.of(context).pop(),
@@ -360,7 +408,7 @@ class _RegisterViewState extends State<RegisterView>
                         left:
                             screenWidth * 0.05), // Ajouter un padding à gauche
                     child: Text(
-                      "Create An Account",
+                      AppLocalizations.of(context).translate('createAccount'),
                       style: TextStyle(
                         color: _theme.textColor,
                         fontSize:
@@ -379,7 +427,8 @@ class _RegisterViewState extends State<RegisterView>
                     children: [
                       _buildTextField(
                         controller: fullNameController,
-                        hintText: "Full Name",
+                        hintText:
+                            AppLocalizations.of(context).translate('fullName'),
                         errorText: _fullNameError,
                         onChanged: _validatefullName,
                         screenWidth: screenWidth,
@@ -387,7 +436,8 @@ class _RegisterViewState extends State<RegisterView>
                       SizedBox(height: screenHeight * 0.02),
                       _buildTextField(
                         controller: emailController,
-                        hintText: "Email",
+                        hintText:
+                            AppLocalizations.of(context).translate('email'),
                         errorText: _emailError,
                         onChanged: _validateEmail,
                         screenWidth: screenWidth,
@@ -395,7 +445,8 @@ class _RegisterViewState extends State<RegisterView>
                       SizedBox(height: screenHeight * 0.02),
                       _buildTextField(
                         controller: PhoneNumberController,
-                        hintText: "Phonne Number",
+                        hintText: AppLocalizations.of(context)
+                            .translate('phoneNumber'),
                         errorText: _PhoneNumberError,
                         onChanged: _validatePhoneNumber,
                         screenWidth: screenWidth,
@@ -403,7 +454,8 @@ class _RegisterViewState extends State<RegisterView>
                       SizedBox(height: screenHeight * 0.02),
                       _buildTextField(
                         controller: passwordController,
-                        hintText: "Password",
+                        hintText:
+                            AppLocalizations.of(context).translate('password'),
                         errorText: _passwordError,
                         onChanged: _validatePassword,
                         obscureText: true,
@@ -412,7 +464,8 @@ class _RegisterViewState extends State<RegisterView>
                       SizedBox(height: screenHeight * 0.02),
                       _buildTextField(
                         controller: ConfirmPasswordController,
-                        hintText: "Confirm Password",
+                        hintText: AppLocalizations.of(context)
+                            .translate('confirmPassword'),
                         errorText: _confirmPasswordError,
                         onChanged: _validataConfirmPassword,
                         obscureText: true,
@@ -439,9 +492,12 @@ class _RegisterViewState extends State<RegisterView>
                                     color: _theme.textColor,
                                     fontSize: screenWidth * 0.035),
                                 children: [
-                                  TextSpan(text: 'I accept '),
                                   TextSpan(
-                                    text: 'terms & conditions',
+                                      text: AppLocalizations.of(context)
+                                          .translate('iAccept')),
+                                  TextSpan(
+                                    text: AppLocalizations.of(context)
+                                        .translate('termsAndConditions'),
                                     style: TextStyle(
                                       color: _theme.textColor,
                                       decoration: TextDecoration.underline,
@@ -457,9 +513,12 @@ class _RegisterViewState extends State<RegisterView>
                                         );
                                       },
                                   ),
-                                  TextSpan(text: ' and '),
                                   TextSpan(
-                                    text: 'privacy policy',
+                                      text: AppLocalizations.of(context)
+                                          .translate('and')),
+                                  TextSpan(
+                                    text: AppLocalizations.of(context)
+                                        .translate('privacyPolicy'),
                                     style: TextStyle(
                                       color: _theme.textColor,
                                       decoration: TextDecoration.underline,
@@ -491,7 +550,8 @@ class _RegisterViewState extends State<RegisterView>
                             height: screenHeight * 0.03,
                           ),
                           label: Text(
-                            'Sign up with Google',
+                            AppLocalizations.of(context)
+                                .translate('signUpWithGoogle'),
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.light
@@ -511,8 +571,7 @@ class _RegisterViewState extends State<RegisterView>
                             backgroundColor: Colors.transparent,
                           ),
                           onPressed: () {
-                            auth.signUpWithGoogle(context);
-                            // print('Google sign-in pressed');
+                            _handleSignupGoogle();
                           },
                         ),
                       ),
@@ -530,7 +589,7 @@ class _RegisterViewState extends State<RegisterView>
                             ),
                           ),
                           child: Text(
-                            "Next",
+                            AppLocalizations.of(context).translate('next'),
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: screenWidth * 0.045,
@@ -543,7 +602,8 @@ class _RegisterViewState extends State<RegisterView>
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "You have an account? ",
+                            AppLocalizations.of(context)
+                                .translate('haveAccount'),
                             style: TextStyle(
                                 color: _theme.textColor,
                                 fontSize: screenWidth * 0.035),
@@ -557,7 +617,7 @@ class _RegisterViewState extends State<RegisterView>
                               );
                             },
                             child: Text(
-                              "Login",
+                              AppLocalizations.of(context).translate('login'),
                               style: TextStyle(
                                   color: Colors.green,
                                   fontSize: screenWidth * 0.035),
@@ -584,13 +644,13 @@ class _RegisterViewState extends State<RegisterView>
     bool obscureText = false,
     required double screenWidth,
   }) {
-    bool isPassword = hintText.toLowerCase().contains('password');
-
+    bool isPassword = hintText.toLowerCase().contains(
+        AppLocalizations.of(context).translate('password').toLowerCase());
     return TextField(
       controller: controller,
       onChanged: onChanged,
       obscureText: isPassword
-          ? (hintText == "Password"
+          ? (hintText == AppLocalizations.of(context).translate('password')
               ? !_isPasswordVisible
               : !_isConfirmPasswordVisible)
           : false,
@@ -636,7 +696,7 @@ class _RegisterViewState extends State<RegisterView>
         suffixIcon: isPassword
             ? IconButton(
                 icon: Icon(
-                  hintText == "Password"
+                  hintText == AppLocalizations.of(context).translate('password')
                       ? (_isPasswordVisible
                           ? Icons.visibility
                           : Icons.visibility_off)
@@ -647,7 +707,8 @@ class _RegisterViewState extends State<RegisterView>
                 ),
                 onPressed: () {
                   setState(() {
-                    if (hintText == "Password") {
+                    if (hintText ==
+                        AppLocalizations.of(context).translate('password')) {
                       _isPasswordVisible = !_isPasswordVisible;
                     } else {
                       _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
