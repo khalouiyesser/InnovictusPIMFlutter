@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:piminnovictus/Models/Transaction%20.dart';
 import '../models/Wallet.dart';
 
 class WalletViewModel extends ChangeNotifier {
@@ -64,7 +65,21 @@ class WalletViewModel extends ChangeNotifier {
   }
   //***************************************************************************************** */
 
+  List<Transaction> _transactions = [];
+  bool _isLoading = false;
 
+  List<Transaction> get transactions => _transactions;
+  //bool get isLoading => _isLoading;
+
+  Future<void> loadTransactions(String accountId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    _transactions = await Transaction.fetchTransactions(accountId);
+
+    _isLoading = false;
+    notifyListeners();
+  } 
 
 
 }

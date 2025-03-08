@@ -6,6 +6,7 @@ import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/ViewModels/WalletViewModel.dart';
+import 'package:piminnovictus/Views/DashboardClient/TransactionCard.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:provider/provider.dart';
 // Import pour la classe User personnalisée
@@ -47,6 +48,11 @@ class _WalletPageState extends State<WalletPage> {
 
     final walletViewModel = Provider.of<WalletViewModel>(context, listen: false);
     walletViewModel.fetchTokenBalance(accountId!);
+
+     WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<WalletViewModel>(context, listen: false).loadTransactions(accountId);
+    });
+
   }
 
 
@@ -69,7 +75,7 @@ class _WalletPageState extends State<WalletPage> {
   @override
   Widget build(BuildContext context) {
     final walletViewModel = Provider.of<WalletViewModel>(context);
-    
+
     final languageProvider =
         Provider.of<LanguageProvider>(context, listen: false);
 
@@ -159,7 +165,7 @@ class _WalletPageState extends State<WalletPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const CircleAvatar(
-                          radius: 18,
+                          radius: 16,
                           backgroundImage: AssetImage(
                             'assets/Bitcoin.png',
                           ),
@@ -177,11 +183,6 @@ class _WalletPageState extends State<WalletPage> {
                             ),
                           ),
                         ),
-                        // _ActionButton(
-                        //   label: AppLocalizations.of(context).translate('listOfTransaction'),
-                        //   icon: Icons.list_alt_rounded,
-                        //   onTap: () {},
-                        // ),
                       ],
                     ),
 
@@ -195,6 +196,31 @@ class _WalletPageState extends State<WalletPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+
+
+SizedBox(
+  height: MediaQuery.of(context).size.height, // or any specific height
+  child: Column(
+    mainAxisSize: MainAxisSize.min, 
+    children: [
+      if (walletViewModel.isLoading)
+        Center(child: CircularProgressIndicator())
+      else if (walletViewModel.transactions.isEmpty)
+        Center(child: Text("No transactions found"))
+      else
+        Flexible(
+        fit: FlexFit.loose,// Ensures the ListView takes the remaining space
+          child: ListView.builder(
+            padding: EdgeInsets.all(10),
+            itemCount: walletViewModel.transactions.length,
+            itemBuilder: (context, index) {
+              return TransactionCard(transaction: walletViewModel.transactions[index]);
+            },
+          ),
+        ),
+    ],
+  ),
+),
 
 
                     // Coins Activity Tracking (Titre + Calendrier)
