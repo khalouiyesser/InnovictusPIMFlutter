@@ -2184,8 +2184,11 @@
 //   }
 // }
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui'; // Pour le BackdropFilter
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:piminnovictus/Models/User.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
@@ -2213,12 +2216,14 @@ class _EditProfileState extends State<EditProfile> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _currentPasswordController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
-  TextEditingController();
+      TextEditingController();
   bool _isPasswordVisible = false;
   bool isSaveButtonEnabled = false;
+  bool isLoading = false;
+  File? _image;
 
   final SessionManager _sessionManager = SessionManager();
   User? currentUser;
@@ -2301,6 +2306,21 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
+  Future<void> _pickImage() async {
+    var status = await Permission.photos.request();
+    if (status.isGranted) {
+      final pickedFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          _image = File(pickedFile.path);
+        });
+      }
+    } else {
+      print("Permission refusée");
+    }
+  }
+
   void _checkPasswordFields() {
     setState(() {
       // Vérifier si le mot de passe actuel est correct
@@ -2345,7 +2365,7 @@ class _EditProfileState extends State<EditProfile> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)
-              .translate('passwordRequirements') ??
+                  .translate('passwordRequirements') ??
               "Le mot de passe doit contenir au moins 6 caractères et un caractère spécial"),
           backgroundColor: Colors.red,
         ),
@@ -2385,15 +2405,46 @@ class _EditProfileState extends State<EditProfile> {
     final url = '${constInstance.url}/auth/change-password';
 
     try {
-      final response = await http.put(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'userId': userId,
-          'oldPassword': currentPassword,
-          'newPassword': newPassword,
-        }),
+      // Désactiver le bouton et montrer l'indicateur de chargement
+      setState(() {
+        isLoading = true;
+      });
+
+      // Afficher un dialogue de chargement
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Row(
+              children: [
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF29E33C)),
+                ),
+                SizedBox(width: 20),
+                Text(AppLocalizations.of(context)
+                        .translate('updatingPassword') ??
+                    "Mise à jour du mot de passe..."),
+              ],
+            ),
+          );
+        },
       );
+
+      final response = await http
+          .put(
+            Uri.parse(url),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'userId': userId,
+              'oldPassword': currentPassword,
+              'newPassword': newPassword,
+            }),
+          )
+          .timeout(const Duration(seconds: 30));
+
+// Fermer le dialogue de chargement
+      Navigator.of(context).pop();
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -2420,12 +2471,30 @@ class _EditProfileState extends State<EditProfile> {
         );
       }
     } catch (error) {
+      // Fermer le dialogue de chargement si une erreur se produit
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      String errorMessage = "Erreur de connexion";
+      if (error.toString().contains("SocketException") ||
+          error.toString().contains("Connection timed out")) {
+        errorMessage =
+            "Impossible de se connecter au serveur. Vérifiez votre connexion réseau et l'URL du serveur.";
+      } else {
+        errorMessage = "Erreur de connexion : $error";
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Erreur de connexion : $error"),
           backgroundColor: Colors.red,
         ),
       );
+    } finally {
+      // Réactiver le bouton
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -2470,7 +2539,7 @@ class _EditProfileState extends State<EditProfile> {
       // Rediriger vers la page de connexion
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => LoginView()),
-            (route) => false,
+        (route) => false,
       );
       return;
     }
@@ -2522,13 +2591,13 @@ class _EditProfileState extends State<EditProfile> {
       // Send PATCH request with increased timeout
       final response = await http
           .patch(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(updateData),
-      )
+            Uri.parse(url),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(updateData),
+          )
           .timeout(const Duration(seconds: 30));
 
       // Fermer le dialogue de chargement
@@ -2542,7 +2611,7 @@ class _EditProfileState extends State<EditProfile> {
           name: updatedUserData['name'] ?? currentUser!.name,
           email: updatedUserData['email'] ?? currentUser!.email,
           phoneNumber:
-          updatedUserData['phoneNumber'] ?? currentUser!.phoneNumber,
+              updatedUserData['phoneNumber'] ?? currentUser!.phoneNumber,
         );
 
         // Update user session
@@ -2591,7 +2660,7 @@ class _EditProfileState extends State<EditProfile> {
       if (error.toString().contains("SocketException") ||
           error.toString().contains("Connection timed out")) {
         errorMessage =
-        "Impossible de se connecter au serveur. Vérifiez votre connexion réseau et l'URL du serveur.";
+            "Impossible de se connecter au serveur. Vérifiez votre connexion réseau et l'URL du serveur.";
       } else {
         errorMessage = "Erreur de connexion : $error";
       }
@@ -2611,20 +2680,20 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   // Fonction pour afficher le pop-up de confirmation
-  void _showConfirmationDialog(BuildContext context, Future<void> Function() changePassword) {
+  void _showConfirmationDialog(
+      BuildContext context, Future<void> Function() changePassword) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirmer les changements'),
-          content:
-          Text('Êtes-vous sûr de vouloir enregistrer ce mot de passe ?'),
+          title: Text('Confirm Changes'),
+          content: Text('Are you sure you want to save this password?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Ferme la boîte de dialogue
               },
-              child: Text('Annuler'),
+              child: Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -2640,7 +2709,7 @@ class _EditProfileState extends State<EditProfile> {
                 });
                 Navigator.of(context).pop(); // Ferme la boîte de dialogue
               },
-              child: Text('Enregistrer'),
+              child: Text('Confirm'),
             ),
           ],
         );
@@ -2651,6 +2720,7 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    bool isLoading = false;
 
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
@@ -2660,74 +2730,79 @@ class _EditProfileState extends State<EditProfile> {
               // Fond adapté au mode clair ou sombre
               Positioned.fill(
                 child:
-                isDarkMode ? _darkModeBackground() : _lightModeBackground(),
+                    isDarkMode ? _darkModeBackground() : _lightModeBackground(),
               ),
               // Contenu principal avec flou d'arrière-plan
               BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
                 child: SafeArea(
                   child: LayoutBuilder(builder: (context, constraints) {
-                    physics:
-                    const AlwaysScrollableScrollPhysics();
-
                     return SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       child: Column(
                         children: [
                           const SizedBox(height: 70),
+
                           // Image du profil et informations
-                          Stack(
-                            children: [
-                              const CircleAvatar(
-                                radius: 50,
-                                backgroundImage: AssetImage('assets/user.jpg'),
-                              ),
-                              Positioned(
-                                bottom: 5,
-                                right: 5,
-                                child: Container(
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).iconTheme.color,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: const Color(0xFF29E33C),
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: const Icon(Icons.check,
-                                      color: Colors.white, size: 14),
+                          GestureDetector(
+                            onTap: _pickImage,
+                            child: Stack(
+                              children: [
+                                CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage: _image != null
+                                      ? FileImage(_image!)
+                                      : const AssetImage('assets/user.jpg')
+                                          as ImageProvider,
                                 ),
-                              ),
-                            ],
+                                Positioned(
+                                  bottom: 5,
+                                  right: 5,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(3),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).iconTheme.color,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: const Color(0xFF29E33C),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: const Icon(Icons.check,
+                                        color: Colors.white, size: 14),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 15),
                           currentUser == null
                               ? const CircularProgressIndicator()
                               : Text(
-                            currentUser!.name,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.normal,
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.color,
-                            ),
-                          ),
+                                  currentUser!.name,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.normal,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.color,
+                                  ),
+                                ),
 
                           currentUser == null
                               ? const CircularProgressIndicator()
                               : Text(
-                            currentUser!.email ?? '',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.normal,
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.color,
-                            ),
-                          ),
+                                  currentUser!.email ?? '',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.normal,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.color,
+                                  ),
+                                ),
 
                           const SizedBox(height: 5),
 
@@ -2780,7 +2855,7 @@ class _EditProfileState extends State<EditProfile> {
                                       ),
                                       child: Column(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                         children: [
                                           Text(
                                             AppLocalizations.of(context)
@@ -2789,9 +2864,9 @@ class _EditProfileState extends State<EditProfile> {
                                                 .textTheme
                                                 .titleLarge
                                                 ?.copyWith(
-                                              fontSize: dialogWidth * 0.06,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                                  fontSize: dialogWidth * 0.06,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                           ),
                                           SizedBox(height: dialogHeight * 0.1),
                                           Text(
@@ -2801,15 +2876,15 @@ class _EditProfileState extends State<EditProfile> {
                                                 .textTheme
                                                 .titleLarge
                                                 ?.copyWith(
-                                              fontSize: dialogWidth * 0.05,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                                  fontSize: dialogWidth * 0.05,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                             textAlign: TextAlign.center,
                                           ),
                                           SizedBox(height: dialogHeight * 0.1),
                                           Row(
                                             mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                                MainAxisAlignment.center,
                                             children: [
                                               SizedBox(
                                                 width: dialogWidth * 0.35,
@@ -2818,16 +2893,16 @@ class _EditProfileState extends State<EditProfile> {
                                                   onPressed: () =>
                                                       Navigator.pop(context),
                                                   style:
-                                                  OutlinedButton.styleFrom(
+                                                      OutlinedButton.styleFrom(
                                                     side: const BorderSide(
                                                       color: Color(0xFF29E33C),
                                                       width: 2,
                                                     ),
                                                     shape:
-                                                    RoundedRectangleBorder(
+                                                        RoundedRectangleBorder(
                                                       borderRadius:
-                                                      BorderRadius.circular(
-                                                          20),
+                                                          BorderRadius.circular(
+                                                              20),
                                                     ),
                                                     padding: EdgeInsets.zero,
                                                   ),
@@ -2838,9 +2913,9 @@ class _EditProfileState extends State<EditProfile> {
                                                       color: const Color(
                                                           0xFF29E33C),
                                                       fontSize:
-                                                      dialogWidth * 0.06,
+                                                          dialogWidth * 0.06,
                                                       fontWeight:
-                                                      FontWeight.bold,
+                                                          FontWeight.bold,
                                                     ),
                                                   ),
                                                 ),
@@ -2853,7 +2928,7 @@ class _EditProfileState extends State<EditProfile> {
                                                 child: DecoratedBox(
                                                   decoration: BoxDecoration(
                                                     gradient:
-                                                    const LinearGradient(
+                                                        const LinearGradient(
                                                       colors: [
                                                         Color(0xFF29E33C),
                                                         Color.fromARGB(
@@ -2861,18 +2936,18 @@ class _EditProfileState extends State<EditProfile> {
                                                       ],
                                                       begin: Alignment.topLeft,
                                                       end:
-                                                      Alignment.bottomRight,
+                                                          Alignment.bottomRight,
                                                     ),
                                                     borderRadius:
-                                                    BorderRadius.circular(
-                                                        20),
+                                                        BorderRadius.circular(
+                                                            20),
                                                   ),
                                                   child: ElevatedButton(
                                                     onPressed: () async {
                                                       Navigator.pop(
                                                           context); // Close dialog
                                                       final sessionManager =
-                                                      SessionManager();
+                                                          SessionManager();
 
                                                       // Clear the session
                                                       await sessionManager
@@ -2884,34 +2959,34 @@ class _EditProfileState extends State<EditProfile> {
                                                         MaterialPageRoute(
                                                             builder: (context) =>
                                                                 LoginView()),
-                                                            (route) =>
-                                                        false, // This removes all previous routes
+                                                        (route) =>
+                                                            false, // This removes all previous routes
                                                       );
                                                     },
                                                     style: ElevatedButton
                                                         .styleFrom(
                                                       backgroundColor:
-                                                      Colors.transparent,
+                                                          Colors.transparent,
                                                       shadowColor:
-                                                      Colors.transparent,
+                                                          Colors.transparent,
                                                       padding: EdgeInsets.zero,
                                                       shape:
-                                                      RoundedRectangleBorder(
+                                                          RoundedRectangleBorder(
                                                         borderRadius:
-                                                        BorderRadius
-                                                            .circular(20),
+                                                            BorderRadius
+                                                                .circular(20),
                                                       ),
                                                     ),
                                                     child: Text(
                                                       AppLocalizations.of(
-                                                          context)
+                                                              context)
                                                           .translate("logout"),
                                                       style: TextStyle(
                                                         color: Colors.white,
                                                         fontSize:
-                                                        dialogWidth * 0.06,
+                                                            dialogWidth * 0.06,
                                                         fontWeight:
-                                                        FontWeight.bold,
+                                                            FontWeight.bold,
                                                       ),
                                                     ),
                                                   ),
@@ -2975,12 +3050,12 @@ class _EditProfileState extends State<EditProfile> {
 
   // Widget générique pour un menu item standard
   Widget _buildMenuItem(
-      BuildContext context, {
-        required IconData icon,
-        required String title,
-        VoidCallback? onTap,
-        Widget? switchWidget,
-      }) {
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    VoidCallback? onTap,
+    Widget? switchWidget,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -3106,7 +3181,7 @@ class _EditProfileState extends State<EditProfile> {
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color:
-                              Theme.of(context).textTheme.bodyMedium?.color,
+                                  Theme.of(context).textTheme.bodyMedium?.color,
                             ),
                           ),
                           Icon(
@@ -3155,7 +3230,7 @@ class _EditProfileState extends State<EditProfile> {
                           },
                           decoration: InputDecoration(
                             labelText:
-                            AppLocalizations.of(context).translate('email'),
+                                AppLocalizations.of(context).translate('email'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(width: 0.5),
@@ -3168,14 +3243,14 @@ class _EditProfileState extends State<EditProfile> {
                           onChanged: (value) {
                             setState(() {
                               isSaveButtonEnabled = _nameController.text !=
-                                  currentUser?.name ||
+                                      currentUser?.name ||
                                   _emailController.text != currentUser?.email ||
                                   value != currentUser?.phoneNumber;
                             });
                           },
                           decoration: InputDecoration(
                             labelText:
-                            AppLocalizations.of(context).translate('phone'),
+                                AppLocalizations.of(context).translate('phone'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(width: 0.5),
@@ -3189,65 +3264,79 @@ class _EditProfileState extends State<EditProfile> {
                             ElevatedButton(
                               onPressed: isSaveButtonEnabled
                                   ? () async {
-                                // Vérifier si des modifications ont été apportées
-                                bool isUpdated = _nameController.text !=
-                                    currentUser?.name ||
-                                    _emailController.text !=
-                                        currentUser?.email ||
-                                    _phoneController.text !=
-                                        currentUser?.phoneNumber;
+                                      // Afficher l'indicateur de progression en changeant l'état local
+                                      setState(() {
+                                        isLoading =
+                                            true; // Ajoutez cette variable dans votre state
+                                      });
+                                      // Vérifier si des modifications ont été apportées
+                                      bool isUpdated = _nameController.text !=
+                                              currentUser?.name ||
+                                          _emailController.text !=
+                                              currentUser?.email ||
+                                          _phoneController.text !=
+                                              currentUser?.phoneNumber;
 
-                                if (isUpdated) {
-                                  // Effectuer la mise à jour si des modifications ont eu lieu
-                                  await auth.updateUser(
-                                    userId!,
-                                    _nameController.text,
-                                    _emailController.text,
-                                    _phoneController.text,
-                                  );
-                                  // Afficher le popup "User updated successfully"
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text('Success'),
-                                        content: Text(
-                                            'User updated successfully'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context)
-                                                  .pop(); // Ferme le popup
-                                            },
-                                            child: Text('OK'),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                } else {
-                                  // Afficher le popup "No update" si aucune donnée n'a été modifiée
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text('No Update'),
-                                        content: Text(
-                                            'No changes were made to the user information'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context)
-                                                  .pop(); // Ferme le popup
-                                            },
-                                            child: Text('OK'),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                }
-                              }
+                                      if (isUpdated) {
+                                        // Effectuer la mise à jour si des modifications ont eu lieu
+                                        await auth.updateUser(
+                                          userId!,
+                                          _nameController.text,
+                                          _emailController.text,
+                                          _phoneController.text,
+                                        );
+
+                                        // Cacher l'indicateur de progression
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                        // Afficher le popup "User updated successfully"
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text('Success'),
+                                              content: Text(
+                                                  'User updated successfully'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pop(); // Ferme le popup
+                                                  },
+                                                  child: Text('OK'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        // En cas d'erreur, cacher l'indicateur et afficher un message d'erreur
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                        // Afficher le popup "No update" si aucune donnée n'a été modifiée
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text('No Update'),
+                                              content: Text(
+                                                  'No changes were made to the user information'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pop(); // Ferme le popup
+                                                  },
+                                                  child: Text('OK'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    }
                                   : null,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: isSaveButtonEnabled
@@ -3303,7 +3392,7 @@ class _EditProfileState extends State<EditProfile> {
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color:
-                              Theme.of(context).textTheme.bodyMedium?.color,
+                                  Theme.of(context).textTheme.bodyMedium?.color,
                             ),
                           ),
                           Icon(
@@ -3329,33 +3418,29 @@ class _EditProfileState extends State<EditProfile> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide:
-                              BorderSide(color: Colors.white, width: 1),
+                                  BorderSide(color: Colors.white, width: 1),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(
-                                color: _currentPasswordController
-                                    .text.isNotEmpty
-                                    ? (isCurrentPasswordCorrect
-                                    ? Colors
-                                    .green // Vert si le mot de passe est correct
-                                    : Colors
-                                    .red) // Rouge si le mot de passe est incorrect
-                                    : Theme.of(context).primaryColor,
+                                color:
+                                    _currentPasswordController.text.isNotEmpty
+                                        ? (isCurrentPasswordCorrect
+                                            ? Colors.green
+                                            : Colors.red)
+                                        : Theme.of(context).primaryColor,
                                 width: 0.5,
                               ),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(
-                                color: _currentPasswordController
-                                    .text.isNotEmpty
-                                    ? (isCurrentPasswordCorrect
-                                    ? Colors
-                                    .green // Vert si le mot de passe est correct
-                                    : Colors
-                                    .red) // Rouge si le mot de passe est incorrect
-                                    : Theme.of(context).primaryColor,
+                                color:
+                                    _currentPasswordController.text.isNotEmpty
+                                        ? (isCurrentPasswordCorrect
+                                            ? Colors.green
+                                            : Colors.red)
+                                        : Theme.of(context).primaryColor,
                                 width: 0.5,
                               ),
                             ),
@@ -3395,8 +3480,8 @@ class _EditProfileState extends State<EditProfile> {
                               borderSide: BorderSide(
                                 color: _newPasswordController.text.isNotEmpty
                                     ? (isNewPasswordValid
-                                    ? Colors.green
-                                    : Colors.red)
+                                        ? Colors.green
+                                        : Colors.red)
                                     : Colors.white,
                                 width: 0.5,
                               ),
@@ -3406,8 +3491,8 @@ class _EditProfileState extends State<EditProfile> {
                               borderSide: BorderSide(
                                 color: _newPasswordController.text.isNotEmpty
                                     ? (isNewPasswordValid
-                                    ? Colors.green
-                                    : Colors.red)
+                                        ? Colors.green
+                                        : Colors.red)
                                     : Theme.of(context).primaryColor,
                                 width: 1.5,
                               ),
@@ -3417,8 +3502,8 @@ class _EditProfileState extends State<EditProfile> {
                               borderSide: BorderSide(
                                 color: _newPasswordController.text.isNotEmpty
                                     ? (isNewPasswordValid
-                                    ? Colors.green
-                                    : Colors.red)
+                                        ? Colors.green
+                                        : Colors.red)
                                     : Colors.white,
                                 width: 0.5,
                               ),
@@ -3461,11 +3546,11 @@ class _EditProfileState extends State<EditProfile> {
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(
                                 color:
-                                _confirmPasswordController.text.isNotEmpty
-                                    ? (isConfirmPasswordMatch
-                                    ? Colors.green
-                                    : Colors.red)
-                                    : Colors.white,
+                                    _confirmPasswordController.text.isNotEmpty
+                                        ? (isConfirmPasswordMatch
+                                            ? Colors.green
+                                            : Colors.red)
+                                        : Colors.white,
                                 width: 0.5,
                               ),
                             ),
@@ -3473,11 +3558,11 @@ class _EditProfileState extends State<EditProfile> {
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(
                                 color:
-                                _confirmPasswordController.text.isNotEmpty
-                                    ? (isConfirmPasswordMatch
-                                    ? Colors.green
-                                    : Colors.red)
-                                    : Colors.white,
+                                    _confirmPasswordController.text.isNotEmpty
+                                        ? (isConfirmPasswordMatch
+                                            ? Colors.green
+                                            : Colors.red)
+                                        : Colors.white,
                                 width: 1.5,
                               ),
                             ),
@@ -3485,11 +3570,11 @@ class _EditProfileState extends State<EditProfile> {
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(
                                 color:
-                                _confirmPasswordController.text.isNotEmpty
-                                    ? (isConfirmPasswordMatch
-                                    ? Colors.green
-                                    : Colors.red)
-                                    : Colors.white,
+                                    _confirmPasswordController.text.isNotEmpty
+                                        ? (isConfirmPasswordMatch
+                                            ? Colors.green
+                                            : Colors.red)
+                                        : Colors.white,
                                 width: 0.5,
                               ),
                             ),
@@ -3518,30 +3603,41 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                         const SizedBox(height: 20),
                         // Bouton "Save" aligné à droite
-                        // Bouton "Save" aligné à droite
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            ElevatedButton(
-                              onPressed: isSavePasswordButtonEnabled
-                                  ? () => _showConfirmationDialog(
-                                  context, _changePassword)
-                                  : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: isSavePasswordButtonEnabled
-                                    ? const Color(0xFF29E33C)
-                                    : Colors.grey,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 30, vertical: 12),
-                              ),
-                              child: Text(
-                                AppLocalizations.of(context).translate('save'),
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
+                            isLoading
+                                ? SizedBox(
+                                    height: 48,
+                                    width: 120,
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: const Color(0xFF29E33C),
+                                      ),
+                                    ),
+                                  )
+                                : ElevatedButton(
+                                    onPressed: isSavePasswordButtonEnabled
+                                        ? () => _showConfirmationDialog(
+                                            context, _changePassword)
+                                        : null,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          isSavePasswordButtonEnabled
+                                              ? const Color(0xFF29E33C)
+                                              : Colors.grey,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 30, vertical: 12),
+                                    ),
+                                    child: Text(
+                                      AppLocalizations.of(context)
+                                          .translate('save'),
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
                           ],
                         ),
                       ],
@@ -3559,7 +3655,7 @@ class _EditProfileState extends State<EditProfile> {
 
   Widget _buildPreferencesCard(BuildContext context) {
     final languageProvider =
-    Provider.of<LanguageProvider>(context, listen: false);
+        Provider.of<LanguageProvider>(context, listen: false);
 
     return GestureDetector(
       onTap: () {
@@ -3727,7 +3823,7 @@ class _EditProfileState extends State<EditProfile> {
                             AppLocalizations.of(context).translate('english'),
                             style: TextStyle(
                               color:
-                              Theme.of(context).textTheme.bodyMedium?.color,
+                                  Theme.of(context).textTheme.bodyMedium?.color,
                             ),
                           ),
                           onTap: () {
@@ -3736,7 +3832,7 @@ class _EditProfileState extends State<EditProfile> {
                           },
                           trailing: languageProvider.locale.languageCode == 'en'
                               ? Icon(Icons.check,
-                              color: Theme.of(context).iconTheme.color)
+                                  color: Theme.of(context).iconTheme.color)
                               : null,
                         ),
                         // French Option
@@ -3745,7 +3841,7 @@ class _EditProfileState extends State<EditProfile> {
                             AppLocalizations.of(context).translate('french'),
                             style: TextStyle(
                               color:
-                              Theme.of(context).textTheme.bodyMedium?.color,
+                                  Theme.of(context).textTheme.bodyMedium?.color,
                             ),
                           ),
                           onTap: () {
@@ -3754,7 +3850,7 @@ class _EditProfileState extends State<EditProfile> {
                           },
                           trailing: languageProvider.locale.languageCode == 'fr'
                               ? Icon(Icons.check,
-                              color: Theme.of(context).iconTheme.color)
+                                  color: Theme.of(context).iconTheme.color)
                               : null,
                         ),
                       ],
@@ -3860,7 +3956,7 @@ class _EditProfileState extends State<EditProfile> {
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color:
-                              Theme.of(context).textTheme.bodyMedium?.color,
+                                  Theme.of(context).textTheme.bodyMedium?.color,
                             ),
                           ),
                         ],
@@ -3910,7 +4006,7 @@ class _EditProfileState extends State<EditProfile> {
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color:
-                              Theme.of(context).textTheme.bodyMedium?.color,
+                                  Theme.of(context).textTheme.bodyMedium?.color,
                             ),
                           ),
                         ],
@@ -4019,7 +4115,7 @@ class _EditProfileState extends State<EditProfile> {
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color:
-                              Theme.of(context).textTheme.bodyMedium?.color,
+                                  Theme.of(context).textTheme.bodyMedium?.color,
                             ),
                           ),
                         ],
@@ -4054,7 +4150,7 @@ class _EditProfileState extends State<EditProfile> {
                           height: dialogHeight,
                           decoration: BoxDecoration(
                             color:
-                            Theme.of(context).cardColor.withOpacity(0.90),
+                                Theme.of(context).cardColor.withOpacity(0.90),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: Colors.white.withOpacity(0.2),
@@ -4071,9 +4167,9 @@ class _EditProfileState extends State<EditProfile> {
                                     .textTheme
                                     .titleLarge
                                     ?.copyWith(
-                                  fontSize: dialogWidth * 0.06,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                      fontSize: dialogWidth * 0.06,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
                               SizedBox(height: dialogHeight * 0.1),
                               Text(
@@ -4083,9 +4179,9 @@ class _EditProfileState extends State<EditProfile> {
                                     .textTheme
                                     .titleLarge
                                     ?.copyWith(
-                                  fontSize: dialogWidth * 0.05,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                      fontSize: dialogWidth * 0.05,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                 textAlign: TextAlign.center,
                               ),
                               SizedBox(height: dialogHeight * 0.1),
@@ -4104,7 +4200,7 @@ class _EditProfileState extends State<EditProfile> {
                                         ),
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
-                                          BorderRadius.circular(20),
+                                              BorderRadius.circular(20),
                                         ),
                                         padding: EdgeInsets.zero,
                                       ),
@@ -4142,9 +4238,9 @@ class _EditProfileState extends State<EditProfile> {
 
                                           // Get the current user's ID
                                           final sessionManager =
-                                          SessionManager();
+                                              SessionManager();
                                           final userId =
-                                          await sessionManager.getUserId();
+                                              await sessionManager.getUserId();
 
                                           if (userId != null) {
                                             try {
@@ -4156,41 +4252,41 @@ class _EditProfileState extends State<EditProfile> {
                                                     (BuildContext context) {
                                                   return Dialog(
                                                     backgroundColor:
-                                                    Colors.transparent,
+                                                        Colors.transparent,
                                                     elevation: 0,
                                                     child: Container(
                                                       padding:
-                                                      const EdgeInsets.all(
-                                                          16),
+                                                          const EdgeInsets.all(
+                                                              16),
                                                       decoration: BoxDecoration(
                                                         color: Theme.of(context)
                                                             .cardColor
                                                             .withOpacity(0.9),
                                                         borderRadius:
-                                                        BorderRadius
-                                                            .circular(20),
+                                                            BorderRadius
+                                                                .circular(20),
                                                       ),
                                                       child: Column(
                                                         mainAxisSize:
-                                                        MainAxisSize.min,
+                                                            MainAxisSize.min,
                                                         children: [
                                                           const CircularProgressIndicator(
                                                             valueColor:
-                                                            AlwaysStoppedAnimation<
-                                                                Color>(
-                                                                Color(
-                                                                    0xFF29E33C)),
+                                                                AlwaysStoppedAnimation<
+                                                                        Color>(
+                                                                    Color(
+                                                                        0xFF29E33C)),
                                                           ),
                                                           const SizedBox(
                                                               height: 16),
                                                           Text(
                                                             AppLocalizations.of(
-                                                                context)
+                                                                    context)
                                                                 .translate(
-                                                                "Deleting account..."),
+                                                                    "Deleting account..."),
                                                             style: TextStyle(
                                                               color: Theme.of(
-                                                                  context)
+                                                                      context)
                                                                   .textTheme
                                                                   .bodyMedium
                                                                   ?.color,
@@ -4205,10 +4301,10 @@ class _EditProfileState extends State<EditProfile> {
 
                                               // Call the method to delete user
                                               final authController =
-                                              AuthController();
+                                                  AuthController();
                                               await authController
                                                   .deleteUserWithProfiles(
-                                                  userId);
+                                                      userId);
 
                                               // Close loading dialog
                                               Navigator.pop(context);
@@ -4218,9 +4314,9 @@ class _EditProfileState extends State<EditProfile> {
                                                   .showSnackBar(
                                                 SnackBar(
                                                   content: Text(AppLocalizations
-                                                      .of(context)
+                                                          .of(context)
                                                       .translate(
-                                                      "Account successfully deleted")),
+                                                          "Account successfully deleted")),
                                                   backgroundColor: Colors.green,
                                                 ),
                                               );
@@ -4235,12 +4331,12 @@ class _EditProfileState extends State<EditProfile> {
                                                 MaterialPageRoute(
                                                     builder: (context) =>
                                                         LoginView()),
-                                                    (route) => false,
+                                                (route) => false,
                                               );
                                             } catch (e) {
                                               // Close loading dialog if open
                                               Navigator.of(context,
-                                                  rootNavigator: true)
+                                                      rootNavigator: true)
                                                   .pop();
 
                                               // Show error message
@@ -4259,9 +4355,9 @@ class _EditProfileState extends State<EditProfile> {
                                                 .showSnackBar(
                                               SnackBar(
                                                 content: Text(AppLocalizations
-                                                    .of(context)
+                                                        .of(context)
                                                     .translate(
-                                                    "User session not found")),
+                                                        "User session not found")),
                                                 backgroundColor: Colors.red,
                                               ),
                                             );
@@ -4273,7 +4369,7 @@ class _EditProfileState extends State<EditProfile> {
                                           padding: EdgeInsets.zero,
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
-                                            BorderRadius.circular(20),
+                                                BorderRadius.circular(20),
                                           ),
                                         ),
                                         child: Text(
@@ -4324,7 +4420,7 @@ class _EditProfileState extends State<EditProfile> {
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color:
-                              Theme.of(context).textTheme.bodyMedium?.color,
+                                  Theme.of(context).textTheme.bodyMedium?.color,
                             ),
                           ),
                         ],

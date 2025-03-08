@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Services/payment_service%20.dart';
 import 'package:piminnovictus/Views/AuthViews/login_view.dart';
+import 'package:piminnovictus/Views/DashboardClient/Dashboard.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewPage extends StatefulWidget {
@@ -54,7 +55,7 @@ class _WebViewPageState extends State<WebViewPage> {
 
     // Navigate to the LoginView page
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => LoginView()),
+      MaterialPageRoute(builder: (context) => DashboardPage()),
     );
   },
   child: Text("OK"),

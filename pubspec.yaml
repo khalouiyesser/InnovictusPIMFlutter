@@ -37,6 +37,10 @@ dependencies:
   google_sign_in: ^6.2.2
   web_socket_channel: ^2.4.0  # Replace with the latest version
   socket_io_client: ^2.0.3    # Replace with the latest version
+  image_picker: ^1.0.7  # Vérifie la dernière version sur pub.dev
+  permission_handler: ^11.0.1
+
+
 
 
 

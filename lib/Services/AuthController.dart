@@ -223,7 +223,7 @@ class AuthController {
           'name': googleUser.displayName,
           'idGoogle': googleUser.id,
           'photoUrl': googleUser.photoUrl,
-          'packId': "67c3a54219a227df76c6b67c",
+          'packId': "67be43394925465e90de0b98",
         }),
       );
 

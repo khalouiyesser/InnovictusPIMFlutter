@@ -23,6 +23,7 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
   String? _passwordError = null;
   late AuthScreenTheme _theme;
   bool _isPasswordVisible = false;
+  bool _isLoading = false; // Variable pour suivre l'état de chargement
   AuthController auth = AuthController();
 
   @override
@@ -103,10 +104,10 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
   void _validateEmail(String value) {
     setState(() {
       if (value.isEmpty) {
-      _emailError = AppLocalizations.of(context).translate("emailRequired");
+        _emailError = AppLocalizations.of(context).translate("emailRequired");
       } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
           .hasMatch(value)) {
-      _emailError = AppLocalizations.of(context).translate("emailInvalid");
+        _emailError = AppLocalizations.of(context).translate("emailInvalid");
       } else {
         _emailError = null;
       }
@@ -116,9 +117,11 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
   void _validatePassword(String value) {
     setState(() {
       if (value.isEmpty) {
-      _passwordError = AppLocalizations.of(context).translate("passwordRequired");
+        _passwordError =
+            AppLocalizations.of(context).translate("passwordRequired");
       } else if (value.length < 6) {
-      _passwordError = AppLocalizations.of(context).translate("passwordTooShort");
+        _passwordError =
+            AppLocalizations.of(context).translate("passwordTooShort");
       } else {
         _passwordError = null;
       }
@@ -164,7 +167,7 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                     decoration: InputDecoration(
                       errorText: _emailError,
                       errorStyle: TextStyle(color: Colors.red),
-                        hintText: AppLocalizations.of(context).translate('email'),
+                      hintText: AppLocalizations.of(context).translate('email'),
                       hintStyle: TextStyle(
                         color: AuthScreenThemeDetector.isSystemDarkMode()
                             ? _theme.hintTextColor
@@ -199,8 +202,8 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                     decoration: InputDecoration(
                       errorText: _passwordError,
                       errorStyle: TextStyle(color: Colors.red),
-                      hintText: AppLocalizations.of(context).translate("password"),
-
+                      hintText:
+                          AppLocalizations.of(context).translate("password"),
                       hintStyle: TextStyle(
                         color: AuthScreenThemeDetector.isSystemDarkMode()
                             ? _theme.hintTextColor
@@ -247,7 +250,8 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                         );
                       },
                       child: Text(
-  AppLocalizations.of(context).translate("forgotPassword"),
+                        AppLocalizations.of(context)
+                            .translate("forgotPassword"),
                         style: TextStyle(
                           color: _theme.textColor,
                           fontSize: 14,
@@ -275,9 +279,16 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                   bool ok = validateform();
                   if (!ok) return;
 
+                  // Activer l'indicateur de chargement
+                  setState(() {
+                    _isLoading = true;
+                  });
+
                   try {
                     Map<String, dynamic> response = await auth.loginSimple(
                         emailController.text, passwordController.text);
+
+                    if (!mounted) return;
 
                     if (response.isNotEmpty) {
                       Navigator.of(context).pushReplacement(
@@ -290,15 +301,27 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                         ),
                       );
                     } else {
+                      setState(() {
+                        _isLoading = false;
+                      });
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-    content: Text(AppLocalizations.of(context).translate("loginFailed") + ": ${response['message'] ?? AppLocalizations.of(context).translate("checkCredentials")}")
-  ), );
+                            content: Text(AppLocalizations.of(context)
+                                    .translate("loginFailed") +
+                                ": ${response['message'] ?? AppLocalizations.of(context).translate("checkCredentials")}")),
+                      );
                     }
                   } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-  SnackBar(content: Text(AppLocalizations.of(context).translate("connectionError"))),
-                    );
+                    if (mounted) {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text(AppLocalizations.of(context)
+                                .translate("connectionError"))),
+                      );
+                    }
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -309,7 +332,8 @@ class _LoginViewState extends State<LoginView> with WidgetsBindingObserver {
                   padding: EdgeInsets.symmetric(vertical: 15),
                 ),
                 child: Text(
-AppLocalizations.of(context).translate("login"),                  style: TextStyle(
+                  AppLocalizations.of(context).translate("login"),
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 15,
                   ),
@@ -327,16 +351,27 @@ AppLocalizations.of(context).translate("login"),                  style: TextSty
               width: MediaQuery.of(context).size.width * 0.8,
               height: 50,
               child: ElevatedButton.icon(
-  onPressed: () async {
-    try {
-      Map<String, dynamic> response = await auth.loginWithGoogle(context);
-      // Navigation is now handled inside the loginWithGoogle function
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).translate("connectionError"))),
-      );
-    }
-  },
+                onPressed: () async {
+                  try {
+                    setState(() {
+                      _isLoading = true;
+                    });
+                    Map<String, dynamic> response =
+                        await auth.loginWithGoogle(context);
+                    // Navigation is now handled inside the loginWithGoogle function
+                  } catch (e) {
+                    if (mounted) {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text(AppLocalizations.of(context)
+                                .translate("connectionError"))),
+                      );
+                    }
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AuthScreenThemeDetector.isSystemDarkMode()
                       ? Color(0xFF2C2E2F).withOpacity(0.1)
@@ -355,7 +390,7 @@ AppLocalizations.of(context).translate("login"),                  style: TextSty
                   height: 24,
                 ),
                 label: Text(
-  AppLocalizations.of(context).translate("loginWithGoogle"),
+                  AppLocalizations.of(context).translate("loginWithGoogle"),
                   style: TextStyle(
                     color: Theme.of(context).brightness == Brightness.light
                         ? Colors.white
@@ -376,7 +411,7 @@ AppLocalizations.of(context).translate("login"),                  style: TextSty
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-  AppLocalizations.of(context).translate("noAccountYet"),
+                  AppLocalizations.of(context).translate("noAccountYet"),
                   style: TextStyle(
                     color: _theme.textColor,
                     fontSize: 14,
@@ -390,7 +425,7 @@ AppLocalizations.of(context).translate("login"),                  style: TextSty
                     );
                   },
                   child: Text(
-  AppLocalizations.of(context).translate("signUp"),
+                    AppLocalizations.of(context).translate("signUp"),
                     style: TextStyle(color: _theme.primaryColor, fontSize: 16),
                   ),
                 )
@@ -403,7 +438,7 @@ AppLocalizations.of(context).translate("login"),                  style: TextSty
             top: 80,
             left: 20,
             child: Text(
-  AppLocalizations.of(context).translate("welcomeBack"),
+              AppLocalizations.of(context).translate("welcomeBack"),
               style: TextStyle(
                 color: _theme.textColor,
                 fontSize: 30,
@@ -424,13 +459,42 @@ AppLocalizations.of(context).translate("login"),                  style: TextSty
             top: 120,
             left: 20,
             child: Text(
-              AppLocalizations.of(context).translate("login"),              style: TextStyle(
+              AppLocalizations.of(context).translate("login"),
+              style: TextStyle(
                 color: _theme.textColor,
                 fontSize: 27,
                 fontWeight: FontWeight.normal,
               ),
             ),
           ),
+
+          // Overlay de chargement plein écran
+          if (_isLoading)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(_theme.primaryColor),
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        AppLocalizations.of(context).translate("loading") ??
+                            "Chargement...",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

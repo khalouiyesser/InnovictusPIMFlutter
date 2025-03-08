@@ -31,19 +31,15 @@ class _DashboardPageState extends State<DashboardPage> {
   final SessionManager _sessionManager = SessionManager();
   User? currentUser;
 
-late WebSocketChannel channel;
-  
+  late WebSocketChannel channel;
+
   final SocketService _socketService = SocketService();
 
-
-
-  int batteryLevel =0;
+  int batteryLevel = 0;
   double totalEnergy = 0.0;
   double capacity = 0.0;
   double co2Reduction = 0.0;
-  double consumedEnergy=0.0;
-
-
+  double consumedEnergy = 0.0;
 
   Widget getWeatherIcon(int code, {double size = 24.0}) {
     switch (code) {
@@ -106,24 +102,25 @@ late WebSocketChannel channel;
     super.initState();
     _loadUserData();
 
-
-_socketService.connectToSocket((data) {
+    _socketService.connectToSocket((data) {
       if (mounted) {
         setState(() {
-          totalEnergy = data['totalEnergy'] is num ? (data['totalEnergy'] as num).toDouble() : 0.0;
-          capacity = data['capacity'] is num ? (data['capacity'] as num).toDouble() : 0.0;
-          co2Reduction = data['co2Reduction'] is num ? (data['co2Reduction'] as num).toDouble() : 0.0;
+          totalEnergy = data['totalEnergy'] is num
+              ? (data['totalEnergy'] as num).toDouble()
+              : 0.0;
+          capacity = data['capacity'] is num
+              ? (data['capacity'] as num).toDouble()
+              : 0.0;
+          co2Reduction = data['co2Reduction'] is num
+              ? (data['co2Reduction'] as num).toDouble()
+              : 0.0;
           batteryLevel = data['batterylevel'] is int ? data['batterylevel'] : 0;
-          consumedEnergy = data['consumed'] is num 
-              ? double.parse((data['consumed'] as num).toStringAsFixed(2)) 
+          consumedEnergy = data['consumed'] is num
+              ? double.parse((data['consumed'] as num).toStringAsFixed(2))
               : 0.0;
         });
       }
     });
-
-
-
-
   }
 
   Future<void> _loadUserData() async {
@@ -138,7 +135,7 @@ _socketService.connectToSocket((data) {
     final theme = Theme.of(context);
     // On récupère le provider pour pouvoir l'utiliser si besoin
     final themeProvider = Provider.of<ThemeProvider>(context);
-  final languageProvider =
+    final languageProvider =
         Provider.of<LanguageProvider>(context, listen: false);
 
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -204,7 +201,8 @@ _socketService.connectToSocket((data) {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-  AppLocalizations.of(context).translate('welcomeBack'),
+                                  AppLocalizations.of(context)
+                                      .translate('welcomeBack'),
                                   style: theme.textTheme.titleMedium
                                       ?.copyWith(fontSize: screenWidth * 0.04),
                                 ),
@@ -232,7 +230,7 @@ _socketService.connectToSocket((data) {
                       BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
                         builder: (context, state) {
                           if (state is WeatherBlocSuccess) {
-                                                              final translations = AppLocalizations.of(context);
+                            final translations = AppLocalizations.of(context);
 
                             return Padding(
                               padding:
@@ -280,7 +278,6 @@ _socketService.connectToSocket((data) {
                       BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
                         builder: (context, state) {
                           if (state is WeatherBlocSuccess) {
-
                             return Padding(
                               padding:
                                   EdgeInsets.symmetric(horizontal: padding),
@@ -325,7 +322,8 @@ _socketService.connectToSocket((data) {
                               children: [
                                 SizedBox(height: screenHeight * 0.02),
                                 Text(
-  AppLocalizations.of(context).translate('energyUsages'),
+                                  AppLocalizations.of(context)
+                                      .translate('energyUsages'),
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     fontSize: 16,
                                     color: theme.textTheme.titleMedium?.color
@@ -334,7 +332,7 @@ _socketService.connectToSocket((data) {
                                 ),
                                 const SizedBox(height: 1),
                                 Text(
-                                  this.batteryLevel.toString()+"%",
+                                  this.batteryLevel.toString() + "%",
                                   style:
                                       theme.textTheme.headlineLarge?.copyWith(
                                     fontSize: screenWidth * 0.1,
@@ -376,19 +374,29 @@ _socketService.connectToSocket((data) {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           children: [
-                            _buildInfoCard(context, AppLocalizations.of(context).translate('totalEnergy'), '${this.totalEnergy} ${AppLocalizations.of(context).translate('kwh')}',
+                            _buildInfoCard(
+                                context,
+                                AppLocalizations.of(context)
+                                    .translate('totalEnergy'),
+                                '${this.totalEnergy} ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.lightbulb),
                             _buildInfoCard(
-  context, 
-  AppLocalizations.of(context).translate('consumed'), 
-  '${this.consumedEnergy} ${AppLocalizations.of(context).translate('kwh')}',
-  Icons.flash_on
-),
-                            _buildInfoCard(context,  AppLocalizations.of(context).translate('capacity'), 
-  '42.0 ${AppLocalizations.of(context).translate('kwh')}',
+                                context,
+                                AppLocalizations.of(context)
+                                    .translate('consumed'),
+                                '${this.consumedEnergy} ${AppLocalizations.of(context).translate('kwh')}',
+                                Icons.flash_on),
+                            _buildInfoCard(
+                                context,
+                                AppLocalizations.of(context)
+                                    .translate('capacity'),
+                                '42.0 ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.battery_full),
-                            _buildInfoCard(context,  AppLocalizations.of(context).translate('co2Reduction'), 
-  '${this.co2Reduction} ${AppLocalizations.of(context).translate('kwh')}',
+                            _buildInfoCard(
+                                context,
+                                AppLocalizations.of(context)
+                                    .translate('co2Reduction'),
+                                '${this.co2Reduction} ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.eco),
                           ],
                         ),
@@ -493,7 +501,7 @@ _socketService.connectToSocket((data) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-  AppLocalizations.of(context).translate('electricityGenerated'),
+                AppLocalizations.of(context).translate('electricityGenerated'),
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
