@@ -7,7 +7,9 @@ import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/ViewModels/WalletViewModel.dart';
+import 'package:piminnovictus/Views/DashboardClient/WalletCreatePasswordPage.dart';
 import 'package:piminnovictus/Views/DashboardClient/WalletPage.dart';
+import 'package:piminnovictus/Views/DashboardClient/WalletPasswordPage.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:provider/provider.dart';
 // Import correct pour la classe User personnalisée
@@ -174,7 +176,7 @@ void _showConnectWalletModal(BuildContext context) {
                                     await secureStorage.write(key: 'accountId', value: accountId);
                                     Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (context) => WalletPage()),
+                                        MaterialPageRoute(builder: (context) => WalletCreatePasswordPage()),
                                       );
                                   }
                                 },

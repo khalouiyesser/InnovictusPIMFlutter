@@ -158,6 +158,13 @@ class _WalletPageState extends State<WalletPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        const CircleAvatar(
+                          radius: 18,
+                          backgroundImage: AssetImage(
+                            'assets/Bitcoin.png',
+                          ),
+                        ),
+                        const SizedBox(width: 10,),
                         Expanded(  // Ensure text does not overflow
                           child: Text(
                             AppLocalizations.of(context).translate(
@@ -165,41 +172,51 @@ class _WalletPageState extends State<WalletPage> {
                             ),
                             style: theme.textTheme.titleLarge?.copyWith(
                               fontSize: screenWidth * 0.04,
-                              color: const Color.fromARGB(137, 255, 255, 255),
+                              color: const Color.fromARGB(227, 255, 255, 255),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                        _ActionButton(
-                          label: AppLocalizations.of(context).translate('listOfTransaction'),
-                          icon: Icons.list_alt_rounded,
-                          onTap: () {},
-                        ),
+                        // _ActionButton(
+                        //   label: AppLocalizations.of(context).translate('listOfTransaction'),
+                        //   icon: Icons.list_alt_rounded,
+                        //   onTap: () {},
+                        // ),
                       ],
                     ),
 
                     const SizedBox(height: 32),
 
-                    // Coins Activity Tracking (Titre + Calendrier)
                     Text(
+                      AppLocalizations.of(context)
+                          .translate('listOfTransaction'),
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontSize: screenWidth * 0.05,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+
+                    // Coins Activity Tracking (Titre + Calendrier)
+                    /*Text(
                       AppLocalizations.of(context)
                           .translate('coinsActivityTracking'),
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontSize: screenWidth * 0.05,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
+                    ),*/
                     const SizedBox(height: 16),
 
                     // Le calendrier dynamique
-                    const CalendarWithTracking(),
+                    //const CalendarWithTracking(),
 
                     const SizedBox(height: 32),
 
                     // Statistic (titre + chart)
 
                     const SizedBox(height: 16),
-                    const _ChartSection(),
+                    //const _ChartSection(),
                   ],
                 ),
               ),
