@@ -5,7 +5,6 @@ import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
-import 'package:piminnovictus/ViewModels/WalletViewModel.dart';
 import 'package:piminnovictus/Views/DashboardClient/TransactionCard.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +13,8 @@ import 'package:piminnovictus/Models/User.dart';
 
 // N'oublie pas d'ajouter table_calendar dans ton pubspec.yaml
 import 'package:table_calendar/table_calendar.dart';
+
+import '../../viewmodels/WalletViewModel.dart';
 
 const kGreen = Color(0xFF29E33C);
 const double padding = 16.0;
@@ -46,15 +47,15 @@ class _WalletPageState extends State<WalletPage> {
       print('-****************AAA***********************-');
     }
 
-    final walletViewModel = Provider.of<WalletViewModel>(context, listen: false);
+    final walletViewModel =
+        Provider.of<WalletViewModel>(context, listen: false);
     walletViewModel.fetchTokenBalance(accountId!);
 
-     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<WalletViewModel>(context, listen: false).loadTransactions(accountId);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<WalletViewModel>(context, listen: false)
+          .loadTransactions(accountId);
     });
-
   }
-
 
   @override
   void initState() {
@@ -92,6 +93,7 @@ class _WalletPageState extends State<WalletPage> {
           children: [
             // Fond d'écran flouté
             BlurredRadialBackground(
+              height: MediaQuery.of(context).size.height,
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.all(padding),
@@ -147,7 +149,7 @@ class _WalletPageState extends State<WalletPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '${(double.tryParse(walletViewModel.tokenBalance) ?? 0) * 0.25} DT ', 
+                                '${(double.tryParse(walletViewModel.tokenBalance) ?? 0) * 0.25} DT ',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontSize: screenWidth * 0.04,
                                 ),
@@ -170,17 +172,17 @@ class _WalletPageState extends State<WalletPage> {
                             'assets/GRE2.png',
                           ),
                         ),
-                        const SizedBox(width: 10,),
-                        Expanded(  // Ensure text does not overflow
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          // Ensure text does not overflow
                           child: Text(
                             AppLocalizations.of(context).translate(
                               'For every generated 1000KW \nyou\'ll get 1 GRE',
                             ),
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              fontSize: screenWidth * 0.04,
-                              color: const Color.fromARGB(227, 255, 255, 255),
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: theme.textTheme.bodyLarge
+                                ?.copyWith(fontSize: screenWidth * 0.04),
                           ),
                         ),
                       ],
@@ -197,31 +199,34 @@ class _WalletPageState extends State<WalletPage> {
                       ),
                     ),
 
-
-SizedBox(
-  height: MediaQuery.of(context).size.height, // or any specific height
-  child: Column(
-    mainAxisSize: MainAxisSize.min, 
-    children: [
-      if (walletViewModel.isLoading)
-        Center(child: CircularProgressIndicator())
-      else if (walletViewModel.transactions.isEmpty)
-        Center(child: Text("No transactions found"))
-      else
-        Flexible(
-        fit: FlexFit.loose,// Ensures the ListView takes the remaining space
-          child: ListView.builder(
-            padding: EdgeInsets.all(10),
-            itemCount: walletViewModel.transactions.length,
-            itemBuilder: (context, index) {
-              return TransactionCard(transaction: walletViewModel.transactions[index]);
-            },
-          ),
-        ),
-    ],
-  ),
-),
-
+                    SizedBox(
+                      height: MediaQuery.of(context)
+                          .size
+                          .height, // or any specific height
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (walletViewModel.isLoading)
+                            Center(child: CircularProgressIndicator())
+                          else if (walletViewModel.transactions.isEmpty)
+                            Center(child: Text("No transactions found"))
+                          else
+                            Flexible(
+                              fit: FlexFit
+                                  .loose, // Ensures the ListView takes the remaining space
+                              child: ListView.builder(
+                                padding: EdgeInsets.all(10),
+                                itemCount: walletViewModel.transactions.length,
+                                itemBuilder: (context, index) {
+                                  return TransactionCard(
+                                      transaction:
+                                          walletViewModel.transactions[index]);
+                                },
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
 
                     // Coins Activity Tracking (Titre + Calendrier)
                     /*Text(

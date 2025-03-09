@@ -6,7 +6,7 @@ import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
-import 'package:piminnovictus/Views/DashboardClient/WalletPage.dart';
+// import 'package:piminnovictus/Views/DashboardClient/WalletPage.dart';
 import 'package:piminnovictus/Views/DashboardClient/energy_settings_sheet.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:piminnovictus/viewmodels/WeatherAPI/bloc/weather_bloc_bloc.dart';
@@ -16,6 +16,9 @@ import 'package:piminnovictus/Views/DashboardClient/profile_switcher_dropdown.da
 
 import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:fl_chart/fl_chart.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import '../../Services/socket_service.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -27,6 +30,17 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final SessionManager _sessionManager = SessionManager();
   User? currentUser;
+
+  late WebSocketChannel channel;
+
+  final SocketService _socketService = SocketService();
+
+  int batteryLevel = 0;
+  double totalEnergy = 0.0;
+  double capacity = 0.0;
+  double co2Reduction = 0.0;
+  double consumedEnergy = 0.0;
+
   Widget getWeatherIcon(int code, {double size = 24.0}) {
     switch (code) {
       case >= 200 && < 300:
@@ -87,6 +101,26 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
     _loadUserData();
+
+    _socketService.connectToSocket((data) {
+      if (mounted) {
+        setState(() {
+          totalEnergy = data['totalEnergy'] is num
+              ? (data['totalEnergy'] as num).toDouble()
+              : 0.0;
+          capacity = data['capacity'] is num
+              ? (data['capacity'] as num).toDouble()
+              : 0.0;
+          co2Reduction = data['co2Reduction'] is num
+              ? (data['co2Reduction'] as num).toDouble()
+              : 0.0;
+          batteryLevel = data['batterylevel'] is int ? data['batterylevel'] : 0;
+          consumedEnergy = data['consumed'] is num
+              ? double.parse((data['consumed'] as num).toStringAsFixed(2))
+              : 0.0;
+        });
+      }
+    });
   }
 
   Future<void> _loadUserData() async {
@@ -101,7 +135,7 @@ class _DashboardPageState extends State<DashboardPage> {
     final theme = Theme.of(context);
     // On récupère le provider pour pouvoir l'utiliser si besoin
     final themeProvider = Provider.of<ThemeProvider>(context);
-  final languageProvider =
+    final languageProvider =
         Provider.of<LanguageProvider>(context, listen: false);
 
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -121,6 +155,7 @@ class _DashboardPageState extends State<DashboardPage> {
           children: [
             // Fond d'écran (background)
             BlurredRadialBackground(
+              height: screenHeight,
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: Padding(
@@ -167,7 +202,8 @@ class _DashboardPageState extends State<DashboardPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-  AppLocalizations.of(context).translate('welcomeBack'),
+                                  AppLocalizations.of(context)
+                                      .translate('welcomeBack'),
                                   style: theme.textTheme.titleMedium
                                       ?.copyWith(fontSize: screenWidth * 0.04),
                                 ),
@@ -195,7 +231,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
                         builder: (context, state) {
                           if (state is WeatherBlocSuccess) {
-                                                              final translations = AppLocalizations.of(context);
+                            final translations = AppLocalizations.of(context);
 
                             return Padding(
                               padding:
@@ -243,7 +279,6 @@ class _DashboardPageState extends State<DashboardPage> {
                       BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
                         builder: (context, state) {
                           if (state is WeatherBlocSuccess) {
-
                             return Padding(
                               padding:
                                   EdgeInsets.symmetric(horizontal: padding),
@@ -277,7 +312,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             CustomPaint(
                               size: Size(screenWidth * 0.5, screenWidth * 0.5),
                               painter: CircularProgressPainter(
-                                0.85,
+                                this.batteryLevel * 0.01,
                                 progressColor: progressColor,
                                 progressBackgroundColor:
                                     progressBackgroundColor,
@@ -288,7 +323,8 @@ class _DashboardPageState extends State<DashboardPage> {
                               children: [
                                 SizedBox(height: screenHeight * 0.02),
                                 Text(
-  AppLocalizations.of(context).translate('energyUsages'),
+                                  AppLocalizations.of(context)
+                                      .translate('energyUsages'),
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     fontSize: 16,
                                     color: theme.textTheme.titleMedium?.color
@@ -297,7 +333,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 ),
                                 const SizedBox(height: 1),
                                 Text(
-                                  '85%',
+                                  this.batteryLevel.toString() + "%",
                                   style:
                                       theme.textTheme.headlineLarge?.copyWith(
                                     fontSize: screenWidth * 0.1,
@@ -339,20 +375,29 @@ class _DashboardPageState extends State<DashboardPage> {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           children: [
-                            _buildInfoCard(context, AppLocalizations.of(context).translate('totalEnergy'), 
-  '36.2 ${AppLocalizations.of(context).translate('kwh')}',
+                            _buildInfoCard(
+                                context,
+                                AppLocalizations.of(context)
+                                    .translate('totalEnergy'),
+                                '${this.totalEnergy} ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.lightbulb),
                             _buildInfoCard(
-  context, 
-  AppLocalizations.of(context).translate('consumed'), 
-  '28.2 ${AppLocalizations.of(context).translate('kwh')}',
-  Icons.flash_on
-),
-                            _buildInfoCard(context,  AppLocalizations.of(context).translate('capacity'), 
-  '42.0 ${AppLocalizations.of(context).translate('kwh')}',
+                                context,
+                                AppLocalizations.of(context)
+                                    .translate('consumed'),
+                                '${this.consumedEnergy} ${AppLocalizations.of(context).translate('kwh')}',
+                                Icons.flash_on),
+                            _buildInfoCard(
+                                context,
+                                AppLocalizations.of(context)
+                                    .translate('capacity'),
+                                '42.0 ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.battery_full),
-                            _buildInfoCard(context,  AppLocalizations.of(context).translate('co2Reduction'), 
-  '28.2 ${AppLocalizations.of(context).translate('kwh')}',
+                            _buildInfoCard(
+                                context,
+                                AppLocalizations.of(context)
+                                    .translate('co2Reduction'),
+                                '${this.co2Reduction} ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.eco),
                           ],
                         ),
@@ -389,39 +434,62 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildInfoCard(
       BuildContext context, String title, String value, IconData icon) {
     final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+    final cardHeight = height * 0.15; // 15% de la hauteur de l'écran
+    final constrainedHeight = cardHeight.clamp(80.0, 120.0);
+    // Tailles responsives pour les éléments internes
+    final iconSize = width * 0.055; // Taille d'icône responsive
+    final titleFontSize = width * 0.035; // Taille de police du titre responsive
+    final valueFontSize =
+        width * 0.045; // Taille de police de la valeur responsive
+    // Espacement responsive
+    final verticalPadding = height * 0.012;
+    final horizontalPadding = width * 0.03;
+    final iconSpacing = height * 0.008;
+    final titleSpacing = height * 0.003;
+
     return Container(
-      height: 100,
+      height: constrainedHeight,
       decoration: BoxDecoration(
         color: theme.cardColor.withOpacity(0.70),
         border: Border.all(
           color: theme.colorScheme.primary.withOpacity(0.11) ??
-              MyThemes.primaryColor.withOpacity(0.11),
+              const Color.fromRGBO(41, 227, 60, 1).withOpacity(0.11),
           width: 1,
         ),
         borderRadius: BorderRadius.circular(15),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      padding: EdgeInsets.symmetric(
+        vertical: verticalPadding,
+        horizontal: horizontalPadding,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             icon,
             color: theme.colorScheme.primary ?? MyThemes.primaryColor,
-            size: 23,
+            size: iconSize.clamp(
+                20.0, 26.0), // Limiter la taille minimale et maximale
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: titleSpacing),
           Text(
             title,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontSize: 15,
+              fontSize: titleFontSize.clamp(
+                  12.0, 16.0), // Limiter la taille minimale et maximale
               color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
             ),
           ),
-          const SizedBox(height: 3),
+          SizedBox(height: titleSpacing),
           Text(
             value,
             style: theme.textTheme.titleLarge?.copyWith(
-              fontSize: 19,
+              fontSize: valueFontSize.clamp(
+                  16.0, 20.0), // Limiter la taille minimale et maximale
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -457,7 +525,7 @@ class _DashboardPageState extends State<DashboardPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-  AppLocalizations.of(context).translate('electricityGenerated'),
+                AppLocalizations.of(context).translate('electricityGenerated'),
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

@@ -41,12 +41,11 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
 
   final List _pages = [
     DashboardPage(),
-    ConnectWalletPage(),
+    WalletPage(),
     BuyEnergiePage(),
     Container(),
     EditProfile(),
   ];
-
 
 //ajbouni
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
@@ -60,7 +59,8 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
       print('Private Key: $privateKey');
       // If wallet data is available, replace ConnectWalletPage with WalletPage
       setState(() {
-        _pages[1] = WalletPasswordPage();  // Change ConnectWalletPage to WalletPage
+        _pages[1] =
+            WalletPasswordPage(); // Change ConnectWalletPage to WalletPage
       });
     } else {
       print('-****************_loadWalletData ***********************-');

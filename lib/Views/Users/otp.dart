@@ -185,9 +185,12 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Services/AuthController.dart';
+import 'package:piminnovictus/Views/DashboardClient/ConnectWallet.dart';
 import 'package:piminnovictus/Views/Users/NewPassword.dart';
 import 'package:piminnovictus/Views/bachground.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
 
 class OTPPage extends StatefulWidget {
   final String email;
@@ -218,6 +221,7 @@ class _OTPPageState extends State<OTPPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     _updateTheme();
+    // S'enregistre pour écouter les changements de luminosité du système
     WidgetsBinding.instance.addObserver(this);
 
     focusNodes = List.generate(6, (index) => FocusNode());
@@ -253,24 +257,37 @@ class _OTPPageState extends State<OTPPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = AuthScreenThemeDetector.isSystemDarkMode();
-
     return Scaffold(
-      body: BlurredRadialBackground(
-        child: SafeArea(
-          child: Padding(
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: _theme.backgroundGradientColors,
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: isDarkMode
+                  ? Image.asset("assets/Pulse.png", fit: BoxFit.cover)
+                  : null,
+            ),
+          ),
+          Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Enter OTP Code",
+                    AppLocalizations.of(context).translate("enterOtpCode"),
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: _theme.textColor,
                     ),
                   ),
                 ),
@@ -293,7 +310,7 @@ class _OTPPageState extends State<OTPPage> with WidgetsBindingObserver {
                         ),
                         decoration: InputDecoration(
                           filled: true,
-                          fillColor: Colors.grey[800],
+                          fillColor: Color.fromARGB(255, 117, 115, 115),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(7),
                             borderSide: BorderSide.none,
@@ -339,9 +356,9 @@ class _OTPPageState extends State<OTPPage> with WidgetsBindingObserver {
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content:
-                                Text("Code incorrect, veuillez réessayer."),
+                          SnackBar(
+                            content: Text(AppLocalizations.of(context)
+                                .translate("incorrectCode")),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -353,8 +370,8 @@ class _OTPPageState extends State<OTPPage> with WidgetsBindingObserver {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text(
-                      "Verify the code",
+                    child: Text(
+                      AppLocalizations.of(context).translate("verifyCode"),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -364,10 +381,10 @@ class _OTPPageState extends State<OTPPage> with WidgetsBindingObserver {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  "You have not received the code?",
+                Text(
+                  AppLocalizations.of(context).translate("codeNotReceived"),
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: _theme.textColor,
                     fontSize: 14,
                   ),
                 ),
@@ -385,10 +402,10 @@ class _OTPPageState extends State<OTPPage> with WidgetsBindingObserver {
                           "Nouveau ResetToken: $resetToken, Nouveau Code: $code");
                     }
                   },
-                  child: const Text(
-                    "Resend",
+                  child: Text(
+                    AppLocalizations.of(context).translate("resend"),
                     style: TextStyle(
-                      color: Colors.green,
+                      color: _theme.textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -397,7 +414,7 @@ class _OTPPageState extends State<OTPPage> with WidgetsBindingObserver {
               ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }

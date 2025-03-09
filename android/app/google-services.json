@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "213262949474-j16uu0r1qi4j3e84jdat0odhotjfs9gh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "tn.esprit.piminnovictus",
+            "certificate_hash": "60f38fa6e1adcc7b6e9c86bab91658ecf7c51656"
+          }
+        },
+        {
           "client_id": "213262949474-p8qafi8buokqn80q11tr42reitpg998m.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
