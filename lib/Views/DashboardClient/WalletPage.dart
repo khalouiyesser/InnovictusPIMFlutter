@@ -167,7 +167,7 @@ class _WalletPageState extends State<WalletPage> {
                         const CircleAvatar(
                           radius: 16,
                           backgroundImage: AssetImage(
-                            'assets/Bitcoin.png',
+                            'assets/GRE2.png',
                           ),
                         ),
                         const SizedBox(width: 10,),

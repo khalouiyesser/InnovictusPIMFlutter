@@ -27,7 +27,7 @@ class Transaction {
   }
 
   static Future<List<Transaction>> fetchTransactions(String accountId) async {
-    final url = Uri.parse('http://192.168.1.17:5000/fetchTransactions/$accountId');
+    final url = Uri.parse('http://192.168.1.148:5000/fetchTransactions/$accountId');
     print("*********** fetchTransactions started********************");
     try {
       final response = await http.get(url);
