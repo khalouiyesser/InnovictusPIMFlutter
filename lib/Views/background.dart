@@ -14,7 +14,7 @@ class BlurredRadialBackground extends StatelessWidget {
     this.colors = const [Color(0xFF0A140C), Color(0xFF0D0F0D)],
     this.stops = const [0.2, 1.0],
     this.radius = 1.2,
-    this.blurSigma = 5.0,
+    this.blurSigma = 5.0, required bool isDarkMode, required List<Color> backgroundGradientColors,
   });
 
   @override

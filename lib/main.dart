@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -8,6 +7,8 @@ import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Views/DashboardClient/ConnectWallet.dart';
 import 'package:piminnovictus/Views/DashboardClient/Dashboard.dart';
+import 'package:piminnovictus/Views/DashboardClient/WalletCreatePasswordPage.dart';
+import 'package:piminnovictus/Views/DashboardClient/WalletPasswordPage.dart';
 import 'package:piminnovictus/viewmodels/WalletViewModel.dart';
 import 'package:piminnovictus/viewmodels/WeatherAPI/bloc/weather_bloc_bloc.dart';
 import 'package:provider/provider.dart';
@@ -110,22 +111,12 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           home: isLoggedIn ? BottomNavBarExample() : WelcomePage(),
-          
+
           //ajbouni
           //home: BottomNavBarExample(),
+          //home: WalletPasswordPage(),
         );
       },
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-

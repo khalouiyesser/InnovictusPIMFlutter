@@ -155,6 +155,7 @@ class _DashboardPageState extends State<DashboardPage> {
           children: [
             // Fond d'écran (background)
             BlurredRadialBackground(
+              height: screenHeight,
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: Padding(
@@ -433,8 +434,24 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildInfoCard(
       BuildContext context, String title, String value, IconData icon) {
     final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+    final cardHeight = height * 0.15; // 15% de la hauteur de l'écran
+    final constrainedHeight = cardHeight.clamp(80.0, 120.0);
+    // Tailles responsives pour les éléments internes
+    final iconSize = width * 0.055; // Taille d'icône responsive
+    final titleFontSize = width * 0.035; // Taille de police du titre responsive
+    final valueFontSize =
+        width * 0.045; // Taille de police de la valeur responsive
+    // Espacement responsive
+    final verticalPadding = height * 0.012;
+    final horizontalPadding = width * 0.03;
+    final iconSpacing = height * 0.008;
+    final titleSpacing = height * 0.003;
+
     return Container(
-      height: 100,
+      height: constrainedHeight,
       decoration: BoxDecoration(
         color: theme.cardColor.withOpacity(0.70),
         border: Border.all(
@@ -444,28 +461,35 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         borderRadius: BorderRadius.circular(15),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      padding: EdgeInsets.symmetric(
+        vertical: verticalPadding,
+        horizontal: horizontalPadding,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             icon,
             color: theme.colorScheme.primary ?? MyThemes.primaryColor,
-            size: 23,
+            size: iconSize.clamp(
+                20.0, 26.0), // Limiter la taille minimale et maximale
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: titleSpacing),
           Text(
             title,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontSize: 15,
+              fontSize: titleFontSize.clamp(
+                  12.0, 16.0), // Limiter la taille minimale et maximale
               color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
             ),
           ),
-          const SizedBox(height: 3),
+          SizedBox(height: titleSpacing),
           Text(
             value,
             style: theme.textTheme.titleLarge?.copyWith(
-              fontSize: 19,
+              fontSize: valueFontSize.clamp(
+                  16.0, 20.0), // Limiter la taille minimale et maximale
               fontWeight: FontWeight.bold,
             ),
           ),

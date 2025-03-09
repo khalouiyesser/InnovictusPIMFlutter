@@ -5,6 +5,7 @@ import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
+import 'package:piminnovictus/Views/DashboardClient/TransactionCard.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:provider/provider.dart';
 // Import pour la classe User personnalisée
@@ -46,10 +47,15 @@ class _WalletPageState extends State<WalletPage> {
       print('-****************AAA***********************-');
     }
 
-    final walletViewModel = Provider.of<WalletViewModel>(context, listen: false);
+    final walletViewModel =
+        Provider.of<WalletViewModel>(context, listen: false);
     walletViewModel.fetchTokenBalance(accountId!);
-  }
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<WalletViewModel>(context, listen: false)
+          .loadTransactions(accountId);
+    });
+  }
 
   @override
   void initState() {
@@ -70,7 +76,7 @@ class _WalletPageState extends State<WalletPage> {
   @override
   Widget build(BuildContext context) {
     final walletViewModel = Provider.of<WalletViewModel>(context);
-    
+
     final languageProvider =
         Provider.of<LanguageProvider>(context, listen: false);
 
@@ -87,6 +93,7 @@ class _WalletPageState extends State<WalletPage> {
           children: [
             // Fond d'écran flouté
             BlurredRadialBackground(
+              height: MediaQuery.of(context).size.height,
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.all(padding),
@@ -142,7 +149,7 @@ class _WalletPageState extends State<WalletPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '${(double.tryParse(walletViewModel.tokenBalance) ?? 0) * 0.25} DT ', 
+                                '${(double.tryParse(walletViewModel.tokenBalance) ?? 0) * 0.25} DT ',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontSize: screenWidth * 0.04,
                                 ),
@@ -159,48 +166,88 @@ class _WalletPageState extends State<WalletPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(  // Ensure text does not overflow
+                        const CircleAvatar(
+                          radius: 16,
+                          backgroundImage: AssetImage(
+                            'assets/Bitcoin.png',
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          // Ensure text does not overflow
                           child: Text(
                             AppLocalizations.of(context).translate(
                               'For every generated 1000KW \nyou\'ll get 1 GRE',
                             ),
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              fontSize: screenWidth * 0.04,
-                              color: const Color.fromARGB(137, 255, 255, 255),
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: theme.textTheme.bodyLarge
+                                ?.copyWith(fontSize: screenWidth * 0.04),
                           ),
-                        ),
-                        _ActionButton(
-                          label: AppLocalizations.of(context).translate('listOfTransaction'),
-                          icon: Icons.list_alt_rounded,
-                          onTap: () {},
                         ),
                       ],
                     ),
 
                     const SizedBox(height: 32),
 
-                    // Coins Activity Tracking (Titre + Calendrier)
                     Text(
+                      AppLocalizations.of(context)
+                          .translate('listOfTransaction'),
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontSize: screenWidth * 0.05,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    SizedBox(
+                      height: MediaQuery.of(context)
+                          .size
+                          .height, // or any specific height
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (walletViewModel.isLoading)
+                            Center(child: CircularProgressIndicator())
+                          else if (walletViewModel.transactions.isEmpty)
+                            Center(child: Text("No transactions found"))
+                          else
+                            Flexible(
+                              fit: FlexFit
+                                  .loose, // Ensures the ListView takes the remaining space
+                              child: ListView.builder(
+                                padding: EdgeInsets.all(10),
+                                itemCount: walletViewModel.transactions.length,
+                                itemBuilder: (context, index) {
+                                  return TransactionCard(
+                                      transaction:
+                                          walletViewModel.transactions[index]);
+                                },
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+
+                    // Coins Activity Tracking (Titre + Calendrier)
+                    /*Text(
                       AppLocalizations.of(context)
                           .translate('coinsActivityTracking'),
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontSize: screenWidth * 0.05,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
+                    ),*/
                     const SizedBox(height: 16),
 
                     // Le calendrier dynamique
-                    const CalendarWithTracking(),
+                    //const CalendarWithTracking(),
 
                     const SizedBox(height: 32),
 
                     // Statistic (titre + chart)
 
                     const SizedBox(height: 16),
-                    const _ChartSection(),
+                    //const _ChartSection(),
                   ],
                 ),
               ),

@@ -3,10 +3,9 @@ import 'package:flutter/rendering.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Views/AuthViews/login_view.dart';
-import 'package:piminnovictus/views/Visitor/Sections/achievement_section.dart';
+import 'package:piminnovictus/Views/Visitor/Sections/achievement_section.dart';
 import 'package:piminnovictus/Views/Visitor/Sections/introduction_section.dart';
 import 'package:piminnovictus/Views/Visitor/Sections/packs_section.dart';
-import 'package:piminnovictus/Views/Visitor/Sections/stat_section.dart';
 import 'package:piminnovictus/Views/Visitor/Sections/team_section.dart';
 import 'package:piminnovictus/views/background.dart';
 import 'package:provider/provider.dart';
@@ -31,10 +30,10 @@ class CopyrightSection extends StatelessWidget {
               ),
               SizedBox(width: screenWidth * 0.01),
               Text(
-AppLocalizations.of(context)
-                        .translate("footerText")
-                        .replaceAll("{date}",   'DateTime.now().year.toString()'),  
-                                        style: TextStyle(
+                AppLocalizations.of(context)
+                    .translate("footerText")
+                    .replaceAll("{date}", 'DateTime.now().year.toString()'),
+                style: TextStyle(
                   color: Colors.white70,
                   fontSize: screenWidth * 0.035,
                 ),
@@ -126,12 +125,14 @@ class _VisitorPageState extends State<VisitorPage> {
         body: Stack(
           children: [
             BlurredRadialBackground(
+              isDarkMode: false,
+              backgroundGradientColors: [],
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final screenWidth = constraints.maxWidth;
                   final logoSize = screenWidth * 0.05;
                   final titleFontSize = screenWidth * 0.055;
-      
+
                   return CustomScrollView(
                     controller: _scrollController,
                     slivers: [
@@ -143,7 +144,8 @@ class _VisitorPageState extends State<VisitorPage> {
                             children: [
                               SizedBox(height: screenWidth * 0.07),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
@@ -160,8 +162,8 @@ class _VisitorPageState extends State<VisitorPage> {
                                         child: CircleAvatar(
                                           radius: logoSize,
                                           backgroundColor: Colors.transparent,
-                                          backgroundImage:
-                                              const AssetImage('assets/logo.png'),
+                                          backgroundImage: const AssetImage(
+                                              'assets/logo.png'),
                                         ),
                                       ),
                                       SizedBox(width: screenWidth * 0.02),
@@ -232,12 +234,13 @@ class _VisitorPageState extends State<VisitorPage> {
                         color: Colors.transparent,
                         child: InkWell(
                           customBorder: const CircleBorder(),
-                         onTap: () {
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => LoginView()),
-  );
-},
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginView()),
+                            );
+                          },
                           child: const Center(
                             child: Icon(
                               Icons.login,

@@ -6,6 +6,9 @@ import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
+import 'package:piminnovictus/Views/DashboardClient/WalletCreatePasswordPage.dart';
+import 'package:piminnovictus/Views/DashboardClient/WalletPage.dart';
+import 'package:piminnovictus/Views/DashboardClient/WalletPasswordPage.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:piminnovictus/views/DashboardClient/WalletPage.dart';
 import 'package:provider/provider.dart';
@@ -184,21 +187,10 @@ class _ConnectWalletPageState extends State<ConnectWalletPage> {
                                       return;
                                     }
 
-                                    // Close the modal first
-                                    Navigator.pop(context);
-
-                                    // Show full-screen loading
-                                    _showLoadingOverlay();
-
-                                    // Connect to wallet
                                     await walletViewModel.connectWallet(
                                         accountId, privateKey);
 
                                     if (walletViewModel.errorMessage != null) {
-                                      // Hide loading indicator
-                                      _hideLoadingOverlay();
-
-                                      // Show error message
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(
@@ -214,12 +206,11 @@ class _ConnectWalletPageState extends State<ConnectWalletPage> {
                                           key: 'privateKey', value: privateKey);
                                       await secureStorage.write(
                                           key: 'accountId', value: accountId);
-
-                                      // Navigate to wallet page (loading indicator will be hidden automatically)
-                                      Navigator.pushReplacement(
+                                      Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => WalletPage()),
+                                            builder: (context) =>
+                                                WalletCreatePasswordPage()),
                                       );
                                     }
                                   },
@@ -266,6 +257,7 @@ class _ConnectWalletPageState extends State<ConnectWalletPage> {
       body: Stack(
         children: [
           BlurredRadialBackground(
+            height: MediaQuery.of(context).size.height,
             child: SafeArea(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
