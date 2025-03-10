@@ -5,6 +5,7 @@ import 'package:piminnovictus/Models/Transaction%20.dart';
 import '../models/Wallet.dart';
 
 class WalletViewModel extends ChangeNotifier {
+
  //***************************************************************************************** */
  Wallet? wallet;
   bool isLoading = false;
@@ -15,7 +16,7 @@ class WalletViewModel extends ChangeNotifier {
     errorMessage = null;
     notifyListeners();
 
-    const String apiUrl = "http://192.168.1.148:5000/connectProfile"; 
+    const String apiUrl = "http://192.168.0.102:5000/connectProfile"; 
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
@@ -50,7 +51,7 @@ class WalletViewModel extends ChangeNotifier {
 
   Future<void> fetchTokenBalance(String accountId) async {
     try {
-      final response = await http.get(Uri.parse("http://192.168.1.148:5000/tokenBalance/$accountId"));
+      final response = await http.get(Uri.parse("http://192.168.0.102:5000/tokenBalance/$accountId"));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -80,6 +81,7 @@ class WalletViewModel extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   } 
+/******************************************* */
 
 
 }
