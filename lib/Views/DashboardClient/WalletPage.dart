@@ -1,10 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:piminnovictus/Models/Transaction%20.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
+import 'package:piminnovictus/Services/socket_service.dart';
 import 'package:piminnovictus/Views/DashboardClient/TransactionCard.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +15,7 @@ import 'package:piminnovictus/Models/User.dart';
 
 // N'oublie pas d'ajouter table_calendar dans ton pubspec.yaml
 import 'package:table_calendar/table_calendar.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../viewmodels/WalletViewModel.dart';
 
@@ -31,6 +34,13 @@ class _WalletPageState extends State<WalletPage> {
   User? currentUser;
 
   //ajbouni
+  
+  late WebSocketChannel channel;
+  final SocketService _socketService = SocketService();
+
+  double generatedEnergy = 0.0;
+  int coinCounter = 0;
+  
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   Future<void> _loadWalletData() async {
     String? privateKey = await secureStorage.read(key: 'privateKey');
@@ -57,11 +67,24 @@ class _WalletPageState extends State<WalletPage> {
     });
   }
 
+  
   @override
   void initState() {
     super.initState();
     _loadUserData();
     _loadWalletData();
+
+    _socketService.connectToSocket((data) {
+      if (mounted) {
+        setState(() {
+          generatedEnergy = data['energyGenerated'] is num
+              ? double.parse((data['energyGenerated'] as num).toStringAsFixed(2))
+              : 0.0;
+          coinCounter = generatedEnergy ~/ 1000; // Compute whole numbers
+        });
+      }
+    });
+
   }
 
   Future<void> _loadUserData() async {
@@ -169,7 +192,7 @@ class _WalletPageState extends State<WalletPage> {
                         const CircleAvatar(
                           radius: 16,
                           backgroundImage: AssetImage(
-                            'assets/Bitcoin.png',
+                            'assets/GRE2.png',
                           ),
                         ),
                         const SizedBox(
@@ -187,9 +210,48 @@ class _WalletPageState extends State<WalletPage> {
                         ),
                       ],
                     ),
-
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        _buildInfoCard(
+                          context,
+                          AppLocalizations.of(context).translate('Generated Energy'),
+                          '${this.generatedEnergy} ${AppLocalizations.of(context).translate('kwh')}',
+                          Icons.flash_on,
+                          '${this.coinCounter}',
+                        ),
+                        const SizedBox(width: 30), // Add spacing between the card and button
+                        ElevatedButton(
+                          onPressed: () {
+                            // Add your claim logic here
+                            Transaction.mintTokens(coinCounter);
+                            _loadWalletData();
+                            print("Claim button pressed");
+                            print(coinCounter);
+                            setState(() {
+                              generatedEnergy = 0;
+                              coinCounter = 0; // Compute whole numbers
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).colorScheme.primary, // Button color
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            AppLocalizations.of(context).translate('Claim'),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white, // Adjust text color
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 32),
-
                     Text(
                       AppLocalizations.of(context)
                           .translate('listOfTransaction'),
@@ -258,6 +320,96 @@ class _WalletPageState extends State<WalletPage> {
     );
   }
 }
+
+
+
+  // Carte d'information personnalisée
+  Widget _buildInfoCard(
+      BuildContext context, String title, String value, IconData icon,String coinCounter) {
+    final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+    final cardHeight = height * 0.15; // 15% de la hauteur de l'écran
+    final constrainedHeight = cardHeight.clamp(80.0, 120.0);
+    // Tailles responsives pour les éléments internes
+    final iconSize = width * 0.055; // Taille d'icône responsive
+    final titleFontSize = width * 0.035; // Taille de police du titre responsive
+    final valueFontSize =
+        width * 0.045; // Taille de police de la valeur responsive
+    // Espacement responsive
+    final verticalPadding = height * 0.012;
+    final horizontalPadding = width * 0.03;
+    final iconSpacing = height * 0.008;
+    final titleSpacing = height * 0.003;
+
+    return Container(
+      height: constrainedHeight,
+      decoration: BoxDecoration(
+        color: theme.cardColor.withOpacity(0.70),
+        border: Border.all(
+          color: theme.colorScheme.primary.withOpacity(0.11) ??
+              const Color.fromRGBO(41, 227, 60, 1).withOpacity(0.11),
+          width: 1,
+        ),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      padding: EdgeInsets.symmetric(
+        vertical: verticalPadding,
+        horizontal: horizontalPadding,
+      ),
+      child: Row(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                color: theme.colorScheme.primary ?? MyThemes.primaryColor,
+                size: iconSize.clamp(
+                    18.0, 26.0), // Limiter la taille minimale et maximale
+              ),
+              SizedBox(height: titleSpacing),
+              Text(
+                title,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontSize: titleFontSize.clamp(
+                      12.0, 16.0), // Limiter la taille minimale et maximale
+                  color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                ),
+              ),
+              SizedBox(height: titleSpacing),
+              Text(
+                value,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontSize: valueFontSize.clamp(
+                      14.0, 20.0), // Limiter la taille minimale et maximale
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 15,),
+          Text(
+            coinCounter,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontSize: valueFontSize.clamp(
+                  20.0, 20.0), // Limiter la taille minimale et maximale
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(width: 10,),
+          const CircleAvatar(
+            radius: 16,
+            backgroundImage: AssetImage(
+              'assets/GRE2.png',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
 // -----------------------------------------------------------------------------
 // Bouton d'action (sent, receive, buy)
