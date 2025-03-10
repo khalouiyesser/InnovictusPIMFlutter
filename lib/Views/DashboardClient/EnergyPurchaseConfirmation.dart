@@ -16,7 +16,7 @@ class EnergyPurchaseConfirmationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final languageProvider =
         Provider.of<LanguageProvider>(context, listen: false);
-  
+
     final themeProvider = Provider.of<ThemeProvider>(context);
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -30,6 +30,7 @@ class EnergyPurchaseConfirmationPage extends StatelessWidget {
         child: Stack(
           children: [
             BlurredRadialBackground(
+              height: MediaQuery.of(context).size.height,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -52,15 +53,17 @@ class EnergyPurchaseConfirmationPage extends StatelessWidget {
                   ),
                   SizedBox(height: 80),
                   Text(
-                    AppLocalizations.of(context).translate("purchase_successful"),
+                    AppLocalizations.of(context)
+                        .translate("purchase_successful"),
                     style: theme.textTheme.titleMedium
                         ?.copyWith(fontSize: screenWidth * 0.05),
                   ),
                   SizedBox(height: 10),
                   Text(
-AppLocalizations.of(context)
+                    AppLocalizations.of(context)
                         .translate("purchased_amount")
-                        .replaceAll("{amount}", energyAmount.toString()),                    style: theme.textTheme.bodyLarge
+                        .replaceAll("{amount}", energyAmount.toString()),
+                    style: theme.textTheme.bodyLarge
                         ?.copyWith(fontSize: screenWidth * 0.04),
                   ),
                   const SizedBox(height: 30),
@@ -94,7 +97,7 @@ AppLocalizations.of(context)
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child:  Text(
+                    child: Text(
                       AppLocalizations.of(context).translate("back_to_home"),
                       style: TextStyle(
                         fontSize: 16,

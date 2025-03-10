@@ -94,6 +94,8 @@ class _PacksListState extends State<PacksList> {
         ),
       ),
       body: BlurredRadialBackground(
+        isDarkMode: true,
+        backgroundGradientColors: [],
         child: Padding(
           padding: EdgeInsets.all(contentPadding),
           child: Column(

@@ -13,7 +13,7 @@ class ProfileSwitcherViewModel with ChangeNotifier {
   bool _isLoading = false;
   final SessionManager _sessionManager = SessionManager();
   final String _baseUrl;
-    // Getters
+  // Getters
   List<ProfileModel> get profiles => _profiles;
   ProfileModel? get currentProfile => _currentProfile;
   bool get isLoading => _isLoading;
@@ -26,19 +26,17 @@ class ProfileSwitcherViewModel with ChangeNotifier {
   }
 
   Map<String, dynamic>? _currentProfileData;
-  
+
   ProfileSwitcherViewModel() : _baseUrl = Const().url {
     _initializeLastProfile();
   }
-
- 
 
   Future<void> _initializeLastProfile() async {
     try {
       // Get the last selected profile ID from SessionManager
       final sessionData = await _sessionManager.getSessionData();
       final lastProfileId = sessionData?['currentProfileId'];
-      
+
       if (lastProfileId != null) {
         await loadProfiles();
         // Find and set the last selected profile
@@ -66,13 +64,13 @@ class ProfileSwitcherViewModel with ChangeNotifier {
 
       // Save current profile ID to session
       await _sessionManager.updateUserData('currentProfileId', profileId);
-      
+
       // Load profile-specific data (e.g., packs)
       await _loadProfileData(profileId);
-      
+
       // Update last used timestamp
       await _updateProfileLastUsed(profileId);
-      
+
       notifyListeners();
     } catch (e) {
       print('Error switching profiles: $e');
@@ -148,10 +146,6 @@ class ProfileSwitcherViewModel with ChangeNotifier {
     }
   }
 
-  
-
-
-
   Future<void> loadRecentUsers() async {
     try {
       // Get current Firebase user
@@ -181,40 +175,42 @@ class ProfileSwitcherViewModel with ChangeNotifier {
       print('Error selecting user: $e');
     }
   }
+
   Future<void> createProfile(String name, String? imageUrl) async {
-  _setLoading(true);
-  try {
-    final userId = await _sessionManager.getUserId();
-    final token = await _sessionManager.getAccessToken();
-    if (userId == null || token == null) return;
+    _setLoading(true);
+    try {
+      final userId = await _sessionManager.getUserId();
+      final token = await _sessionManager.getAccessToken();
+      if (userId == null || token == null) return;
 
-    final response = await http.post(
-      Uri.parse('$_baseUrl/profile'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: json.encode({
-        'name': name,
-        'image': imageUrl,
-        'userId': userId,
-        'packId': 'default',
-        'createdAt': DateTime.now().toIso8601String(), // Add this line
-      }),
-    );
+      final response = await http.post(
+        Uri.parse('$_baseUrl/profile'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'name': name,
+          'image': imageUrl,
+          'userId': userId,
+          'packId': 'default',
+          'createdAt': DateTime.now().toIso8601String(), // Add this line
+        }),
+      );
 
-    if (response.statusCode == 201) {
-      await loadProfiles();
-    } else {
-      print('Error creating profile: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      if (response.statusCode == 201) {
+        await loadProfiles();
+      } else {
+        print('Error creating profile: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      print('Error creating profile: $e');
+    } finally {
+      _setLoading(false);
     }
-  } catch (e) {
-    print('Error creating profile: $e');
-  } finally {
-    _setLoading(false);
   }
-}
+
   Future<void> deleteProfile(String profileId) async {
     _setLoading(true);
     try {
@@ -241,7 +237,8 @@ class ProfileSwitcherViewModel with ChangeNotifier {
       _setLoading(false);
     }
   }
-List<ProfileModel> getRecentProfiles(int limit) {
+
+  List<ProfileModel> getRecentProfiles(int limit) {
     // Filter out the current profile and get the most recent ones
     return _profiles
         .where((profile) => profile.id != currentProfile?.id)
@@ -255,7 +252,7 @@ List<ProfileModel> getRecentProfiles(int limit) {
     try {
       final userId = await _sessionManager.getUserId();
       final token = await _sessionManager.getAccessToken();
-      
+
       if (userId == null || token == null) {
         _setLoading(false);
         return;
@@ -271,9 +268,8 @@ List<ProfileModel> getRecentProfiles(int limit) {
 
       if (response.statusCode == 200) {
         final List<dynamic> profilesJson = json.decode(response.body);
-        _profiles = profilesJson
-            .map((json) => ProfileModel.fromJson(json))
-            .toList();
+        _profiles =
+            profilesJson.map((json) => ProfileModel.fromJson(json)).toList();
 
         // Sort profiles by last used date if available
         _profiles.sort((a, b) => b.lastUsed.compareTo(a.lastUsed));
@@ -293,19 +289,17 @@ List<ProfileModel> getRecentProfiles(int limit) {
   }
 
   List<ProfileModel> get profilesSortedByCreationDate {
-  // Create a copy of the profiles list to avoid modifying the original
-  List<ProfileModel> sortedProfiles = List.from(_profiles);
-  // Sort profiles by creation date (oldest to newest)
-  sortedProfiles.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-  return sortedProfiles;
-}
+    // Create a copy of the profiles list to avoid modifying the original
+    List<ProfileModel> sortedProfiles = List.from(_profiles);
+    // Sort profiles by creation date (oldest to newest)
+    sortedProfiles.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    return sortedProfiles;
+  }
 
 // If you want newest to oldest, use this version instead:
-List<ProfileModel> get profilesSortedByCreationDateDesc {
-  List<ProfileModel> sortedProfiles = List.from(_profiles);
-  sortedProfiles.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-  return sortedProfiles;
-}
-
-  
+  List<ProfileModel> get profilesSortedByCreationDateDesc {
+    List<ProfileModel> sortedProfiles = List.from(_profiles);
+    sortedProfiles.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return sortedProfiles;
+  }
 }

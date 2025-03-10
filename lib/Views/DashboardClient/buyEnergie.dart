@@ -31,6 +31,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
         child: Stack(
           children: [
             BlurredRadialBackground(
+              height: MediaQuery.of(context).size.height,
               child: SingleChildScrollView(
                 // Ajout du ScrollView
                 child: Column(
@@ -369,7 +370,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
   Widget build(BuildContext context) {
     final languageProvider =
         Provider.of<LanguageProvider>(context, listen: false);
-  
+
     // Récupérer le ThemeProvider
     final themeProvider = Provider.of<ThemeProvider>(context);
 
@@ -387,6 +388,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
         child: Stack(
           children: [
             BlurredRadialBackground(
+              height: MediaQuery.of(context).size.height,
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: Column(
@@ -550,7 +552,8 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               border: InputBorder.none,
-              hintText: AppLocalizations.of(context).translate("enter_quantity_hint"),
+              hintText:
+                  AppLocalizations.of(context).translate("enter_quantity_hint"),
               hintStyle: theme.textTheme.bodyLarge?.copyWith(
                 fontSize: screenWidth * 0.03,
               ),
@@ -564,11 +567,10 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
           ),
         ),
         const SizedBox(height: 15),
-        
         Text(
-           AppLocalizations.of(context)
-              .translate("equivalent_coins").replaceAll("{coin}", _coin.toString()),
-
+          AppLocalizations.of(context)
+              .translate("equivalent_coins")
+              .replaceAll("{coin}", _coin.toString()),
           style: theme.textTheme.titleMedium
               ?.copyWith(fontSize: screenWidth * 0.04),
         ),
@@ -582,9 +584,8 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
     return Column(
       children: [
         Text(
- AppLocalizations.of(context)
-              .translate("enter_code"),
-                        style: theme.textTheme.titleMedium
+          AppLocalizations.of(context).translate("enter_code"),
+          style: theme.textTheme.titleMedium
               ?.copyWith(fontSize: screenWidth * 0.04),
         ),
         SizedBox(height: 10),
@@ -633,14 +634,14 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
     return Column(
       children: [
         Text(
- AppLocalizations.of(context).translate("payment_success"),
-         style: theme.textTheme.titleMedium?.copyWith(
+          AppLocalizations.of(context).translate("payment_success"),
+          style: theme.textTheme.titleMedium?.copyWith(
             fontSize: screenWidth * 0.04,
           ),
         ),
         const SizedBox(height: 10),
         Text(
- AppLocalizations.of(context).translate("check_email"),
+          AppLocalizations.of(context).translate("check_email"),
           style: TextStyle(color: const Color(0xFF29E33C)),
         ),
       ],
@@ -663,8 +664,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
                   backgroundColor: Colors.grey,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 40, vertical: 15)),
-              child: Text( AppLocalizations.of(context).translate("back"),
-
+              child: Text(AppLocalizations.of(context).translate("back"),
                   style: TextStyle(color: Colors.white, fontSize: 16)),
             ),
           ),
@@ -688,9 +688,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
                 backgroundColor: const Color(0xFF29E33C),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 40, vertical: 15)),
-            child:  Text( 
-              AppLocalizations.of(context)
-              .translate("next"),
+            child: Text(AppLocalizations.of(context).translate("next"),
                 style: TextStyle(color: Colors.white, fontSize: 16)),
           ),
         ],

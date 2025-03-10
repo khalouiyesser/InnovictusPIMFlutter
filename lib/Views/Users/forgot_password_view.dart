@@ -4,6 +4,7 @@ import 'package:piminnovictus/Services/AuthController.dart';
 import '../AuthViews/login_view.dart';
 import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
 import 'otp.dart';
+import 'dart:async';
 
 class ForgotPasswordView extends StatefulWidget {
   const ForgotPasswordView({Key? key}) : super(key: key);
@@ -18,12 +19,14 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
   bool isPhoneInput = false;
   bool isEmailInput = false;
   bool phoneError = false;
+  bool isLoading = false; // State for managing loading
+  bool isFullScreenLoading = false; // State for full screen loading
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
 
   final AuthController con = AuthController();
   bool isEmail(String email) {
-    // Expression régulière pour valider une adresse e-mail
+    // Regular expression to validate an email address
     final RegExp emailRegex = RegExp(
       r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
     );
@@ -44,13 +47,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
   void initState() {
     super.initState();
     _updateTheme();
-    // S'enregistre pour écouter les changements de luminosité du système
+    // Register to listen for system brightness changes
     WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void didChangePlatformBrightness() {
-    // Mettre à jour le thème quand la luminosité du système change
+    // Update theme when system brightness changes
     if (mounted) {
       setState(() {
         _updateTheme();
@@ -62,15 +65,129 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
     _theme = AuthScreenThemeDetector.getTheme();
   }
 
+  // Method to send reset email with full screen loading
+  Future<void> _sendResetEmail() async {
+    if (!isEmailInput ||
+        emailController.text.isEmpty ||
+        !isEmail(emailController.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                AppLocalizations.of(context).translate("enterValidEmail"))),
+      );
+      return;
+    }
+
+    // Show full screen loading with message
+    setState(() {
+      isFullScreenLoading = true;
+    });
+
+    try {
+      // Wait for 5 seconds to show the loading screen
+      await Future.delayed(const Duration(seconds: 5));
+
+      Map<String, dynamic> response =
+          await con.forgotPassword(emailController.text);
+
+      if (response.containsKey('resetToken') && response.containsKey('code')) {
+        String resetToken = response['resetToken'];
+        int code = response['code'];
+
+        print("Email: ${emailController.text}");
+        print("ResetToken: $resetToken");
+        print("Code: $code");
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OTPPage(
+              email: emailController.text,
+              resetToken: resetToken,
+              code: code,
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  "${AppLocalizations.of(context).translate("connectionError")} : ${response['message'] ?? AppLocalizations.of(context).translate("missingData")}")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                "${AppLocalizations.of(context).translate("connectionError")} : $e")),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          isFullScreenLoading = false;
+        });
+      }
+    }
+  }
+
+  // Method to send OTP by SMS
+  Future<void> _sendOTPBySMS() async {
+    if (!isPhoneInput || phoneController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                AppLocalizations.of(context).translate("enterPhoneNumber"))),
+      );
+      return;
+    }
+
+    if (!isTunisianNumber(phoneController.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                AppLocalizations.of(context).translate("invalidPhoneNumber"))),
+      );
+      return;
+    }
+
+    // Show full screen loading
+    setState(() {
+      isFullScreenLoading = true;
+    });
+
+    try {
+      // Wait for 5 seconds to show the loading screen
+      await Future.delayed(const Duration(seconds: 5));
+
+      // Replace this part with the actual API call for SMS OTP
+      await con.forgotPassword(phoneController.text);
+
+      // Navigation after receiving OTP
+      // To be adjusted according to your actual implementation
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                "${AppLocalizations.of(context).translate("connectionError")} : $e")),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          isFullScreenLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = AuthScreenThemeDetector.isSystemDarkMode();
 
     return Scaffold(
-      resizeToAvoidBottomInset:
-          false, // Disable resizing of the screen when keyboard appears
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
+          // Background
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -82,29 +199,28 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
               ),
               child: isDarkMode
                   ? Image.asset("assets/Pulse.png", fit: BoxFit.cover)
-                  : null, // Utilise l'image uniquement en mode sombre
+                  : null,
             ),
           ),
+
+          // Main content
           Center(
             child: SafeArea(
               child: Center(
-                // Centre le contenu
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center, // Centre verticalement
-                    crossAxisAlignment:
-                        CrossAxisAlignment.center, // Centre horizontalement
-                    mainAxisSize:
-                        MainAxisSize.min, // Ajuste la taille au contenu
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       const SizedBox(height: 1),
 
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          AppLocalizations.of(context).translate("forgotPassword"),
+                          AppLocalizations.of(context)
+                              .translate("forgotPassword"),
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -115,88 +231,14 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
                       ),
 
                       const SizedBox(height: 100),
-                      // const SizedBox(height: 40),
-
-                      /* isPhoneInput
-                          ? TextField(
-                              controller: phoneController,
-                              keyboardType:
-                                  TextInputType.phone, // Clavier numérique
-                              decoration: InputDecoration(
-                                hintText: "Enter your phone number",
-                                hintStyle: TextStyle(
-                                    color: _theme
-                                        .hintTextColor), // HintText en blanc
-                                prefixIcon: Icon(Icons.phone,
-                                    color: Colors.white), // Icône téléphone
-                                filled: true,
-                                fillColor: _theme
-                                    .fieldFillColor, // Couleur similaire au bouton
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      24.0), // Bordures arrondies
-                                  borderSide: BorderSide(color: Colors.white),
-                                ),
-
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(24.0),
-                                  borderSide: BorderSide(
-                                      color: Colors
-                                          .green), // Bordure verte au focus
-                                ),
-                              ),
-                              style: TextStyle(
-                                  color: _theme.textColor), // Texte en blanc
-                              onSubmitted: (_) {
-                                setState(() {
-                                  isPhoneInput = false;
-                                });
-                              },
-                            )
-                          : GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  isPhoneInput = true;
-                                  isEmailInput = false;
-                                  emailController.clear();
-                                });
-                              },
-                              child: Container(
-                                height: 56,
-                                decoration: BoxDecoration(
-                                  color: _theme.fieldFillColor,
-                                  borderRadius: BorderRadius.circular(24.0),
-                                  border: Border.all(
-                                    color: Colors.green, // Bordure verte
-                                  ), // Bordure verte au focus
-                                  // Bordures identiques
-                                ),
-                                padding: EdgeInsets.symmetric(horizontal: 16),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.chat_bubble_outline,
-                                        color: Colors.white), // Icône OTP
-                                    SizedBox(width: 10),
-                                    Text(
-                                      "Send OTP via SMS",
-                                      style: TextStyle(
-                                          color: _theme.textColor,
-                                          fontSize: 16),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            */
-
                       const SizedBox(height: 30),
 
                       isEmailInput
                           ? TextField(
                               controller: emailController,
                               decoration: InputDecoration(
-                                hintText: AppLocalizations.of(context).translate("enterEmail"),
+                                hintText: AppLocalizations.of(context)
+                                    .translate("enterEmail"),
                                 hintStyle:
                                     TextStyle(color: _theme.hintTextColor),
                                 prefixIcon:
@@ -204,8 +246,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
                                 filled: true,
                                 fillColor: _theme.fieldFillColor,
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      24.0), // Bordures arrondies
+                                  borderRadius: BorderRadius.circular(24.0),
                                   borderSide: BorderSide(color: Colors.white),
                                 ),
                                 enabledBorder: OutlineInputBorder(
@@ -213,18 +254,11 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(24.0),
-                                  borderSide: BorderSide(
-                                      color: Colors
-                                          .green), // Bordure verte au focus
+                                  borderSide: BorderSide(color: Colors.green),
                                 ),
                               ),
-                              style: TextStyle(
-                                  color: _theme.textColor), // Texte en blanc
-                              onSubmitted: (_) {
-                                setState(() {
-                                  isEmailInput = false;
-                                });
-                              },
+                              style: TextStyle(color: _theme.textColor),
+                              onSubmitted: (_) => _sendResetEmail(),
                             )
                           : GestureDetector(
                               onTap: () {
@@ -235,11 +269,11 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
                                 });
                               },
                               child: Container(
-                                height: 56, //
+                                height: 56,
                                 decoration: BoxDecoration(
                                   color: _theme.fieldFillColor,
                                   border: Border.all(
-                                    color: Colors.green, // Bordure verte
+                                    color: Colors.green,
                                   ),
                                   borderRadius: BorderRadius.circular(24.0),
                                 ),
@@ -248,10 +282,11 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(Icons.email_outlined,
-                                        color: Colors.white), // Icône email
+                                        color: Colors.white),
                                     SizedBox(width: 10),
                                     Text(
-                                      AppLocalizations.of(context).translate("sendOtpEmail"),
+                                      AppLocalizations.of(context)
+                                          .translate("sendOtpEmail"),
                                       style: TextStyle(
                                           color: _theme.textColor,
                                           fontSize: 16),
@@ -263,75 +298,59 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
 
                       const SizedBox(height: 80),
 
-                      buildActionButton(
-                        text: AppLocalizations.of(context).translate("continueButton"),
-                        backgroundColor: Color(0xFF29E33C),
-                        textColor: const Color.fromARGB(255, 251, 251, 251),
-                        onTap: () async {
-                          if (isPhoneInput &&
-                              phoneController.text.isNotEmpty &&
-                              isTunisianNumber(phoneController.text)) {
-                            con.forgotPassword(emailController.text);
-                            // Navigator.pushReplacement(
-                            //   context,
-                            //   MaterialPageRoute(builder: (context) => const OTPPage()),
-                            // );
-                          } else if (isPhoneInput &&
-                              phoneController.text.isNotEmpty &&
-                              !isTunisianNumber(phoneController.text)) {
-                            // phone input rempli mais le numéro n'est pas vrai
-                            // Navigator.pushReplacement(
-                            //   context,
-                            //   MaterialPageRoute(builder: (context) => const OTPPage()),
-                            // );
-                          } else if (isEmailInput &&
-                              emailController.text.isNotEmpty &&
-                              isEmail(emailController.text)) {
-                            try {
-                              Map<String, dynamic> response = await con
-                                  .forgotPassword(emailController.text);
-
-                              if (response.containsKey('resetToken') &&
-                                  response.containsKey('code')) {
-                                String resetToken = response['resetToken'];
-                                int code = response['code'];
-
-                                print("Email: ${emailController.text}");
-                                print("ResetToken: $resetToken");
-                                print("Code: $code");
-                          Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => OTPPage(
-                                      email: emailController.text,
-                                      resetToken: resetToken,
-                                      code: code,
+                      // Continue button
+                      Container(
+                        width: double.infinity,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: Color(0xFF29E33C),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: isLoading
+                            ? Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 3,
+                                ),
+                              )
+                            : GestureDetector(
+                                onTap: () async {
+                                  if (isEmailInput) {
+                                    await _sendResetEmail();
+                                  } else if (isPhoneInput) {
+                                    await _sendOTPBySMS();
+                                  } else {
+                                    // Prompt user to select a method
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            AppLocalizations.of(context)
+                                                .translate("selectMethod")),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Center(
+                                  child: Text(
+                                    AppLocalizations.of(context)
+                                        .translate("continueButton"),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
                                     ),
-                        ),);
-
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text(
-                                          "${AppLocalizations.of(context).translate("connectionError")} : ${response['message'] ?? AppLocalizations.of(context).translate("missingData")}")),
-                                );
-                              }
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text("${AppLocalizations.of(context).translate("connectionError")} : $e")),
-                              );
-                            }
-                          }
-                        },
+                                  ),
+                                ),
+                              ),
                       ),
 
                       const SizedBox(height: 15),
 
                       buildActionButton(
-                        text: AppLocalizations.of(context).translate("backToLogin"),
+                        text: AppLocalizations.of(context)
+                            .translate("backToLogin"),
                         backgroundColor: Colors.transparent,
-                        textColor: _theme.textColor, // Remplacement ici
+                        textColor: _theme.textColor,
                         borderColor: Color(0xFF29E33C),
                         onTap: () {
                           Navigator.pushReplacement(
@@ -347,6 +366,34 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView>
               ),
             ),
           ),
+
+          // Full screen loading overlay
+          if (isFullScreenLoading)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.7),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        color: Color(0xFF29E33C),
+                        strokeWidth: 4,
+                      ),
+                      SizedBox(height: 24),
+                      Text(
+                        "Email being sent...",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

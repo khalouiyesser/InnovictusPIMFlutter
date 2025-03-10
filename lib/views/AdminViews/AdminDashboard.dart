@@ -4,14 +4,12 @@ import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:fl_chart/fl_chart.dart';
 
 class AdminDashboardPage extends StatefulWidget {
-
-    @override
+  @override
   _AdminDashboardPageState createState() => _AdminDashboardPageState();
 }
 
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
-
-    // Initial data for the chart
+  // Initial data for the chart
   List<FlSpot> weekDataPoints = [
     const FlSpot(0, 3000),
     const FlSpot(1, 5000),
@@ -55,7 +53,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     currentDataPoints = weekDataPoints; // Default to week
   }
 
-    // Toggle buttons to switch between Week, Month, and Year
+  // Toggle buttons to switch between Week, Month, and Year
   void updateChart(int index) {
     setState(() {
       selectedPeriodIndex = index;
@@ -72,11 +70,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       }
     });
   }
-double getMaxY(List<FlSpot> dataPoints) {
-  return (dataPoints.map((e) => e.y).reduce((a, b) => a > b ? a : b) * 1.2); 
-  // Multiply by 1.2 for some padding above the highest point
-}
 
+  double getMaxY(List<FlSpot> dataPoints) {
+    return (dataPoints.map((e) => e.y).reduce((a, b) => a > b ? a : b) * 1.2);
+    // Multiply by 1.2 for some padding above the highest point
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,6 +92,8 @@ double getMaxY(List<FlSpot> dataPoints) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   BlurredRadialBackground(
+                    isDarkMode: true,
+                    backgroundGradientColors: [],
                     child: Padding(
                       padding: EdgeInsets.all(padding),
                       child: Column(
@@ -116,8 +116,8 @@ double getMaxY(List<FlSpot> dataPoints) {
                                 ),
                               ),
                               const Text('10 Février, 2025',
-                                style: TextStyle(
-                                    color: Colors.white70, fontSize: 14)),
+                                  style: TextStyle(
+                                      color: Colors.white70, fontSize: 14)),
                               Row(
                                 children: [
                                   _buildIconButton(Icons.search),
@@ -152,7 +152,8 @@ double getMaxY(List<FlSpot> dataPoints) {
                                   size: const Size(200, 200),
                                   painter: CircularProgressPainter(
                                     0.85,
-                                    progressBackgroundColor: Colors.grey.withOpacity(0.3),
+                                    progressBackgroundColor:
+                                        Colors.grey.withOpacity(0.3),
                                     progressColor: Colors.green,
                                   ),
                                 ),
@@ -204,17 +205,18 @@ double getMaxY(List<FlSpot> dataPoints) {
                               physics:
                                   const NeverScrollableScrollPhysics(), // Désactive le défilement interne du GridView
                               children: [
-                                _buildInfoCard('Total Energy', '85000 Kwh',Icons.lightbulb),
-                                _buildInfoCard(
-                                    'Capacity', '100000.0 Kwh', Icons.battery_full),
-                                _buildInfoCard(
-                                      'Monthly Sold', '22309 Kwh', Icons.flash_on),
-                                _buildInfoCard(
-                                      'Monthly Bought', '10102 Kwh', Icons.flash_on),
+                                _buildInfoCard('Total Energy', '85000 Kwh',
+                                    Icons.lightbulb),
+                                _buildInfoCard('Capacity', '100000.0 Kwh',
+                                    Icons.battery_full),
+                                _buildInfoCard('Monthly Sold', '22309 Kwh',
+                                    Icons.flash_on),
+                                _buildInfoCard('Monthly Bought', '10102 Kwh',
+                                    Icons.flash_on),
                                 _buildInfoCard(
                                     'CO2 Reduction', '48 tCO₂', Icons.eco),
-                                _buildInfoCard(
-                                    'Monthly Income', '3,250.56 TND', Icons.attach_money),
+                                _buildInfoCard('Monthly Income', '3,250.56 TND',
+                                    Icons.attach_money),
                               ],
                             ),
                           ),
@@ -286,7 +288,8 @@ double getMaxY(List<FlSpot> dataPoints) {
   }
 
   // Helper function to build the cards
-  Widget buildCard(BuildContext context, String title, int transactions, String number, String percentChange) {
+  Widget buildCard(BuildContext context, String title, int transactions,
+      String number, String percentChange) {
     return Card(
       color: const Color(0xFF151F1A).withOpacity(0.78),
       elevation: 2,
@@ -294,7 +297,8 @@ double getMaxY(List<FlSpot> dataPoints) {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.27, // Use context from parameter
+        width: MediaQuery.of(context).size.width *
+            0.27, // Use context from parameter
         padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -302,21 +306,27 @@ double getMaxY(List<FlSpot> dataPoints) {
             Center(
               child: Text(
                 title,
-                style: const TextStyle(color: Colors.white70,fontWeight: FontWeight.bold, fontSize: 14),
+                style: const TextStyle(
+                    color: Colors.white70,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14),
               ),
             ),
             const SizedBox(height: 8),
             Center(
               child: Text(
                 "$transactions",
-                style: const TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 1),
             const Center(
               child: Text(
                 "Transactions",
-                style: TextStyle(color: Colors.white70,fontSize: 13),
+                style: TextStyle(color: Colors.white70, fontSize: 13),
               ),
             ),
             const SizedBox(height: 8),
@@ -324,12 +334,20 @@ double getMaxY(List<FlSpot> dataPoints) {
               children: [
                 Text(
                   "$percentChange",
-                  style: TextStyle(fontSize: 13, color: percentChange.startsWith("+") ? Colors.green : Colors.red),
+                  style: TextStyle(
+                      fontSize: 13,
+                      color: percentChange.startsWith("+")
+                          ? Colors.green
+                          : Colors.red),
                 ),
                 const SizedBox(width: 2),
                 Text(
                   "vs last $title",
-                  style: TextStyle(fontSize: 9, color: percentChange.startsWith("+") ? Colors.green : Colors.red),
+                  style: TextStyle(
+                      fontSize: 9,
+                      color: percentChange.startsWith("+")
+                          ? Colors.green
+                          : Colors.red),
                 ),
               ],
             ),
@@ -346,15 +364,13 @@ double getMaxY(List<FlSpot> dataPoints) {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          buildCard(context,"Week", 72, "+5", "+4%"),
-          buildCard(context,"Month", 289, "-2", "-1%"),
-          buildCard(context,"Year", 3468, "+10", "+7%"),
+          buildCard(context, "Week", 72, "+5", "+4%"),
+          buildCard(context, "Month", 289, "-2", "-1%"),
+          buildCard(context, "Year", 3468, "+10", "+7%"),
         ],
       ),
     );
   }
-
-
 
   Widget buildLineChart(BuildContext context) {
     return Container(
@@ -379,26 +395,35 @@ double getMaxY(List<FlSpot> dataPoints) {
               children: const [
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Text('Week',style: TextStyle(color: Colors.white, fontSize: 12),),
+                  child: Text(
+                    'Week',
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Text('Month',style: TextStyle(color: Colors.white, fontSize: 12),),
+                  child: Text(
+                    'Month',
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Text('Year',style: TextStyle(color: Colors.white, fontSize: 12),),
+                  child: Text(
+                    'Year',
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
                 ),
               ],
             ),
           ),
-          
+
           // Line chart below the toggle buttons and the cards
           Expanded(
             child: LineChart(
               LineChartData(
                 minY: 0,
-                maxY: getMaxY(currentDataPoints), // Dynamically set maxY 
+                maxY: getMaxY(currentDataPoints), // Dynamically set maxY
                 gridData: const FlGridData(show: false),
                 titlesData: FlTitlesData(
                   leftTitles: AxisTitles(
@@ -407,7 +432,8 @@ double getMaxY(List<FlSpot> dataPoints) {
                       getTitlesWidget: (value, meta) {
                         return Text(
                           '${(value / 1000).toStringAsFixed(0)}K', // Divide by 1000 and add "K" // Show the data point value on the left side
-                          style: const TextStyle(color: Colors.white, fontSize: 10),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 10),
                         );
                       },
                     ),
@@ -420,20 +446,48 @@ double getMaxY(List<FlSpot> dataPoints) {
                         String title = '';
                         if (selectedPeriodIndex == 0) {
                           // Week: Show days of the week
-                          final daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                          final daysOfWeek = [
+                            'Mon',
+                            'Tue',
+                            'Wed',
+                            'Thu',
+                            'Fri',
+                            'Sat',
+                            'Sun'
+                          ];
                           title = daysOfWeek[value.toInt()];
                         } else if (selectedPeriodIndex == 1) {
                           // Month: Show weeks (Week 1, Week 2, Week 3, Week 4)
-                          final weeksOfMonth = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-                          title = weeksOfMonth[value.toInt()]; // Use modulo to cycle through weeks
+                          final weeksOfMonth = [
+                            'Week 1',
+                            'Week 2',
+                            'Week 3',
+                            'Week 4'
+                          ];
+                          title = weeksOfMonth[value
+                              .toInt()]; // Use modulo to cycle through weeks
                         } else if (selectedPeriodIndex == 2) {
                           // Year: Show months
-                          final monthsOfYear = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                          final monthsOfYear = [
+                            'Jan',
+                            'Feb',
+                            'Mar',
+                            'Apr',
+                            'May',
+                            'Jun',
+                            'Jul',
+                            'Aug',
+                            'Sep',
+                            'Oct',
+                            'Nov',
+                            'Dec'
+                          ];
                           title = monthsOfYear[value.toInt()];
                         }
                         return Text(
                           title,
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12),
                           textAlign: TextAlign.center,
                         );
                       },
@@ -453,7 +507,10 @@ double getMaxY(List<FlSpot> dataPoints) {
                     belowBarData: BarAreaData(
                       show: true,
                       gradient: LinearGradient(
-                        colors: [Colors.lightGreen.withOpacity(0.3), Colors.transparent],
+                        colors: [
+                          Colors.lightGreen.withOpacity(0.3),
+                          Colors.transparent
+                        ],
                       ),
                     ),
                     dotData: const FlDotData(show: true),
@@ -466,13 +523,12 @@ double getMaxY(List<FlSpot> dataPoints) {
       ),
     );
   }
-
 }
 
 class CircularProgressPainter extends CustomPainter {
-  
   final double progress;
-  CircularProgressPainter(this.progress, {required Color progressBackgroundColor, required Color progressColor});
+  CircularProgressPainter(this.progress,
+      {required Color progressBackgroundColor, required Color progressColor});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -516,4 +572,3 @@ class CircularProgressPainter extends CustomPainter {
   bool shouldRepaint(CircularProgressPainter oldDelegate) =>
       oldDelegate.progress != progress;
 }
-

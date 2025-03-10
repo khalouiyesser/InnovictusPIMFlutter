@@ -59,7 +59,7 @@ class BlurredRadialBackground extends StatelessWidget {
     super.key,
     required this.child,
     this.radius = 1.2,
-    this.blurSigma = 5.0,
+    this.blurSigma = 5.0, required double height,
   });
 
   @override

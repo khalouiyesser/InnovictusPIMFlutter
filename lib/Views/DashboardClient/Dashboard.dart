@@ -31,19 +31,15 @@ class _DashboardPageState extends State<DashboardPage> {
   final SessionManager _sessionManager = SessionManager();
   User? currentUser;
 
-late WebSocketChannel channel;
-  
+  late WebSocketChannel channel;
+
   final SocketService _socketService = SocketService();
 
-
-
-  int batteryLevel =0;
+  int batteryLevel = 0;
   double totalEnergy = 0.0;
   double capacity = 0.0;
   double co2Reduction = 0.0;
-  double consumedEnergy=0.0;
-
-
+  double consumedEnergy = 0.0;
 
   Widget getWeatherIcon(int code, {double size = 24.0}) {
     switch (code) {
@@ -106,24 +102,25 @@ late WebSocketChannel channel;
     super.initState();
     _loadUserData();
 
-
-_socketService.connectToSocket((data) {
+    _socketService.connectToSocket((data) {
       if (mounted) {
         setState(() {
-          totalEnergy = data['totalEnergy'] is num ? (data['totalEnergy'] as num).toDouble() : 0.0;
-          capacity = data['capacity'] is num ? (data['capacity'] as num).toDouble() : 0.0;
-          co2Reduction = data['co2Reduction'] is num ? (data['co2Reduction'] as num).toDouble() : 0.0;
+          totalEnergy = data['totalEnergy'] is num
+              ? (data['totalEnergy'] as num).toDouble()
+              : 0.0;
+          capacity = data['capacity'] is num
+              ? (data['capacity'] as num).toDouble()
+              : 0.0;
+          co2Reduction = data['co2Reduction'] is num
+              ? (data['co2Reduction'] as num).toDouble()
+              : 0.0;
           batteryLevel = data['batterylevel'] is int ? data['batterylevel'] : 0;
-          consumedEnergy = data['consumed'] is num 
-              ? double.parse((data['consumed'] as num).toStringAsFixed(2)) 
+          consumedEnergy = data['consumed'] is num
+              ? double.parse((data['consumed'] as num).toStringAsFixed(2))
               : 0.0;
         });
       }
     });
-
-
-
-
   }
 
   Future<void> _loadUserData() async {
@@ -138,7 +135,7 @@ _socketService.connectToSocket((data) {
     final theme = Theme.of(context);
     // On récupère le provider pour pouvoir l'utiliser si besoin
     final themeProvider = Provider.of<ThemeProvider>(context);
-  final languageProvider =
+    final languageProvider =
         Provider.of<LanguageProvider>(context, listen: false);
 
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -158,6 +155,7 @@ _socketService.connectToSocket((data) {
           children: [
             // Fond d'écran (background)
             BlurredRadialBackground(
+              height: screenHeight,
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: Padding(
@@ -204,7 +202,8 @@ _socketService.connectToSocket((data) {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-  AppLocalizations.of(context).translate('welcomeBack'),
+                                  AppLocalizations.of(context)
+                                      .translate('welcomeBack'),
                                   style: theme.textTheme.titleMedium
                                       ?.copyWith(fontSize: screenWidth * 0.04),
                                 ),
@@ -232,7 +231,7 @@ _socketService.connectToSocket((data) {
                       BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
                         builder: (context, state) {
                           if (state is WeatherBlocSuccess) {
-                                                              final translations = AppLocalizations.of(context);
+                            final translations = AppLocalizations.of(context);
 
                             return Padding(
                               padding:
@@ -280,7 +279,6 @@ _socketService.connectToSocket((data) {
                       BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
                         builder: (context, state) {
                           if (state is WeatherBlocSuccess) {
-
                             return Padding(
                               padding:
                                   EdgeInsets.symmetric(horizontal: padding),
@@ -325,7 +323,8 @@ _socketService.connectToSocket((data) {
                               children: [
                                 SizedBox(height: screenHeight * 0.02),
                                 Text(
-  AppLocalizations.of(context).translate('energyUsages'),
+                                  AppLocalizations.of(context)
+                                      .translate('energyUsages'),
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     fontSize: 16,
                                     color: theme.textTheme.titleMedium?.color
@@ -334,7 +333,7 @@ _socketService.connectToSocket((data) {
                                 ),
                                 const SizedBox(height: 1),
                                 Text(
-                                  this.batteryLevel.toString()+"%",
+                                  this.batteryLevel.toString() + "%",
                                   style:
                                       theme.textTheme.headlineLarge?.copyWith(
                                     fontSize: screenWidth * 0.1,
@@ -376,19 +375,29 @@ _socketService.connectToSocket((data) {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           children: [
-                            _buildInfoCard(context, AppLocalizations.of(context).translate('totalEnergy'), '${this.totalEnergy} ${AppLocalizations.of(context).translate('kwh')}',
+                            _buildInfoCard(
+                                context,
+                                AppLocalizations.of(context)
+                                    .translate('totalEnergy'),
+                                '${this.totalEnergy} ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.lightbulb),
                             _buildInfoCard(
-  context, 
-  AppLocalizations.of(context).translate('consumed'), 
-  '${this.consumedEnergy} ${AppLocalizations.of(context).translate('kwh')}',
-  Icons.flash_on
-),
-                            _buildInfoCard(context,  AppLocalizations.of(context).translate('capacity'), 
-  '42.0 ${AppLocalizations.of(context).translate('kwh')}',
+                                context,
+                                AppLocalizations.of(context)
+                                    .translate('consumed'),
+                                '${this.consumedEnergy} ${AppLocalizations.of(context).translate('kwh')}',
+                                Icons.flash_on),
+                            _buildInfoCard(
+                                context,
+                                AppLocalizations.of(context)
+                                    .translate('capacity'),
+                                '42.0 ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.battery_full),
-                            _buildInfoCard(context,  AppLocalizations.of(context).translate('co2Reduction'), 
-  '${this.co2Reduction} ${AppLocalizations.of(context).translate('kwh')}',
+                            _buildInfoCard(
+                                context,
+                                AppLocalizations.of(context)
+                                    .translate('co2Reduction'),
+                                '${this.co2Reduction} ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.eco),
                           ],
                         ),
@@ -425,8 +434,24 @@ _socketService.connectToSocket((data) {
   Widget _buildInfoCard(
       BuildContext context, String title, String value, IconData icon) {
     final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+    final cardHeight = height * 0.15; // 15% de la hauteur de l'écran
+    final constrainedHeight = cardHeight.clamp(80.0, 120.0);
+    // Tailles responsives pour les éléments internes
+    final iconSize = width * 0.055; // Taille d'icône responsive
+    final titleFontSize = width * 0.035; // Taille de police du titre responsive
+    final valueFontSize =
+        width * 0.045; // Taille de police de la valeur responsive
+    // Espacement responsive
+    final verticalPadding = height * 0.012;
+    final horizontalPadding = width * 0.03;
+    final iconSpacing = height * 0.008;
+    final titleSpacing = height * 0.003;
+
     return Container(
-      height: 100,
+      height: constrainedHeight,
       decoration: BoxDecoration(
         color: theme.cardColor.withOpacity(0.70),
         border: Border.all(
@@ -436,28 +461,35 @@ _socketService.connectToSocket((data) {
         ),
         borderRadius: BorderRadius.circular(15),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      padding: EdgeInsets.symmetric(
+        vertical: verticalPadding,
+        horizontal: horizontalPadding,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             icon,
             color: theme.colorScheme.primary ?? MyThemes.primaryColor,
-            size: 23,
+            size: iconSize.clamp(
+                20.0, 26.0), // Limiter la taille minimale et maximale
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: titleSpacing),
           Text(
             title,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontSize: 15,
+              fontSize: titleFontSize.clamp(
+                  12.0, 16.0), // Limiter la taille minimale et maximale
               color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
             ),
           ),
-          const SizedBox(height: 3),
+          SizedBox(height: titleSpacing),
           Text(
             value,
             style: theme.textTheme.titleLarge?.copyWith(
-              fontSize: 19,
+              fontSize: valueFontSize.clamp(
+                  16.0, 20.0), // Limiter la taille minimale et maximale
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -493,7 +525,7 @@ _socketService.connectToSocket((data) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-  AppLocalizations.of(context).translate('electricityGenerated'),
+                AppLocalizations.of(context).translate('electricityGenerated'),
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

@@ -12,7 +12,7 @@ class SubscriptionViewModel extends ChangeNotifier {
 
   SubscriptionViewModel({required this.pendingSignupId}) : api = Const().url {
     // Initialize with static pack ID
-    selectedPackId = "67c3a54219a227df76c6b67c";
+    selectedPackId = "67be43394925465e90de0b98";
   }
 /*
   Future<bool> updatePackForPendingSignup() async {
@@ -59,60 +59,67 @@ class SubscriptionViewModel extends ChangeNotifier {
     }
   }
 */
-Future<bool> updatePackForPendingSignup() async {
-  try {
-    isLoading = true;
-    notifyListeners();
-    
-    final url = '$api/auth/pending-signup/$pendingSignupId/pack/$selectedPackId';
-    
-    print('Making API call to URL: $url');
-    print('Selected Pack ID: $selectedPackId');
-    
-    final response = await http.patch(
-      Uri.parse(url),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    );
-    
-    print('Response status code: ${response.statusCode}');
-    print('Response body: ${response.body}');
-    
-    final responseData = json.decode(response.body);
-    
-    if (response.statusCode == 200 && responseData['message'] == 'Pack updated successfully') {
-      error = null;
-      return true;
-    } else if (response.statusCode == 403 && responseData['message'].toString().contains("Email verification required")) {
-      // Special handling for email verification
-      error = "EMAIL_VERIFICATION_REQUIRED";
+  Future<bool> updatePackForPendingSignup() async {
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      final url =
+          '$api/auth/pending-signup/$pendingSignupId/pack/$selectedPackId';
+
+      print('Making API call to URL: $url');
+      print('Selected Pack ID: $selectedPackId');
+
+      final response = await http.patch(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print('Response status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      final responseData = json.decode(response.body);
+
+      if (response.statusCode == 200 &&
+          responseData['message'] == 'Pack updated successfully') {
+        error = null;
+        return true;
+      } else if (response.statusCode == 403 &&
+          responseData['message']
+              .toString()
+              .contains("Email verification required")) {
+        // Special handling for email verification
+        error = "EMAIL_VERIFICATION_REQUIRED";
+        notifyListeners();
+        return false;
+      } else {
+        error = responseData['message'] ??
+            'Failed to update pack. Please try again.';
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      print('Error during API call: $e');
+      error = 'An error occurred. Please check your connection and try again.';
       notifyListeners();
       return false;
-    } else {
-      error = responseData['message'] ?? 'Failed to update pack. Please try again.';
+    } finally {
+      isLoading = false;
       notifyListeners();
-      return false;
     }
-  } catch (e) {
-    print('Error during API call: $e');
-    error = 'An error occurred. Please check your connection and try again.';
-    notifyListeners();
-    return false;
-  } finally {
-    isLoading = false;
-    notifyListeners();
   }
-}
+
   void selectPack(String packId) {
-    selectedPackId = "67c3a54219a227df76c6b67c";  // Always use static ID
+    selectedPackId = "67be43394925465e90de0b98"; // Always use static ID
     print('Pack selected: $selectedPackId'); // Debug print
     error = null;
     notifyListeners();
   }
 
   bool isPackSelected(String packId) {
-    return selectedPackId == "67c3a54219a227df76c6b67c";
+    return selectedPackId == "67be43394925465e90de0b98";
   }
 
   void clearError() {
