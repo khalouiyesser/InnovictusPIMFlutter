@@ -11,6 +11,7 @@ import 'package:piminnovictus/Views/DashboardClient/WalletCreatePasswordPage.dar
 import 'package:piminnovictus/Views/DashboardClient/WalletPasswordPage.dart';
 import 'package:piminnovictus/viewmodels/WalletViewModel.dart';
 import 'package:piminnovictus/viewmodels/WeatherAPI/bloc/weather_bloc_bloc.dart';
+import 'package:piminnovictus/viewmodels/packs_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:piminnovictus/views/AuthViews/welcome_view.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
@@ -68,6 +69,8 @@ void main() async {
         providers: [
           ChangeNotifierProvider.value(value: themeProvider),
           ChangeNotifierProvider.value(value: languageProvider),
+                  ChangeNotifierProvider(create: (_) => PacksViewModel()),
+
           ChangeNotifierProvider(
               create: (_) => ProfileSwitcherViewModel()..loadProfiles()),
           BlocProvider(

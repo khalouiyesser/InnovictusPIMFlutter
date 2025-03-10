@@ -274,7 +274,7 @@ class _CreateProfileDialogState extends State<CreateProfileDialog> {
                     ),
                   ),
                   subtitle: Text(
-                    '${pack.panelsCount} panels • ${pack.energyGain}',
+                    '${pack.panels} panels • ${pack.gain}',
                     style: TextStyle(
                       color:
                           theme.textTheme.titleMedium?.color?.withOpacity(0.7),
