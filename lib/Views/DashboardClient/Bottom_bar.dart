@@ -6,6 +6,7 @@ import 'package:piminnovictus/Views/DashboardClient/Dashboard.dart';
 import 'package:piminnovictus/Views/DashboardClient/WalletPage.dart';
 import 'package:piminnovictus/Views/DashboardClient/WalletPasswordPage.dart';
 import 'package:piminnovictus/Views/Users/EditProfile.dart';
+import 'package:piminnovictus/views/DashboardClient/WalletCreatePasswordPage.dart';
 import 'package:provider/provider.dart';
 import 'buyEnergie.dart';
 import 'energy_settings_sheet.dart';
@@ -41,7 +42,7 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
 
   final List _pages = [
     DashboardPage(),
-    WalletPage(),
+    WalletCreatePasswordPage(),
     BuyEnergiePage(),
     Container(),
     EditProfile(),
