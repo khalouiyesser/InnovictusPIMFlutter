@@ -1,156 +1,80 @@
-// class Pack {
-//   final String id;
-//   final String title;
-//   final String image;
-//   final String description;
-//   final String price;
-//   final String panelsCount;
-//   final String energyGain;
-//   final String co2Saved;
-//   final String certification;
-//
-//   Pack({
-//     required this.id,
-//     required this.title,
-//     required this.image,
-//     required this.description,
-//     this.price = '',
-//     this.panelsCount = '',
-//     this.energyGain = '',
-//     this.co2Saved = '',
-//     this.certification = '',
-//   });
-//
-//   // Convert Map to Pack object
-//   factory Pack.fromMap(Map<String, String> map) {
-//     return Pack(
-//       id: map['id'] ?? '',
-//       title: map['title'] ?? '',
-//       image: map['image'] ?? '',
-//       description: map['description'] ?? '',
-//       price: map['price'] ?? '',
-//       panelsCount: map['panels_count'] ?? '',
-//       energyGain: map['energy_gain'] ?? '',
-//       co2Saved: map['co2_saved'] ?? '',
-//       certification: map['certification'] ?? '',
-//     );
-//   }
-//
-//   // Convert Pack object to Map
-//   Map<String, String> toMap() {
-//     return {
-//       'id': id,
-//       'title': title,
-//       'image': image,
-//       'description': description,
-//       'price': price,
-//       'panels_count': panelsCount,
-//       'energy_gain': energyGain,
-//       'co2_saved': co2Saved,
-//       'certification': certification,
-//     };
-//   }
-//
-//   // Create a copy of Pack with modified fields
-//   Pack copyWith({
-//     String? id,
-//     String? title,
-//     String? image,
-//     String? description,
-//     String? price,
-//     String? panelsCount,
-//     String? energyGain,
-//     String? co2Saved,
-//     String? certification,
-//   }) {
-//     return Pack(
-//       id: id ?? this.id,
-//       title: title ?? this.title,
-//       image: image ?? this.image,
-//       description: description ?? this.description,
-//       price: price ?? this.price,
-//       panelsCount: panelsCount ?? this.panelsCount,
-//       energyGain: energyGain ?? this.energyGain,
-//       co2Saved: co2Saved ?? this.co2Saved,
-//       certification: certification ?? this.certification,
-//     );
-//   }
-// }
 class Pack {
-  final String id;
+  final String? id;
   final String title;
-  final String image;
   final String description;
-  final int price;  // ✅ `price` est un `int`
-  final String panelsCount;
-  final String energyGain;
-  final String co2Saved;
-  final String certification;
-
+  final double price;
+  final double panels;
+  final double generated;
+  final double gain;
+  final int fossil;
+  final String image; // Ajout de la propriété image
+  
   Pack({
-    required this.id,
+    this.id,
     required this.title,
-    required this.image,
     required this.description,
-    this.price = 0,  // ✅ Valeur par défaut 0
-    this.panelsCount = '',
-    this.energyGain = '',
-    this.co2Saved = '',
-    this.certification = '',
+    required this.price,
+    required this.panels,
+    required this.generated,
+    required this.gain,
+    required this.fossil,
+    this.image = "assets/panel.png", // Valeur par défaut
   });
-
-  // ✅ Convertir un `Map<String, String>` en `Pack`
-  factory Pack.fromMap(Map<String, String> map) {
+  
+  factory Pack.fromJson(Map<String, dynamic> json) {
     return Pack(
-      id: map['id'] ?? '',
-      title: map['title'] ?? '',
-      image: map['image'] ?? '',
-      description: map['description'] ?? '',
-      price: int.tryParse(map['price'] ?? '0') ?? 0,  // ✅ Conversion sécurisée
-      panelsCount: map['panels_count'] ?? '',
-      energyGain: map['energy_gain'] ?? '',
-      co2Saved: map['co2_saved'] ?? '',
-      certification: map['certification'] ?? '',
+      id: json['_id'],
+      title: json['title'],
+      description: json['description'],
+      price: json['price'] is int ? (json['price'] as int).toDouble() : json['price'],
+      panels: json['panels'] is int ? (json['panels'] as int).toDouble() : json['panels'],
+      generated: json['generated'] is int ? (json['generated'] as int).toDouble() : json['generated'],
+      gain: json['gain'] is int ? (json['gain'] as int).toDouble() : json['gain'],
+      fossil: json['fossil'],
+      image: json['image'] ?? "assets/panel.png", // Gérer le cas où l'image n'est pas fournie
     );
   }
-
-  // ✅ Convertir un `Pack` en `Map<String, String>`
-  Map<String, String> toMap() {
+  
+  Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) '_id': id,
       'title': title,
-      'image': image,
       'description': description,
-      'price': price.toString(),  // ✅ Conversion en `String`
-      'panels_count': panelsCount,
-      'energy_gain': energyGain,
-      'co2_saved': co2Saved,
-      'certification': certification,
+      'price': price,
+      'panels': panels,
+      'generated': generated,
+      'gain': gain,
+      'fossil': fossil,
+      'image': image,
     };
   }
-
-  // ✅ Méthode `copyWith` pour créer une copie de `Pack` avec des modifications
+  
   Pack copyWith({
     String? id,
     String? title,
-    String? image,
     String? description,
-    int? price,  // ✅ `price` est bien un `int`
-    String? panelsCount,
-    String? energyGain,
-    String? co2Saved,
-    String? certification,
+    double? price,
+    double? panels,
+    double? generated,
+    double? gain,
+    int? fossil,
+    String? image,
   }) {
     return Pack(
       id: id ?? this.id,
       title: title ?? this.title,
-      image: image ?? this.image,
       description: description ?? this.description,
-      price: price ?? this.price,  // ✅ Correct
-      panelsCount: panelsCount ?? this.panelsCount,
-      energyGain: energyGain ?? this.energyGain,
-      co2Saved: co2Saved ?? this.co2Saved,
-      certification: certification ?? this.certification,
+      price: price ?? this.price,
+      panels: panels ?? this.panels,
+      generated: generated ?? this.generated,
+      gain: gain ?? this.gain,
+      fossil: fossil ?? this.fossil,
+      image: image ?? this.image,
     );
+  }
+  
+  @override
+  String toString() {
+    return 'Pack(id: $id, title: $title, price: $price, panels: $panels, generated: $generated, gain: $gain, fossil: $fossil, image: $image)';
   }
 }

@@ -6,6 +6,7 @@ import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
 import 'package:piminnovictus/Views/Users/create_profile.dart';
+import 'package:piminnovictus/viewmodels/packs_view_model.dart';
 import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -21,13 +22,25 @@ class _AllProfilesViewState extends State<AllProfilesView> {
   List<Map<String, dynamic>> _recentUsers = [];
   bool _isLoadingRecentUsers = true;
   String? _currentUserId;
-
+late PacksViewModel _packsViewModel;
+bool _isLoadingPacks = true;
   @override
   void initState() {
     super.initState();
-    _loadCurrentUserAndRecentUsers();
-  }
+_packsViewModel = Provider.of<PacksViewModel>(context, listen: false);
+  _loadCurrentUserAndRecentUsers();
+  _loadPacks();  }
+Future<void> _loadPacks() async {
+  setState(() {
+    _isLoadingPacks = true;
+  });
 
+  await _packsViewModel.getAllPacks();
+
+  setState(() {
+    _isLoadingPacks = false;
+  });
+}
   Future<void> _loadCurrentUserAndRecentUsers() async {
     try {
       _currentUserId = await _sessionManager.getUserId();
@@ -221,29 +234,29 @@ Future<void> _showSwitchProfileDialog(BuildContext context, String profileName, 
   ),
     title: Text(AppLocalizations.of(context).translate('createNewProfile')),
 
-  onTap: () async {
-    // Get the packs list from your PacksList widget
-    final List<Pack> packs = [
-      Pack(
-        id: "1",
-        title: "Basic Pack",
-        image: "assets/panel.png",
-        description: "• Unlock energy potential\n• Maximize savings\n• Smart monitoring",
-        price: 999,
-        panelsCount: "6",
-        energyGain: "5 kWh/jour",
-        co2Saved: "10 kg CO₂/jour",
-        certification: "Empreinte carbone réduite"
-      ),
-      // Add other packs here...
-    ];
-    
-    final result = await showDialog(
-      context: context,
-      builder: (context) => CreateProfileDialog(packs: packs),
+ onTap: () async {
+  if (_isLoadingPacks) {
+    // Show loading indicator or message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppLocalizations.of(context).translate('loadingPacks'))),
     );
-    
-    if (result != null) {
+    return;
+  }
+  
+  if (_packsViewModel.packs.isEmpty) {
+    // Handle the case when packs couldn't be loaded
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppLocalizations.of(context).translate('noPacksAvailable'))),
+    );
+    return;
+  }
+  
+  final result = await showDialog(
+    context: context,
+    builder: (context) => CreateProfileDialog(packs: _packsViewModel.packs),
+  );
+  
+  if (result != null) {
       // Handle the created profile with selected pack
       // You can access:
       // result['name'] - profile name
