@@ -42,7 +42,7 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
 
   final List _pages = [
     DashboardPage(),
-    WalletCreatePasswordPage(),
+    ConnectWalletPage(),
     BuyEnergiePage(),
     Container(),
     EditProfile(),

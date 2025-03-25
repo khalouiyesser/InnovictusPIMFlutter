@@ -2258,6 +2258,8 @@ class _EditProfileState extends State<EditProfile> {
     _loadUserData();
     Future<String?> userId = _sessionManager.getUserId();
     print("userrrrrrc  $userId");
+  _loadUserData();
+
   }
 
   // Update validation method to return validation state
@@ -2559,7 +2561,7 @@ class _EditProfileState extends State<EditProfile> {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return AlertDialog(
+          return const AlertDialog(
             content: Row(
               children: [
                 CircularProgressIndicator(
@@ -2604,8 +2606,10 @@ class _EditProfileState extends State<EditProfile> {
       Navigator.of(context).pop();
 
       if (response.statusCode == 200) {
+
         // Successful update
         final updatedUserData = jsonDecode(response.body);
+        print(currentUser!.id);
         final updatedUser = User(
           id: currentUser!.id,
           name: updatedUserData['name'] ?? currentUser!.name,
@@ -2614,8 +2618,10 @@ class _EditProfileState extends State<EditProfile> {
               updatedUserData['phoneNumber'] ?? currentUser!.phoneNumber,
         );
 
+
         // Update user session
         await _sessionManager.saveUser(updatedUser);
+
 
         // Update UI state
         setState(() {

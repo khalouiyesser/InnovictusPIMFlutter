@@ -114,11 +114,11 @@ class MyApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          //home: isLoggedIn ? BottomNavBarExample() : WelcomePage(),
+          home: isLoggedIn ? BottomNavBarExample() : WelcomePage(),
 
           //ajbouni
           // home: BottomNavBarExample(),
-          home: WalletPage(),
+          //home: WalletPage(),
         );
       },
     );
