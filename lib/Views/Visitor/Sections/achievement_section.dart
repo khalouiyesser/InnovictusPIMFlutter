@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 // import 'package:visibility_detector/visibility_detector.dart';
@@ -33,6 +34,8 @@ class _AchievementSectionState extends State<AchievementSection> {
 
   @override
   Widget build(BuildContext context) {
+    final AuthScreenTheme _theme = AuthScreenThemeDetector.getTheme();
+
     return VisibilityDetector(
       key: const Key("achievement_section"),
       onVisibilityChanged: _handleVisibilityChange,
@@ -51,13 +54,14 @@ class _AchievementSectionState extends State<AchievementSection> {
             ),
             child: Column(
               children: [
-                 Text(
-AppLocalizations.of(context)!.translate("achievement_section_title"),
+                Text(
+                  AppLocalizations.of(context)!
+                      .translate("achievement_section_title"),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: _theme.textColor,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -69,14 +73,26 @@ AppLocalizations.of(context)!.translate("achievement_section_title"),
                   mainAxisSpacing: 20,
                   childAspectRatio: 3 / 2,
                   children: [
-                    AchievementCard(count: 520, label: AppLocalizations.of(context)!.translate("regular_users"),
- isVisible: _isVisible),
-                    AchievementCard(count: 120, label:AppLocalizations.of(context)!.translate("enterprise_users"),
- isVisible: _isVisible),
-                    AchievementCard(count: 100, label: AppLocalizations.of(context)!.translate("carbon_footprint_certified"),
- isVisible: _isVisible),
-                    AchievementCard(count: 10000, label: AppLocalizations.of(context)!.translate("installed_solar_panels"),
- isVisible: _isVisible),
+                    AchievementCard(
+                        count: 520,
+                        label: AppLocalizations.of(context)!
+                            .translate("regular_users"),
+                        isVisible: _isVisible),
+                    AchievementCard(
+                        count: 120,
+                        label: AppLocalizations.of(context)!
+                            .translate("enterprise_users"),
+                        isVisible: _isVisible),
+                    AchievementCard(
+                        count: 100,
+                        label: AppLocalizations.of(context)!
+                            .translate("carbon_footprint_certified"),
+                        isVisible: _isVisible),
+                    AchievementCard(
+                        count: 10000,
+                        label: AppLocalizations.of(context)!
+                            .translate("installed_solar_panels"),
+                        isVisible: _isVisible),
                   ],
                 ),
               ],
@@ -102,10 +118,13 @@ class AchievementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthScreenTheme _theme = AuthScreenThemeDetector.getTheme();
+
     return LayoutBuilder(
       builder: (context, constraints) {
         return Container(
-          padding: EdgeInsets.symmetric(horizontal: constraints.maxWidth > 150 ? 10 : 5),
+          padding: EdgeInsets.symmetric(
+              horizontal: constraints.maxWidth > 150 ? 10 : 5),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -121,7 +140,7 @@ class AchievementCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: constraints.maxWidth > 150 ? 25 : 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: _theme.textColor,
                     ),
                   );
                 },
@@ -132,7 +151,7 @@ class AchievementCard extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: constraints.maxWidth > 150 ? 16 : 14,
-                  color: Colors.white,
+                  color: _theme.textColor,
                 ),
               ),
             ],

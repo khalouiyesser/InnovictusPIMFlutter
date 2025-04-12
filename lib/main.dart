@@ -20,7 +20,7 @@ import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
 
-Future<Position> _determinePosition() async {
+/*Future<Position> _determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;
 
@@ -46,7 +46,7 @@ Future<Position> _determinePosition() async {
   } catch (e) {
     throw 'Erreur de localisation: $e';
   }
-}
+}*/
 
 void main() async {
   try {
@@ -63,19 +63,16 @@ void main() async {
       languageProvider.initializeLocale(),
     ]);
 
-    Position position = await _determinePosition();
-
     runApp(
       MultiProvider(
         providers: [
           ChangeNotifierProvider.value(value: themeProvider),
           ChangeNotifierProvider.value(value: languageProvider),
-                  ChangeNotifierProvider(create: (_) => PacksViewModel()),
-
+          ChangeNotifierProvider(create: (_) => PacksViewModel()),
           ChangeNotifierProvider(
               create: (_) => ProfileSwitcherViewModel()..loadProfiles()),
           BlocProvider(
-            create: (context) => WeatherBlocBloc()..add(FetchWeather(position)),
+            create: (context) => WeatherBlocBloc(),
           ),
           ChangeNotifierProvider(create: (_) => WalletViewModel()),
         ],
@@ -115,10 +112,6 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           home: isLoggedIn ? BottomNavBarExample() : WelcomePage(),
-
-          //ajbouni
-          // home: BottomNavBarExample(),
-          //home: WalletPage(),
         );
       },
     );

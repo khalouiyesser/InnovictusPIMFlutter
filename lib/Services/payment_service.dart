@@ -53,7 +53,7 @@ class PaymentService {
     }
   }
 
-  Future<void> finalizeSignup(String userId) async {
+  Future<void> finalizeSignup(String userId, String packId) async {
     final String apiUrl =
         "${Const().url}/auth/finalize-signup/$userId"; // Corrected const() usage
     final response = await http.patch(

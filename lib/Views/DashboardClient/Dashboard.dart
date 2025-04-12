@@ -6,14 +6,13 @@ import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
-// import 'package:piminnovictus/Views/DashboardClient/WalletPage.dart';
 import 'package:piminnovictus/Views/DashboardClient/energy_settings_sheet.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:piminnovictus/viewmodels/WeatherAPI/bloc/weather_bloc_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
 import 'package:piminnovictus/Views/DashboardClient/profile_switcher_dropdown.dart';
-
+import 'package:geolocator/geolocator.dart';
 import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -97,10 +96,43 @@ class _DashboardPageState extends State<DashboardPage> {
   // Déclaration de la variable _currentEnergyPercentage
   double _currentEnergyPercentage = 50.0; // Exemple de valeur initiale
 
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    try {
+      // Vérifier si les services de localisation sont activés
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        throw 'Les services de localisation sont désactivés.';
+      }
+
+      // Vérifier les permissions
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw 'Les permissions de localisation ont été refusées';
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        throw 'Les permissions de localisation sont définitivement refusées';
+      }
+
+      // Permissions accordées, récupérer la position actuelle
+      return await Geolocator.getCurrentPosition();
+    } catch (e) {
+      print('Erreur de localisation: $e');
+      throw 'Erreur de localisation: $e';
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _requestLocationPermission();
 
     _socketService.connectToSocket((data) {
       if (mounted) {
@@ -121,6 +153,19 @@ class _DashboardPageState extends State<DashboardPage> {
         });
       }
     });
+  }
+
+  Future<void> _requestLocationPermission() async {
+    try {
+      Position position = await _determinePosition();
+      // Une fois la position obtenue, mettre à jour le bloc WeatherBloc
+      if (mounted) {
+        BlocProvider.of<WeatherBlocBloc>(context).add(FetchWeather(position));
+      }
+    } catch (e) {
+      print('Erreur lors de la demande de permission de localisation: $e');
+      // Vous pouvez afficher un message d'erreur à l'utilisateur si nécessaire
+    }
   }
 
   Future<void> _loadUserData() async {
