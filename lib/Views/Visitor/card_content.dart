@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/ClientModels/packs.dart';
+import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
 
 import '../AuthViews/RegisterView.dart';
 import 'pack_details.dart';
@@ -29,13 +30,15 @@ class CardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthScreenTheme _theme = AuthScreenThemeDetector.getTheme();
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final cardWidth = constraints.maxWidth;
         final cardHeight = constraints.maxHeight;
 
         final textStyle = TextStyle(
-          color: Colors.white,
+          color: _theme.textColor,
           fontSize: cardWidth * 0.08,
           height: 1.5,
         );
@@ -86,7 +89,7 @@ class CardContent extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: _theme.textColor,
                       fontSize: cardWidth * 0.1,
                       fontWeight: FontWeight.bold,
                     ),
@@ -106,23 +109,23 @@ class CardContent extends StatelessWidget {
                     ),
                   ),
                 ),
-              if ( signiUpButtont != null) ...[
+              if (signiUpButtont != null) ...[
                 SizedBox(height: cardHeight * 0.01),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                     SizedBox(width: cardWidth * 0.02),
+                    SizedBox(width: cardWidth * 0.02),
                     SizedBox(
-                     width: cardWidth * 0.5,
+                      width: cardWidth * 0.5,
                       height: cardHeight * 0.16,
                       child: OutlinedButton(
                         onPressed: () {
-                              Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => PackDetails(pack: pack),
-      ),
-    );
-                          },
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => PackDetails(pack: pack),
+                            ),
+                          );
+                        },
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(
                               color: Color(0xFF29E33C), width: 2),

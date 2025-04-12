@@ -8,6 +8,8 @@ import 'package:piminnovictus/Views/Visitor/Sections/introduction_section.dart';
 import 'package:piminnovictus/Views/Visitor/Sections/packs_section.dart';
 import 'package:piminnovictus/Views/Visitor/Sections/team_section.dart';
 import 'package:piminnovictus/views/background.dart';
+import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
+
 import 'package:provider/provider.dart';
 
 class CopyrightSection extends StatelessWidget {
@@ -15,6 +17,8 @@ class CopyrightSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthScreenTheme _theme = AuthScreenThemeDetector.getTheme();
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
@@ -25,7 +29,7 @@ class CopyrightSection extends StatelessWidget {
             children: [
               Icon(
                 Icons.copyright,
-                color: Colors.white70,
+                color: _theme.textColor,
                 size: screenWidth * 0.04,
               ),
               SizedBox(width: screenWidth * 0.01),
@@ -34,7 +38,7 @@ class CopyrightSection extends StatelessWidget {
                     .translate("footerText")
                     .replaceAll("{date}", 'DateTime.now().year.toString()'),
                 style: TextStyle(
-                  color: Colors.white70,
+                  color: _theme.textColor,
                   fontSize: screenWidth * 0.035,
                 ),
               ),
@@ -53,9 +57,10 @@ class VisitorPage extends StatefulWidget {
   State<VisitorPage> createState() => _VisitorPageState();
 }
 
-class _VisitorPageState extends State<VisitorPage> {
+class _VisitorPageState extends State<VisitorPage> with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _packsKey = GlobalKey();
+  late AuthScreenTheme _theme;
 
   void scrollToPacksSection() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -77,9 +82,33 @@ class _VisitorPageState extends State<VisitorPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _updateTheme();
+    // Register to listen for system brightness changes - fixed by removing the cast
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  void _updateTheme() {
+    _theme = AuthScreenThemeDetector.getTheme();
+  }
+
+  @override
   void dispose() {
+    // Remove observer before disposal
+    WidgetsBinding.instance.removeObserver(this);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    // Update the theme when system brightness changes
+    if (mounted) {
+      setState(() {
+        _updateTheme();
+      });
+    }
   }
 
   Widget _buildLanguageDropdown(BuildContext context) {
@@ -120,13 +149,17 @@ class _VisitorPageState extends State<VisitorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = AuthScreenThemeDetector.isSystemDarkMode();
+    final authTheme = AuthScreenThemeDetector.getTheme();
+
     return SafeArea(
       child: Scaffold(
         body: Stack(
           children: [
             BlurredRadialBackground(
-              isDarkMode: false,
-              backgroundGradientColors: [],
+              isDarkMode: isDarkMode, // Use the detected system theme
+              backgroundGradientColors: authTheme
+                  .backgroundGradientColors, // Use theme gradient colors
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final screenWidth = constraints.maxWidth;
@@ -170,7 +203,7 @@ class _VisitorPageState extends State<VisitorPage> {
                                       Text(
                                         'GreenEnergy',
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color: _theme.textColor,
                                           fontSize: titleFontSize,
                                           fontWeight: FontWeight.bold,
                                         ),
