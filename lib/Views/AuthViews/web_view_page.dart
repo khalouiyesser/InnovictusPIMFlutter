@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
 import 'package:piminnovictus/Services/payment_service%20.dart';
 import 'package:piminnovictus/Views/AuthViews/login_view.dart';
 import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
@@ -42,13 +43,29 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   void _showSuccessPopup() {
+    final _theme = AuthScreenThemeDetector.getTheme();
+    final isDarkMode = AuthScreenThemeDetector.isSystemDarkMode();
     showDialog(
       context: context,
       barrierDismissible: false, // Prevent clicking outside the popup
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Payment Successful"),
-          content: Text("Thank you for your payment!"),
+          backgroundColor: isDarkMode
+              ? const Color.fromARGB(255, 8, 16, 9)
+              : Colors.white.withOpacity(0.7),
+          title: Text(
+            "Payment Successful",
+            style: TextStyle(
+              color: _theme.textColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            "Thank you for your payment!",
+            style: TextStyle(
+              color: _theme.textColor,
+            ),
+          ),
           actions: [
             TextButton(
               onPressed: () async {
@@ -73,10 +90,20 @@ class _WebViewPageState extends State<WebViewPage> {
 
   @override
   Widget build(BuildContext context) {
+    final _theme = AuthScreenThemeDetector.getTheme();
+    final isDarkMode = AuthScreenThemeDetector.isSystemDarkMode();
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Stripe Payment"),
-        backgroundColor: const Color.fromARGB(255, 3, 36, 12),
+        title: Text(
+          "Stripe Payment",
+          style: TextStyle(
+            color: _theme.textColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: isDarkMode
+            ? const Color.fromARGB(255, 8, 16, 9)
+            : Colors.white.withOpacity(0.7),
       ),
       body: WebViewWidget(controller: _controller),
     );
