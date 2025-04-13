@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/ClientModels/packs.dart';
+import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/viewmodels/packs_view_model.dart';
 // import 'package:piminnovictus/views/Visitor/pack_details.dart';
@@ -59,6 +60,8 @@ class _PacksListState extends State<PacksList> {
 
   @override
   Widget build(BuildContext context) {
+    final AuthScreenTheme _theme = AuthScreenThemeDetector.getTheme();
+
     final screenSize = MediaQuery.of(context).size;
     final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
@@ -83,7 +86,7 @@ class _PacksListState extends State<PacksList> {
           style: TextStyle(
             fontSize: titleFontSize,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: _theme.textColor,
           ),
         ),
         backgroundColor: Colors.transparent,
