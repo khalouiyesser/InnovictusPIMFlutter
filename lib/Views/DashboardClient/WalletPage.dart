@@ -225,8 +225,9 @@ class _WalletPageState extends State<WalletPage> {
                           onPressed: () {
                             // Add your claim logic here
                             Transaction.mintTokens(coinCounter);
-                            _loadWalletData();
-                            print("Claim button pressed");
+                            // _loadWalletData();
+                            initState();
+                            print("*********** Claim button pressed");
                             print(coinCounter);
                             setState(() {
                               generatedEnergy = 0;

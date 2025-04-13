@@ -2625,6 +2625,9 @@ class _EditProfileState extends State<EditProfile> {
           _phoneController.text = updatedUser.phoneNumber ?? '';
         });
 
+        initState();
+        _loadUserData();
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

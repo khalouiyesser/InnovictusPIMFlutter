@@ -27,7 +27,7 @@
 //   }
 
 //   static Future<List<Transaction>> fetchTransactions(String accountId) async {
-//     final url = Uri.parse('http://192.168.0.102:5000/fetchTransactions/$accountId');
+//     final url = Uri.parse('http://192.168.214.132:5000/fetchTransactions/$accountId');
 //     print("*********** fetchTransactions started********************");
 //     try {
 //       final response = await http.get(url);
@@ -53,7 +53,7 @@
 // static Future<List<Transaction>> mintTokens(String amount) async {
 //     try {
 //       final response = await http.post(
-//         Uri.parse("http://192.168.0.102:5000/mintTokens"),
+//         Uri.parse("http://192.168.214.132:5000/mintTokens"),
 //         headers: {
 //           'Content-Type': 'application/json',
 //         },
@@ -106,7 +106,7 @@ class Transaction {
 
   // Fetch transactions for a specific accountId
   static Future<List<Transaction>> fetchTransactions(String accountId) async {
-    final url = Uri.parse('http://192.168.0.102:5000/fetchTransactions/$accountId');
+    final url = Uri.parse('http://192.168.214.132:5000/fetchTransactions/$accountId');
     print("*********** fetchTransactions started ********************");
     try {
       final response = await http.get(url);
@@ -132,7 +132,7 @@ class Transaction {
   static Future<String> mintTokens(int amount) async {
     try {
       final response = await http.post(
-        Uri.parse("http://192.168.0.102:5000/mintTokens"),
+        Uri.parse("http://192.168.214.132:5000/mintTokens"),
         headers: {
           'Content-Type': 'application/json',
         },

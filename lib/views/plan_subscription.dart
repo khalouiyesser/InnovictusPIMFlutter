@@ -6,7 +6,9 @@ import 'package:piminnovictus/Services/payment_service%20.dart';
 import 'package:piminnovictus/Views/Visitor/card_content.dart';
 import 'package:piminnovictus/Views/Visitor/flip_card.dart';
 import 'package:piminnovictus/viewmodels/Auth/subscription_view_model.dart';
+import 'package:piminnovictus/viewmodels/packs_view_model.dart';
 import 'package:piminnovictus/views/AuthViews/welcome_view.dart';
+import 'package:provider/provider.dart';
 
 class SubscriptionCarousel extends StatefulWidget {
   final String? preselectedPackId;
@@ -21,56 +23,15 @@ class SubscriptionCarousel extends StatefulWidget {
 }
 
 class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
-  final List<Pack> packs = [
-    Pack(
-      id: '67be43394925465e90de0b98',
-      title: 'Basic Pack',
-      image: 'assets/panel.png',
-      description: 'Unlock energy potential...',
-      price: 999,
-      panelsCount: '4',
-      energyGain: '400kW',
-      co2Saved: '200kg',
-      certification: 'ISO Certified',
-    ),
-    Pack(
-      id: '67be43394925465e90de0b98',
-      title: 'Advanced Pack',
-      image: 'assets/background.jpg',
-      description: 'Track energy live.',
-      price: 1999,
-      panelsCount: '8',
-      energyGain: '800kW',
-      co2Saved: '400kg',
-      certification: 'ISO Certified',
-    ),
-    Pack(
-      id: '67be43394925465e90de0b98',
-      title: 'Advanced Pack',
-      image: 'assets/background.jpg',
-      description: 'Track energy live.',
-      price: 1999,
-      panelsCount: '8',
-      energyGain: '800kW',
-      co2Saved: '400kg',
-      certification: 'ISO Certified',
-    ),
-    Pack(
-      id: '67be43394925465e90de0b98',
-      title: 'Advanced Pack',
-      image: 'assets/background.jpg',
-      description: 'Track energy live.',
-      price: 1999,
-      panelsCount: '8',
-      energyGain: '800kW',
-      co2Saved: '400kg',
-      certification: 'ISO Certified',
-    ),
-  ];
+    List<Pack> packs = [];
+
   late final SubscriptionViewModel _viewModel;
+  late final PacksViewModel _packsViewModel;
 
   String? _selectedPackId;
   bool _isLoading = false;
+  bool _isLoadingPacks = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -79,11 +40,37 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
     if (widget.preselectedPackId != null) {
       _viewModel.selectedPackId = widget.preselectedPackId;
     }
+     _packsViewModel = Provider.of<PacksViewModel>(context, listen: false);
+    _loadPacks();
   }
+
+  Future<void> _loadPacks() async {
+    setState(() {
+      _isLoadingPacks = true;
+      _errorMessage = null;
+    });
+
+    try {
+      await _packsViewModel.getAllPacks();
+      
+      setState(() {
+        packs = _packsViewModel.packs;
+        _isLoadingPacks = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+        _isLoadingPacks = false;
+      });
+    }
+  }
+
 
   void _selectPack(String packId) {
     setState(() {
       _selectedPackId = _selectedPackId == packs ? null : packId;
+            _viewModel.selectedPackId = _selectedPackId;
+
     });
   }
 
@@ -184,7 +171,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
         }
 
         if (success) {
-          String packId = "67be43394925465e90de0b98";
+          String packId = _viewModel.selectedPackId!;
           String pendingSignupId = widget.pendingSignupId;
           PaymentService.openPayment(context, packId, pendingSignupId);
         } else {
@@ -418,7 +405,83 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
                       ),
 
                       SizedBox(height: screenHeight * 0.03),
-
+   if (_isLoadingPacks)
+                        Center(
+                          child: Column(
+                            children: [
+                              CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Color.fromARGB(255, 31, 219, 59),
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                AppLocalizations.of(context).translate('loading'),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: screenWidth * 0.04,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      else if (_errorMessage != null)
+                        Center(
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                color: Colors.white,
+                                size: screenWidth * 0.1,
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                AppLocalizations.of(context).translate('errorLoadingPacks'),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: screenWidth * 0.05,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                _errorMessage!,
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: screenWidth * 0.04,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: _loadPacks,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color.fromARGB(255, 31, 219, 59),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                child: Text(
+                                  AppLocalizations.of(context).translate('retry'),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: screenWidth * 0.04,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      else if (packs.isEmpty)
+                        Center(
+                          child: Text(
+                            AppLocalizations.of(context).translate('noPacksAvailable'),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: screenWidth * 0.05,
+                            ),
+                          ),
+                        )
+                      else
                       // GridView with 2 cards per line
                       Padding(
                         padding: EdgeInsets.symmetric(
@@ -443,7 +506,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
                                     .translate(pack.description);
 
                             return GestureDetector(
-                              onTap: () => _selectPack(pack.id),
+                              onTap: () => _selectPack(pack.id??""),
                               child: FlipCard(
                                 front: CardContent(
                                   image: pack.image,
@@ -458,7 +521,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
                                       .translate('select'),
                                   pack: pack,
                                   isSelected: _selectedPackId == pack.id,
-                                  onSelectPressed: () => _selectPack(pack.id),
+                                  onSelectPressed: () => _selectPack(pack.id??""),
                                 ),
                               ),
                             );
@@ -466,7 +529,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.05),
-
+  if (!_isLoadingPacks && _errorMessage == null)
                       // Bottom button with responsive padding
                       Padding(
                         padding: EdgeInsets.fromLTRB(

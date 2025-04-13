@@ -196,7 +196,7 @@ class AuthController {
     }
   }
 
-
+/*
   /// Signup with google
   Future<SignupResponse?> signUpWithGoogle(BuildContext context) async {
     try {
@@ -214,7 +214,9 @@ class AuthController {
       }
 
 
+      
       // Envoi des données au backend
+       
       final response = await http.post(
         Uri.parse("$api/auth/signupGoogle"),
         headers: {'Content-Type': 'application/json'},
@@ -226,7 +228,7 @@ class AuthController {
           'packId': "67be43394925465e90de0b98",
         }),
       );
-
+    
 
       print("📩 Réponse brute du backend : ${response.body}");
 
@@ -255,7 +257,108 @@ class AuthController {
       return null;
     }
   }
-
+*/
+Future<SignupResponse?> signUpWithGoogle(BuildContext context) async {
+  try {
+    print("🔄 Déconnexion des sessions existantes...");
+    await _googleSignIn.signOut();
+    await FirebaseAuth.instance.signOut();
+    await Future.delayed(Duration(seconds: 1));
+    
+    print("🚀 Tentative de connexion avec Google...");
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    
+    if (googleUser == null) {
+      print("❌ Connexion Google annulée par l'utilisateur.");
+      return null;
+    }
+    
+    // Obtenir les jetons d'authentification Google (important pour la persistance)
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final String? idToken = googleAuth.idToken;
+    
+    // Envoi des données au backend
+    final response = await http.post(
+      Uri.parse("$api/auth/signupGoogle"),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'email': googleUser.email,
+        'name': googleUser.displayName,
+        'idGoogle': googleUser.id,
+        'photoUrl': googleUser.photoUrl,
+        'packId': "67be43394925465e90de0b98",
+      }),
+    );
+    
+    print("📩 Réponse brute du backend : ${response.body}");
+    
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final responseData = json.decode(response.body);
+      SignupResponse signupResponse;
+      
+      Map<String, dynamic> userData;
+      String userId = '';
+      
+      if (responseData is List && responseData.isNotEmpty) {
+        print("✅ Inscription réussie sur le backend !");
+        signupResponse = SignupResponse.fromJson(responseData[0]);
+        userData = responseData[0];
+        userId = responseData[0]['_id'] ?? '';
+      } else if (responseData is Map<String, dynamic>) {
+        signupResponse = SignupResponse.fromJson(responseData);
+        userData = responseData;
+        userId = responseData['_id'] ?? '';
+      } else {
+        print("❌ Réponse inattendue du backend.");
+        throw Exception("Format de réponse inattendu");
+      }
+      
+      print("🔐 Sauvegarde de la session utilisateur avec ID: $userId");
+      
+      // Utiliser idToken de Google comme token d'authentification
+      final String authToken = idToken ?? 'google_auth_$userId';
+      
+      // Sauvegarder toutes les données de l'utilisateur plus le token Google
+      await _sessionManager.saveSession(
+        token: authToken,
+        userData: {
+          ...userData, // Inclure toutes les données du backend
+          'email': googleUser.email,
+          'userId': userId,
+          'idGoogle': googleUser.id,
+          'name': googleUser.displayName,
+          'photoUrl': googleUser.photoUrl,
+          'idToken': idToken, // Stocker le token d'authentification Google
+        },
+      );
+      
+      print("✅ Session sauvegardée avec succès");
+      
+      // Rediriger vers l'écran principal
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => 
+            BottomNavBarExample(),
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
+        ),
+      );
+      
+      return signupResponse;
+    } else {
+      throw Exception('❌ Échec de l\'inscription Google : ${response.body}');
+    }
+    
+  } catch (e, stackTrace) {
+    print("❌ Erreur lors de la connexion Google: $e");
+    print(stackTrace);
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Erreur: ${e.toString()}")),
+    );
+    return null;
+  }
+}
  Future<Map<String, dynamic>> loginWithGoogle(BuildContext context) async {
   try {
     print("🔄 Déconnexion des sessions existantes...");
