@@ -59,7 +59,10 @@ class _WalletPageState extends State<WalletPage> {
 
     final walletViewModel =
         Provider.of<WalletViewModel>(context, listen: false);
-    walletViewModel.fetchTokenBalance(accountId!);
+    walletViewModel.fetchTokenBalance(accountId!,privateKey!);
+    
+    // Optional wait if needed
+    //await Future.delayed(Duration(seconds: 3));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<WalletViewModel>(context, listen: false)
@@ -225,14 +228,14 @@ class _WalletPageState extends State<WalletPage> {
                           onPressed: () {
                             // Add your claim logic here
                             Transaction.mintTokens(coinCounter);
-                            // _loadWalletData();
-                            initState();
+                            _loadWalletData();
+                            //initState();
                             print("*********** Claim button pressed");
                             print(coinCounter);
-                            setState(() {
-                              generatedEnergy = 0;
-                              coinCounter = 0; // Compute whole numbers
-                            });
+                            // setState(() {
+                            //   generatedEnergy = 0;
+                            //   coinCounter = 0; // Compute whole numbers
+                            // });
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context).colorScheme.primary, // Button color

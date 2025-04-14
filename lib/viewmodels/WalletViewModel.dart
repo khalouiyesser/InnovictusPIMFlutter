@@ -16,7 +16,7 @@ class WalletViewModel extends ChangeNotifier {
     errorMessage = null;
     notifyListeners();
 
-    const String apiUrl = "http://192.168.214.132:5000/connectProfile"; 
+    const String apiUrl = "http://192.168.1.186:5000/connectProfile"; 
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
@@ -46,24 +46,32 @@ class WalletViewModel extends ChangeNotifier {
   }
 
 //***************************************************************************************** */
-  String _tokenBalance = "0";
-  String get tokenBalance => _tokenBalance;
+  
+String _tokenBalance = "0";
+String get tokenBalance => _tokenBalance;
 
-  Future<void> fetchTokenBalance(String accountId) async {
-    try {
-      final response = await http.get(Uri.parse("http://192.168.214.132:5000/tokenBalance/$accountId"));
+Future<void> fetchTokenBalance(String operatorAccountId, String operatorPrivateKey) async {
+  try {
+    final uri = Uri.parse(
+      "http://192.168.1.186:5000/tokenBalance"
+      "?operatorAccountId=$operatorAccountId&operatorPrivateKey=$operatorPrivateKey",
+    );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        _tokenBalance = data["balance"].toString();
-        notifyListeners();
-      } else {
-        throw Exception("Failed to fetch balance: ${response.reasonPhrase}");
-      }
-    } catch (error) {
-      print(" ❌ Error fetching token balance: $error");
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      _tokenBalance = data["balance"].toString();
+      notifyListeners();
+    } else {
+      throw Exception("Failed to fetch balance: ${response.reasonPhrase}");
     }
+  } catch (error) {
+    print("❌ Error fetching token balance: $error");
   }
+}
+
+
   //***************************************************************************************** */
 
   List<Transaction> _transactions = [];

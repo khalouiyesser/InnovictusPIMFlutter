@@ -70,7 +70,7 @@ void main() async {
         providers: [
           ChangeNotifierProvider.value(value: themeProvider),
           ChangeNotifierProvider.value(value: languageProvider),
-                  ChangeNotifierProvider(create: (_) => PacksViewModel()),
+          ChangeNotifierProvider(create: (_) => PacksViewModel()),
 
           ChangeNotifierProvider(
               create: (_) => ProfileSwitcherViewModel()..loadProfiles()),

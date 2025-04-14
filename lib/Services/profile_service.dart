@@ -2,14 +2,15 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:piminnovictus/Models/ClientModels/profile.dart';
+import 'package:piminnovictus/Services/Const.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 
 class ProfileService {
   final String baseUrl;
   final SessionManager _sessionManager;
-
   ProfileService({required this.baseUrl, required SessionManager sessionManager})
       : _sessionManager = sessionManager;
+      
 
   Future<Map<String, String>> _getHeaders() async {
     final token = await _sessionManager.getAccessToken();
@@ -65,6 +66,107 @@ class ProfileService {
       throw Exception('Error creating profile: $e');
     }
   }
+
+
+
+//
+  Future<List<dynamic>> transfer( String quantite) async {
+        final userId = await _sessionManager.getUserId();
+    print("**********************************object");
+    //print(userId);
+    try {
+          print("**********************************tryyyy");
+      // Prepare the request body
+      final Map<String, dynamic> body = {
+        'quantite': quantite,
+      };
+
+      // Send the POST request to the API
+      final response = await http.post(
+        //Uri.parse('http://192.168.1.186:3009/surplus/transfer/67fc0fc891dd216a7100505e'),
+Uri.parse('$baseUrl/surplus/transfer/$userId'),
+        headers: {
+          'Content-Type': 'application/json', // Set the content type to JSON
+        },
+        body: json.encode(body), // Convert the body to JSON
+      );
+      print(response.statusCode );
+      // Check if the response is successful
+      if (response.statusCode == 201) {
+        print("----------------------------------------------------response.body");
+       // print(response.body);  
+        
+         final Map<String, dynamic> data = json.decode(response.body);
+
+      final List<dynamic> usersList = data['usersList'];
+      print('🟢 Users List: $usersList');
+
+      return usersList;      // Parse the response if needed
+      
+      } else {
+        print( 'Error: ${response.statusCode} - ${response.body}');
+        return [];
+      }
+    } catch (error) {
+      print( 'Error during transfer: $error');
+      return [];
+    }
+    
+  }
+
+
+
+//
+Future<Map<String, dynamic>> transaction({
+    required String senderId,
+    required String receiverId,
+    required double amount,
+    required String senderPrivateKey,
+  }) async {
+    try {
+      final url = Uri.parse('http://192.168.1.186:5000/transferTokens');
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'senderId': senderId,
+          'receiverId': receiverId,
+          'amount': amount,
+          'senderPrivateKey': senderPrivateKey,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('✅ Transaction success: $data');
+        return data;
+      } else {
+        print('🔴 Transaction failed: ${response.statusCode} - ${response.body}');
+        throw Exception('Failed transaction: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('🔴 Error calling /transferTokens: $e');
+      throw Exception('Transaction error: $e');
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // Other API methods...
 }

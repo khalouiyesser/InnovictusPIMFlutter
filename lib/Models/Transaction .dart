@@ -27,7 +27,7 @@
 //   }
 
 //   static Future<List<Transaction>> fetchTransactions(String accountId) async {
-//     final url = Uri.parse('http://192.168.214.132:5000/fetchTransactions/$accountId');
+//     final url = Uri.parse('http://192.168.1.186:5000/fetchTransactions/$accountId');
 //     print("*********** fetchTransactions started********************");
 //     try {
 //       final response = await http.get(url);
@@ -53,7 +53,7 @@
 // static Future<List<Transaction>> mintTokens(String amount) async {
 //     try {
 //       final response = await http.post(
-//         Uri.parse("http://192.168.214.132:5000/mintTokens"),
+//         Uri.parse("http://192.168.1.186:5000/mintTokens"),
 //         headers: {
 //           'Content-Type': 'application/json',
 //         },
@@ -78,6 +78,12 @@
 // }
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:piminnovictus/Services/Const.dart';
+import 'package:piminnovictus/Services/session_manager.dart';
+import 'package:piminnovictus/Services/socket_service.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+
+late IO.Socket socket;
 
 class Transaction {
   final DateTime date;
@@ -106,7 +112,7 @@ class Transaction {
 
   // Fetch transactions for a specific accountId
   static Future<List<Transaction>> fetchTransactions(String accountId) async {
-    final url = Uri.parse('http://192.168.214.132:5000/fetchTransactions/$accountId');
+    final url = Uri.parse('http://192.168.1.186:5000/fetchTransactions/$accountId');
     print("*********** fetchTransactions started ********************");
     try {
       final response = await http.get(url);
@@ -132,7 +138,7 @@ class Transaction {
   static Future<String> mintTokens(int amount) async {
     try {
       final response = await http.post(
-        Uri.parse("http://192.168.214.132:5000/mintTokens"),
+        Uri.parse("http://192.168.1.186:5000/mintTokens"),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -145,6 +151,24 @@ class Transaction {
         final data = json.decode(response.body);
         // Assuming the response is just a success message or status
         print("API Minted Successfully ---------------------------------");
+          final SocketService _socketService = SocketService();
+
+late IO.Socket socket;
+  String api = Const().urlSocket;
+  socket = IO.io(api, <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': false,
+    });
+
+    socket.connect();
+  // 🔥 Function to send the reset topic
+  socket.emit('message', {
+    'topic': 'resetEnergy',
+    'message': 'reset'  // your server can ignore the payload if not needed
+  });
+
+
+
         return data['message'] ?? 'Minted Successfully'; // Return the message or status
       } else {
         print("API Failed to mint tokens ---------------------------------");
@@ -155,4 +179,17 @@ class Transaction {
       throw Exception('Error: $e');
     }
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

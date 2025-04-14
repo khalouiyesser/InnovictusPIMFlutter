@@ -343,11 +343,20 @@ class CircularProgressPainter extends CustomPainter {
   }
 }
 */
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:piminnovictus/Models/Transaction%20.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
+import 'package:piminnovictus/Services/Const.dart';
+import 'package:piminnovictus/Services/profile_service.dart';
+import 'package:piminnovictus/Services/session_manager.dart';
+import 'package:piminnovictus/ViewModels/WalletViewModel.dart';
 import 'dart:math';
 import 'package:piminnovictus/Views/DashboardClient/EnergyPurchaseConfirmation.dart';
 import 'package:piminnovictus/Views/bachground.dart';
@@ -364,10 +373,111 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
   double _coin = 0.0;
   List<String> _codeDigits = List.filled(4, "");
 
+// Instantiate ProfileService (make sure to pass the base URL and session manager properly)
+final profileService = ProfileService(
+  baseUrl: Const().url, // Your base URL here
+  sessionManager: SessionManager(),
+);
+
   get screenWidth => MediaQuery.of(context).size.width;
+
+String? accountId;
+String? privateKey;
+
+  final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
+  Future<void> _loadWalletData() async {
+     this.privateKey = await secureStorage.read(key: 'privateKey');
+     this.accountId = await secureStorage.read(key: 'accountId');
+
+    if (accountId != null && privateKey != null) {
+      print('-****************CCC***********************-');
+      print('Account ID: $accountId');
+      print('Private Key: $privateKey');
+      print('-****************CCC***********************-');
+    } else {
+      print('-****************CCC***********************-');
+      print('No stored wallet credentials found.');
+      print('-****************CCC***********************-');
+    }
+
+  fetchTokenBalance(accountId.toString(),privateKey.toString());
+  }
+
+String _tokenBalance = "0";
+String get tokenBalance => _tokenBalance;
+Future<void> fetchTokenBalance(String operatorAccountId, String operatorPrivateKey) async {
+  try {
+    final uri = Uri.parse(
+      "http://192.168.1.186:5000/tokenBalance"
+      "?operatorAccountId=$operatorAccountId&operatorPrivateKey=$operatorPrivateKey",
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      _tokenBalance = data["balance"].toString();
+      
+    } else {
+      throw Exception("Failed to fetch balance: ${response.reasonPhrase}");
+    }
+  } catch (error) {
+    print("❌ Error fetching token balance: $error");
+  }
+}
+
+
+void handleTransferAndSendTokens(double quantity) async{
+try {
+    // 1. Call the transfer() method to get the users list
+    final List<dynamic> usersList = await profileService.transfer(quantity.toString());
+
+    print("✅ Received users list: $usersList");
+
+    for (var user in usersList) {
+      final int amount = user['amount'];
+      final double price = amount * 0.25;
+
+      final String? receiverId = user['wallet']; // assumes `wallet` key exists
+
+      if (receiverId == null) {
+        print("⚠️ Skipping user with no wallet: $user");
+        continue;
+      }
+
+      // 2. Call transaction for each user
+      final result = await profileService.transaction(
+        senderId: this.accountId.toString(),
+        receiverId: receiverId,
+        amount: price,
+        senderPrivateKey: this.privateKey.toString(),
+      );
+
+      print("🔁 Transaction result for $receiverId: $result");
+    }
+  } catch (e) {
+    print("❌ Error during transfer and token distribution: $e");
+  }
+}
+
+// bool verifyCoinsAvail(BuildContext context, double coins) {
+//   final walletViewModel = Provider.of<WalletViewModel>(context, listen: false);
+//   print("verify ++++++++++++++++++++");
+// return coins >= double.parse(walletViewModel.tokenBalance);
+// }
+
+
+@override
+  void initState() {
+    super.initState();
+    _loadWalletData();
+    //fetchTokenBalance(this.accountId.toString(),this.privateKey.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
+
+
     final languageProvider =
         Provider.of<LanguageProvider>(context, listen: false);
 
@@ -443,7 +553,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
                   ),
                 ),
                 Text(
-                  "300KW",
+                  "250KW",
                   style: theme.textTheme.headlineLarge?.copyWith(
                     fontSize: screenWidth * 0.1,
                     fontWeight: FontWeight.normal,
@@ -549,6 +659,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
           ),
           child: TextField(
             style: theme.textTheme.bodyLarge,
+            
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               border: InputBorder.none,
@@ -649,6 +760,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
   }
 
   Widget _buildNavigationButtons() {
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 30),
       child: Row(
@@ -671,10 +783,56 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
           ElevatedButton(
             onPressed: () {
               setState(() {
+                // if (_currentStep == 0){
+                //   //verify flousou tzazzi wala le
+                //   //final walletViewModel = Provider.of<WalletViewModel>(context, listen: false);
+                //   bool hasEnough = this._coin < double.parse(WalletViewModel().tokenBalance);
+                //   print("hasEnough");print(hasEnough);
+                //   //verify fama surplus wala le
+                //   bool thersEnoughSur = this._quantity > 250 ;
+                //   if ( !hasEnough || !thersEnoughSur ) return ;
+                // }
+                if (_currentStep == 0) {
+                  bool hasEnough = this._coin < double.parse(this._tokenBalance);
+                  print("fffffffffffffffffffffffffffffffffffffffffff   "+this._tokenBalance);
+                  bool thersEnoughSur = this._quantity <= 250;
+
+                  if (!hasEnough || !thersEnoughSur) {
+                    String message = '';
+
+                    if (!hasEnough && !thersEnoughSur) {
+                      message = "Not enough coins AND not enough surplus.";
+                    } else if (!hasEnough) {
+                      message = "You don't have enough coins.";
+                    } else if (!thersEnoughSur) {
+                      message = "Not enough surplus available.";
+                    }
+
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text("Validation Error"),
+                        content: Text(message),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: Text("OK"),
+                          ),
+                        ],
+                      ),
+                    );
+                    return;
+                  }
+                }
+
                 if (_currentStep < 2) {
                   _currentStep++;
-                } else {
-                  // Naviguer vers la page de confirmation
+                }
+                else {
+                  print("----------------------------------------------------preseeeeeed");
+                  handleTransferAndSendTokens(_quantity);
+
+                  //Naviguer vers la page de confirmation
                   Navigator.push(
                     context,
                     MaterialPageRoute(
