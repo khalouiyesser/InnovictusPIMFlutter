@@ -6,6 +6,8 @@ import 'package:piminnovictus/Services/Const.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 
 class ProfileService {
+  final String baseBcUrl = "${Const().urlBlockChain}";
+
   final String baseUrl;
   final SessionManager _sessionManager;
   ProfileService({required this.baseUrl, required SessionManager sessionManager})
@@ -84,7 +86,7 @@ class ProfileService {
       // Send the POST request to the API
       final response = await http.post(
         //Uri.parse('http://192.168.1.186:3009/surplus/transfer/67fc0fc891dd216a7100505e'),
-Uri.parse('$baseUrl/surplus/transfer/$userId'),
+        Uri.parse('$baseUrl/surplus/transfer/$userId'),
         headers: {
           'Content-Type': 'application/json', // Set the content type to JSON
         },
@@ -124,7 +126,7 @@ Future<Map<String, dynamic>> transaction({
     required String senderPrivateKey,
   }) async {
     try {
-      final url = Uri.parse('http://192.168.1.186:5000/transferTokens');
+      final url = Uri.parse('$baseBcUrl/transferTokens');
 
       final response = await http.post(
         url,

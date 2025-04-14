@@ -356,11 +356,13 @@ import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/Const.dart';
 import 'package:piminnovictus/Services/profile_service.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
+import 'package:piminnovictus/Services/socket_service.dart';
 import 'package:piminnovictus/ViewModels/WalletViewModel.dart';
 import 'dart:math';
 import 'package:piminnovictus/Views/DashboardClient/EnergyPurchaseConfirmation.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:provider/provider.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class BuyEnergiePage extends StatefulWidget {
   @override
@@ -405,10 +407,11 @@ String? privateKey;
 
 String _tokenBalance = "0";
 String get tokenBalance => _tokenBalance;
+final String baseBcUrl = "${Const().urlBlockChain}";
 Future<void> fetchTokenBalance(String operatorAccountId, String operatorPrivateKey) async {
   try {
     final uri = Uri.parse(
-      "http://192.168.1.186:5000/tokenBalance"
+      "$baseBcUrl/tokenBalance"
       "?operatorAccountId=$operatorAccountId&operatorPrivateKey=$operatorPrivateKey",
     );
 
@@ -460,18 +463,60 @@ try {
   }
 }
 
-// bool verifyCoinsAvail(BuildContext context, double coins) {
-//   final walletViewModel = Provider.of<WalletViewModel>(context, listen: false);
-//   print("verify ++++++++++++++++++++");
-// return coins >= double.parse(walletViewModel.tokenBalance);
-// }
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
+  String? _errorMessage;
 
+Future<bool> _checkPassword() async {
+    String? storedPassword = await secureStorage.read(key: 'walletPassword');
+    print("**************_check Wallet Password Srarted ********************");
+    String enteredPassword = _passwordController.text.trim();
+
+    if (storedPassword == null) {
+      setState(() {
+        print(
+            "**************_check Wallet Password: storedPassword == null ********************");
+        _errorMessage = "No password found. Please create one first.";
+      });
+      return false;
+    } else if (enteredPassword == storedPassword) {
+      setState(() {
+        _errorMessage = null;
+      });
+      print(
+          "**************_check Wallet Password: enteredPassword == storedPassword ********************");
+      return true;
+    } else {
+      setState(() {
+        print(
+            "**************_check Wallet Password: Incorrect password. Please try again. ********************");
+        _errorMessage = "Incorrect password. Please try again.";
+      });
+      return false;
+    }
+    print("**************_check Wallet Password ENDED ********************");
+  }
+
+  late WebSocketChannel channel;
+  final SocketService _socketService = SocketService();
+  double surplusAvail = 0.0;
 
 @override
   void initState() {
     super.initState();
     _loadWalletData();
     //fetchTokenBalance(this.accountId.toString(),this.privateKey.toString());
+    _socketService.connectToSocket((data) {
+      if (mounted) {
+        setState(() {
+          surplusAvail = data['totalSurplusAvail'] is num
+              ? double.parse((data['totalSurplusAvail'] as num).toStringAsFixed(2))
+              : 0.0;
+        });
+      }
+      print("-----------------------------print(surplusAvail);---------------------------------");
+      print(surplusAvail);
+    });
   }
 
   @override
@@ -553,7 +598,8 @@ try {
                   ),
                 ),
                 Text(
-                  "250KW",
+                  //"250KW",
+                  '${this.surplusAvail} ${AppLocalizations.of(context).translate('KW')}',
                   style: theme.textTheme.headlineLarge?.copyWith(
                     fontSize: screenWidth * 0.1,
                     fontWeight: FontWeight.normal,
@@ -695,19 +741,20 @@ try {
     return Column(
       children: [
         Text(
-          AppLocalizations.of(context).translate("enter_code"),
+          // AppLocalizations.of(context).translate("enter_code"),
+          "Enter Your Wallet Password",
           style: theme.textTheme.titleMedium
               ?.copyWith(fontSize: screenWidth * 0.04),
         ),
         SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(4, (index) => _buildCodeBox(index)),
+          children: List.generate(1, (index) => _buildCodeBox(index)),
         ),
       ],
     );
   }
-
+/*
   Widget _buildCodeBox(int index) {
     final theme = Theme.of(context);
 
@@ -737,7 +784,59 @@ try {
         },
       ),
     );
-  }
+   }*/
+
+///
+Widget _buildCodeBox(int index) {
+  final theme = Theme.of(context);
+
+  return Expanded(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: _passwordController,
+          obscureText: !_isPasswordVisible,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: theme.cardColor.withOpacity(0.70),
+            hintText: 'Password',
+            hintStyle: theme.textTheme.bodyLarge?.copyWith(
+              fontSize: screenWidth * 0.03,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                color: theme.iconTheme.color,
+              ),
+              onPressed: () {
+                setState(() {
+                  _isPasswordVisible = !_isPasswordVisible;
+                });
+              },
+            ),
+          ),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontSize: screenWidth * 0.04,
+          ),
+        ),
+        if (_errorMessage != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              _errorMessage!,
+              style: const TextStyle(color: Colors.red),
+            ),
+          ),
+      ],
+    ),
+  );
+}
+
 
   Widget _buildConfirmation() {
     final theme = Theme.of(context);
@@ -782,7 +881,7 @@ try {
           ),
           ElevatedButton(
             onPressed: () {
-              setState(() {
+              setState(() async {
                 // if (_currentStep == 0){
                 //   //verify flousou tzazzi wala le
                 //   //final walletViewModel = Provider.of<WalletViewModel>(context, listen: false);
@@ -824,12 +923,32 @@ try {
                     return;
                   }
                 }
+                 if (_currentStep == 1) {
+                if (await _checkPassword()) {
+                    // do something if password is valid
+                  } else {
+                    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Invalid Password"),
+          content: Text(_errorMessage ?? "Incorrect password. Please try again."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("OK"),
+            )
+          ],
+        ),
+      );
+                    return;
+                  }
 
+              }
                 if (_currentStep < 2) {
                   _currentStep++;
                 }
                 else {
-                  print("----------------------------------------------------preseeeeeed");
+                  print("---------------------------------------------------- preseeeeeed");
                   handleTransferAndSendTokens(_quantity);
 
                   //Naviguer vers la page de confirmation

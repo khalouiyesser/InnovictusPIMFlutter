@@ -7,6 +7,7 @@ import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Services/socket_service.dart';
+import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
 import 'package:piminnovictus/Views/DashboardClient/TransactionCard.dart';
 import 'package:piminnovictus/Views/bachground.dart';
 import 'package:provider/provider.dart';
@@ -130,32 +131,56 @@ class _WalletPageState extends State<WalletPage> {
                       padding: const EdgeInsets.all(0),
                     ), // Décalage pour éviter le chevauchement du bouton
 
-                    // Header (avatar + nom)
-                    Row(
-                      children: [
-                        const CircleAvatar(
-                          radius: 24,
-                          backgroundImage: AssetImage(
-                            'assets/user.jpg',
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: currentUser == null
-                              ? const CircularProgressIndicator()
-                              : Text(
-                                  currentUser!.name,
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontSize: screenWidth * 0.05,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 24),
+                    // // Header (avatar + nom)
+                    // Row(
+                    //   children: [
+                    //     const CircleAvatar(
+                    //       radius: 24,
+                    //       backgroundImage: AssetImage(
+                    //         'assets/user.jpg',
+                    //       ),
+                    //     ),
+                    //     const SizedBox(width: 12),
+                    //     Expanded(
+                    //       child: currentUser == null
+                    //           ? const CircularProgressIndicator()
+                    //           : Text(
+                    //               currentUser!.name,
+                    //               style: theme.textTheme.titleLarge?.copyWith(
+                    //                 fontSize: screenWidth * 0.05,
+                    //                 fontWeight: FontWeight.bold,
+                    //               ),
+                    //               overflow: TextOverflow.ellipsis,
+                    //             ),
+                    //     ),
+                    //   ],
+                    // ),
+                    
+Align(
+  alignment: Alignment.centerLeft,
+ child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => BottomNavBarExample()), // Navigate to Contact Page (index 2)
+                      (route) => false, // Remove all previous routes from the stack
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    // backgroundColor: Colors.white.withOpacity(0.4),
+                    backgroundColor:  Color(0xFF161E35).withOpacity(0.4),
+                    padding: const EdgeInsets.all(12),
+                    shape: const CircleBorder(),
+                    elevation: 2,
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+),
+                    const SizedBox(height: 0),
 
                     // Solde principal centré et responsive
                     Center(

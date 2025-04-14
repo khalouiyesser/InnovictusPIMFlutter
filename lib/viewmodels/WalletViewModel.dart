@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:piminnovictus/Models/Transaction%20.dart';
+import 'package:piminnovictus/Services/Const.dart';
 import '../models/Wallet.dart';
 
 class WalletViewModel extends ChangeNotifier {
-
+final String baseBcUrl = "${Const().urlBlockChain}";
  //***************************************************************************************** */
  Wallet? wallet;
   bool isLoading = false;
@@ -16,7 +17,7 @@ class WalletViewModel extends ChangeNotifier {
     errorMessage = null;
     notifyListeners();
 
-    const String apiUrl = "http://192.168.1.186:5000/connectProfile"; 
+    String apiUrl = "$baseBcUrl/connectProfile"; 
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
@@ -53,7 +54,7 @@ String get tokenBalance => _tokenBalance;
 Future<void> fetchTokenBalance(String operatorAccountId, String operatorPrivateKey) async {
   try {
     final uri = Uri.parse(
-      "http://192.168.1.186:5000/tokenBalance"
+      "$baseBcUrl/tokenBalance"
       "?operatorAccountId=$operatorAccountId&operatorPrivateKey=$operatorPrivateKey",
     );
 
