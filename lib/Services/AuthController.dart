@@ -86,7 +86,7 @@ class AuthController {
   }
 
 
-
+/*
  Future<SignupResponse> signupSimple({
     required String name,
     required String email,
@@ -117,8 +117,39 @@ class AuthController {
       throw Exception('Error during signup: $e');
     }
   }
+*/
+Future<SignupResponse> signupSimple({
+  required String name,
+  required String email,
+  required String password,
+  required String phoneNumber,
+  required String packId,
+  String? idGoogle, // Nouveau paramètre optionnel
+}) async {
+  try {
+    final response = await http.post(
+      Uri.parse("$api/auth/signup"),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'name': name,
+        'email': email,
+        'password': password,
+        'phoneNumber': phoneNumber,
+        'packId': packId,
+        'idGoogle': idGoogle, // Inclure idGoogle s'il est fourni
+      }),
+    );
 
-
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final responseData = json.decode(response.body);
+      return SignupResponse.fromJson(responseData);
+    } else {
+      throw Exception('Signup failed: ${response.body}');
+    }
+  } catch (e) {
+    throw Exception('Error during signup: $e');
+  }
+}
 
 
 

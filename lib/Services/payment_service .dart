@@ -6,7 +6,7 @@ import 'package:piminnovictus/Views/AuthViews/web_view_page.dart';
 
 class PaymentService {
   static Future<void> openPayment(
-      BuildContext context, String packId, String pendingSignupId) async {
+      BuildContext context, String packId, String pendingSignupId ,String email,String profileId) async {
     final String apiUrl = "${Const().url}/stripe-payment/create-session";
 
     try {
@@ -16,8 +16,12 @@ class PaymentService {
         body: jsonEncode({
           "packId": packId,
           "pendingSignupId": pendingSignupId,
+          "profileId" : profileId,
+          "email" : email,
         }),
       );
+      print("🔍 pendingSignupId: ${pendingSignupId}");
+      print("🔍 profileId: ${profileId}");
 
       print("🔍 Response Status: ${response.statusCode}");
       print("🔍 Response Body: ${response.body}");
@@ -32,10 +36,8 @@ class PaymentService {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => WebViewPage(
-                url: paymentUrl,
-                pendingSignupId: pendingSignupId,
-              ),
+              builder: (context) => WebViewPage(url: paymentUrl,
+      pendingSignupId: pendingSignupId, defaultProfileId: profileId,),
             ),
           );
         } else {
@@ -53,7 +55,7 @@ class PaymentService {
     }
   }
 
-  Future<void> finalizeSignup(String userId) async {
+  Future<void> finalizeSignup(String userId , String ProfileId) async {
     print(
         "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 $userId");
     final String apiUrl =

@@ -4,6 +4,7 @@ class SignupRequest {
   final String password;
   final String phoneNumber;
   final String packId;
+  final String? idGoogle; 
 
   SignupRequest({
     required this.name,
@@ -11,15 +12,22 @@ class SignupRequest {
     required this.password,
     required this.phoneNumber,
     required this.packId,
+    this.idGoogle, 
   });
 
   Map<String, dynamic> toJson() {
-    return {
+    final map = {
       'name': name,
       'email': email,
       'password': password,
       'phoneNumber': phoneNumber,
       'packId': packId,
     };
+    
+    if (idGoogle != null) {
+      map['idGoogle'] = idGoogle!;
+    }
+    
+    return map;
   }
 }

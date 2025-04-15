@@ -14,9 +14,10 @@ import 'package:provider/provider.dart';
 class SubscriptionCarousel extends StatefulWidget {
   final String? preselectedPackId;
   final String pendingSignupId; // Make sure this is not nullable
-
+final String profileId;
+final String email; 
   const SubscriptionCarousel(
-      {Key? key, this.preselectedPackId, required this.pendingSignupId})
+      {Key? key, this.preselectedPackId, required this.pendingSignupId, required this.email ,required this.profileId})
       : super(key: key);
 
   @override
@@ -37,7 +38,10 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
   @override
   void initState() {
     super.initState();
-    _viewModel = SubscriptionViewModel(pendingSignupId: widget.pendingSignupId);
+    print("signuid" + widget.pendingSignupId);
+        print("signuid" + widget.profileId);
+
+    _viewModel = SubscriptionViewModel(pendingSignupId: widget.pendingSignupId , profileId: widget.profileId);
     if (widget.preselectedPackId != null) {
       _viewModel.selectedPackId = widget.preselectedPackId;
     }
@@ -122,7 +126,9 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
           // Close loading dialog
           Navigator.of(context).pop();
 
-          print('Selected pack ID: ${_viewModel.selectedPackId}');
+          print('/////////////////Selected pack ID: ${_viewModel.selectedPackId}');
+            print("signuid" + widget.pendingSignupId);
+        print("signuid" + widget.profileId);
           print('Available pack IDs: ${packs.map((p) => p.id).toList()}');
           // If pack not found, show error
           final _theme = AuthScreenThemeDetector.getTheme();
@@ -181,7 +187,10 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
         if (success) {
           String packId = _viewModel.selectedPackId!;
           String pendingSignupId = widget.pendingSignupId;
-          PaymentService.openPayment(context, packId, pendingSignupId);
+                    String profileId = widget.profileId;
+                    String email = widget.email;
+
+          PaymentService.openPayment(context, packId,pendingSignupId, email ,profileId );
         } else {
           // Check if it's the email verification error
           if (_viewModel.error == "EMAIL_VERIFICATION_REQUIRED") {
@@ -601,7 +610,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                               ),
-                              child: _isLoading
+                               child: _isLoading
                                   ? SizedBox(
                                       height: screenHeight * 0.025,
                                       width: screenHeight * 0.025,

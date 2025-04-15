@@ -8,11 +8,15 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewPage extends StatefulWidget {
   final String url;
-  final String pendingSignupId; // Add pendingSignupId
-
-  const WebViewPage(
-      {Key? key, required this.url, required this.pendingSignupId})
-      : super(key: key);
+  final String pendingSignupId;
+  final String defaultProfileId; 
+  
+  const WebViewPage({
+    Key? key, 
+    required this.url, 
+    required this.pendingSignupId,
+     required this.defaultProfileId  // Add this parameter to the constructor
+  }) : super(key: key);
 
   @override
   State<WebViewPage> createState() => _WebViewPageState();
@@ -69,8 +73,11 @@ class _WebViewPageState extends State<WebViewPage> {
           actions: [
             TextButton(
               onPressed: () async {
+                await _paymentService.finalizeSignup(
+  widget.pendingSignupId,
+  widget.defaultProfileId // Pass the profileId to the finalizeSignup method
+);
                 // Call the finalizeSignup method when OK is pressed
-                await _paymentService.finalizeSignup(widget.pendingSignupId);
                 Navigator.of(context).pop(); // Close the popup
                 Navigator.of(context).pop(); // Close the WebView
 
