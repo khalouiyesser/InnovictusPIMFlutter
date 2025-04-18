@@ -882,19 +882,10 @@ Widget _buildCodeBox(int index) {
           ElevatedButton(
             onPressed: () {
               setState(() async {
-                // if (_currentStep == 0){
-                //   //verify flousou tzazzi wala le
-                //   //final walletViewModel = Provider.of<WalletViewModel>(context, listen: false);
-                //   bool hasEnough = this._coin < double.parse(WalletViewModel().tokenBalance);
-                //   print("hasEnough");print(hasEnough);
-                //   //verify fama surplus wala le
-                //   bool thersEnoughSur = this._quantity > 250 ;
-                //   if ( !hasEnough || !thersEnoughSur ) return ;
-                // }
                 if (_currentStep == 0) {
                   bool hasEnough = this._coin < double.parse(this._tokenBalance);
                   print("fffffffffffffffffffffffffffffffffffffffffff   "+this._tokenBalance);
-                  bool thersEnoughSur = this._quantity <= 250;
+                  bool thersEnoughSur = this._quantity <= this.surplusAvail && this._quantity > 0  ;
 
                   if (!hasEnough || !thersEnoughSur) {
                     String message = '';

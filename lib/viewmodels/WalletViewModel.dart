@@ -7,6 +7,7 @@ import '../models/Wallet.dart';
 
 class WalletViewModel extends ChangeNotifier {
 final String baseBcUrl = "${Const().urlBlockChain}";
+final String baseUrl = "${Const().url}";
  //***************************************************************************************** */
  Wallet? wallet;
   bool isLoading = false;
@@ -72,6 +73,32 @@ Future<void> fetchTokenBalance(String operatorAccountId, String operatorPrivateK
   }
 }
 
+
+Future<void> affectWallet(String userId, String wallet) async {
+  final Uri url = Uri.parse('$baseUrl/auth/$userId/wallet'); // Adjust base path as needed
+
+  try {
+    final response = await http.patch(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'wallet': wallet,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print('Wallet updated successfully: $data');
+    } else {
+      print('Failed to update wallet. Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+    }
+  } catch (e) {
+    print('Error updating wallet: $e');
+  }
+}
 
   //***************************************************************************************** */
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
+import 'package:piminnovictus/ViewModels/WalletViewModel.dart';
 import 'package:piminnovictus/Views/DashboardClient/WalletPage.dart';
 import 'package:piminnovictus/Views/DashboardClient/WalletPasswordPage.dart';
 import 'package:piminnovictus/Views/bachground.dart';
@@ -195,11 +196,24 @@ class _WalletCreatePasswordPageState extends State<WalletCreatePasswordPage> {
                                 await secureStorage.write(
                                     key: 'walletPassword',
                                     value: walletPassword);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => WalletPage()),
-                                );
+                                    //final userId = await secureStorage.read(key: 'userId');
+                                    final userId = "67fc0fc891dd216a7100505e"; // make sure it's already stored
+                                    final walletId = await secureStorage.read(key: 'accountId');
+                                if (userId != null && walletId != null) {
+                                  // Call the API to update the wallet
+                                  final WalletViewModel walletVM = WalletViewModel();
+                                  await walletVM.affectWallet(userId, walletId);
+
+                                  // Navigate to WalletPage
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => WalletPage()),
+                                  );
+                                } else {
+                                  print("///////////////////////////////////////////////////////////////  userId or walletId is null");
+                                }
+                                print("///////////////////////////////////////////////////////////////  userId or walletId :");
+                                print(userId);print(walletId);
                               }
                             : null,
                         style: ElevatedButton.styleFrom(
