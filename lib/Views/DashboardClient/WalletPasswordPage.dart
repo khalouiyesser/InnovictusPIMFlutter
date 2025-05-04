@@ -145,6 +145,7 @@ class _WalletPasswordPageState extends State<WalletPasswordPage> {
                     const SizedBox(height: 16),
                     TextButton(
                       onPressed: () {
+                        print("forgot wallet password button called !!!!");
                         Navigator.push(
                             context,
                             MaterialPageRoute(

@@ -96,7 +96,7 @@ class ProfileService {
       // Check if the response is successful
       if (response.statusCode == 201) {
         print("----------------------------------------------------response.body");
-       // print(response.body);  
+        print(response.body);  
         
          final Map<String, dynamic> data = json.decode(response.body);
 

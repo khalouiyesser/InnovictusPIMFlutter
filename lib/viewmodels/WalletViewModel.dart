@@ -12,40 +12,44 @@ final String baseUrl = "${Const().url}";
  Wallet? wallet;
   bool isLoading = false;
   String? errorMessage;
-
+  
   Future<void> connectWallet(String accountId, String privateKey) async {
-    isLoading = true;
-    errorMessage = null;
-    notifyListeners();
+  isLoading = true;
+  errorMessage = null;
+  notifyListeners();
 
-    String apiUrl = "$baseBcUrl/connectProfile"; 
-    try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"accountId": accountId, "privateKey": privateKey}),
+  String apiUrl = "$baseBcUrl/connectProfile"; 
+
+  try {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"accountId": accountId, "privateKey": privateKey}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      wallet = Wallet(
+        accountId: accountId,
+        privateKey: privateKey,
       );
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
-        wallet = Wallet(
-          accountId: accountId,
-          privateKey: privateKey,
-        );
-      } else {
+    } else {
+      if (response.headers['content-type']?.contains('application/json') == true) {
         errorMessage = jsonDecode(response.body)['message'];
-        print("aaaaaaaaaaaaaaaaaaa");
-        print(errorMessage);
+      } else {
+        errorMessage = "Server returned an error (${response.statusCode}).";
       }
-    } catch (e) {
-      print("bbbbbbbbbbbbbbbbbbb");
-      print(e);
-      errorMessage = "Failed to connect wallet. Please try again.";
+      print("Error message from backend: $errorMessage");
     }
-
-    isLoading = false;
-    notifyListeners();
+  } catch (e) {
+    print("Exception caught: $e");
+    errorMessage = "Failed to connect wallet. Error: $e";
   }
+
+  isLoading = false;
+  notifyListeners();
+}
+
 
 //***************************************************************************************** */
   
@@ -76,7 +80,7 @@ Future<void> fetchTokenBalance(String operatorAccountId, String operatorPrivateK
 
 Future<void> affectWallet(String userId, String wallet) async {
   final Uri url = Uri.parse('$baseUrl/auth/$userId/wallet'); // Adjust base path as needed
-
+  print('affectWallet from walletviemodel called here !!!!!!!!!!!!!!!!!!!!!!!!!!!!');
   try {
     final response = await http.patch(
       url,

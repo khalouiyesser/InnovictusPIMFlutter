@@ -124,7 +124,7 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
               radius: widget.customRadius,
               backgroundImage: viewModel.currentProfile?.imageUrl != null
                   ? NetworkImage(viewModel.currentProfile!.imageUrl!)
-                  : const AssetImage('assets/user.jpg') as ImageProvider,
+                  : const AssetImage('assets/yassine.jpg') as ImageProvider,
             ),
           ),
           itemBuilder: (BuildContext context) => [

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -7,6 +8,8 @@ class TeamSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthScreenTheme _theme = AuthScreenThemeDetector.getTheme();
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
@@ -26,7 +29,8 @@ class TeamSection extends StatelessWidget {
             email: "shayma.ouerhani@esprit.tn",
             phone: "+216 28 160 626",
             image: "assets/shayma.jpeg",
-            linkedinUrl: "https://www.linkedin.com/in/shayma-ouerhani-b468ab284/",
+            linkedinUrl:
+                "https://www.linkedin.com/in/shayma-ouerhani-b468ab284/",
             nameFontSize: teamMemberNameSize,
             infoFontSize: teamMemberInfoSize,
             linkFontSize: teamMemberLinkSize,
@@ -39,7 +43,8 @@ class TeamSection extends StatelessWidget {
             email: "hadhemi.mahmoud@esprit.tn",
             phone: "+216 26 892 285",
             image: "assets/hadhemi.jpg",
-            linkedinUrl: "https://www.linkedin.com/in/hadhemi-mahmoud-aa6384250/",
+            linkedinUrl:
+                "https://www.linkedin.com/in/hadhemi-mahmoud-aa6384250/",
             nameFontSize: teamMemberNameSize,
             infoFontSize: teamMemberInfoSize,
             linkFontSize: teamMemberLinkSize,
@@ -63,7 +68,8 @@ class TeamSection extends StatelessWidget {
             email: "houssemeddine.khalfaoui@esprit.tn",
             phone: "+216 25 405 325",
             image: "assets/houssem.jpg",
-            linkedinUrl: "https://www.linkedin.com/in/houssem-khalfaoui-499389254/",
+            linkedinUrl:
+                "https://www.linkedin.com/in/houssem-khalfaoui-499389254/",
             nameFontSize: teamMemberNameSize,
             infoFontSize: teamMemberInfoSize,
             linkFontSize: teamMemberLinkSize,
@@ -75,7 +81,8 @@ class TeamSection extends StatelessWidget {
             email: "yassine.ajbouni@esprit.tn",
             phone: "+216 23 990 938",
             image: "assets/yassine.jpg",
-            linkedinUrl: "https://www.linkedin.com/in/yassine-ajbouni-1616b01a0/",
+            linkedinUrl:
+                "https://www.linkedin.com/in/yassine-ajbouni-1616b01a0/",
             nameFontSize: teamMemberNameSize,
             infoFontSize: teamMemberInfoSize,
             linkFontSize: teamMemberLinkSize,
@@ -85,7 +92,8 @@ class TeamSection extends StatelessWidget {
         ];
 
         return Padding(
-          padding: EdgeInsets.symmetric(horizontal: basePadding, vertical: screenWidth * 0.075),
+          padding: EdgeInsets.symmetric(
+              horizontal: basePadding, vertical: screenWidth * 0.075),
           child: Container(
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.2),
@@ -102,11 +110,13 @@ class TeamSection extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.groups, color: Colors.white, size: titleFontSize),
+                    Icon(Icons.groups,
+                        color: _theme.textColor, size: titleFontSize),
                     SizedBox(width: screenWidth * 0.02),
-                    Text(AppLocalizations.of(context)!.translate("whoWeAre"),
+                    Text(
+                      AppLocalizations.of(context)!.translate("whoWeAre"),
                       style: TextStyle(
-                        color: Colors.white,
+                        color: _theme.textColor,
                         fontSize: titleFontSize,
                         fontWeight: FontWeight.bold,
                       ),
@@ -115,21 +125,21 @@ class TeamSection extends StatelessWidget {
                 ),
                 SizedBox(height: containerSpacing),
                 Text(
-                    AppLocalizations.of(context)!.translate("aboutUs"),
-                  style: TextStyle(color: Colors.white70, fontSize: contentFontSize),
+                  AppLocalizations.of(context)!.translate("aboutUs"),
+                  style: TextStyle(
+                      color: _theme.textColor, fontSize: contentFontSize),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: containerSpacing * 2),
                 Text(
-  AppLocalizations.of(context)!.translate("contact_us"),
+                  AppLocalizations.of(context)!.translate("contact_us"),
                   style: TextStyle(
-                    color: Colors.white,
+                    color: _theme.textColor,
                     fontSize: titleFontSize,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 SizedBox(height: containerSpacing * 2),
-                
                 Column(
                   children: [
                     Row(
@@ -141,13 +151,11 @@ class TeamSection extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: containerSpacing * 2),
-                    
                     SizedBox(
                       width: screenWidth * 0.5,
                       child: teamMembers[2],
                     ),
                     SizedBox(height: containerSpacing * 2),
-                    
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -271,6 +279,11 @@ class TeamMember extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthScreenTheme _theme = AuthScreenThemeDetector.getTheme();
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final underlineColor = isDarkMode ? Colors.black : Colors.transparent;
+
     return Container(
       padding: EdgeInsets.all(avatarRadius * 0.02),
       child: Column(
@@ -295,14 +308,13 @@ class TeamMember extends StatelessWidget {
           Text(
             name,
             style: TextStyle(
-              color: Colors.white,
+              color: _theme.textColor,
               fontSize: nameFontSize,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: avatarRadius * 0.1),
-
           InkWell(
             onTap: () => _sendEmail(context),
             child: Row(
@@ -315,9 +327,11 @@ class TeamMember extends StatelessWidget {
                   child: Text(
                     email,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: _theme.textColor,
                       fontSize: infoFontSize,
                       decoration: TextDecoration.underline,
+                      decorationColor:
+                          isDarkMode ? Colors.black : Colors.transparent,
                     ),
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
@@ -326,9 +340,7 @@ class TeamMember extends StatelessWidget {
               ],
             ),
           ),
-
           SizedBox(height: avatarRadius * 0.1),
-
           InkWell(
             onTap: () => _callPhone(context),
             child: Row(
@@ -340,18 +352,18 @@ class TeamMember extends StatelessWidget {
                 Text(
                   phone,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: _theme.textColor,
                     fontSize: infoFontSize,
                     decoration: TextDecoration.underline,
+                    decorationColor:
+                        isDarkMode ? Colors.black : Colors.transparent,
                   ),
                   textAlign: TextAlign.center,
                 ),
               ],
             ),
           ),
-
           SizedBox(height: avatarRadius * 0.1),
-
           InkWell(
             onTap: () => _openLinkedIn(context),
             child: Row(
@@ -363,9 +375,11 @@ class TeamMember extends StatelessWidget {
                 Text(
                   "LinkedIn Profile",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: _theme.textColor,
                     fontSize: linkFontSize,
                     decoration: TextDecoration.underline,
+                    decorationColor:
+                        isDarkMode ? Colors.black : Colors.transparent,
                   ),
                   textAlign: TextAlign.center,
                 ),

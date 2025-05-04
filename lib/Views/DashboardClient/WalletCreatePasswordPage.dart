@@ -201,8 +201,8 @@ class _WalletCreatePasswordPageState extends State<WalletCreatePasswordPage> {
                                     final walletId = await secureStorage.read(key: 'accountId');
                                 if (userId != null && walletId != null) {
                                   // Call the API to update the wallet
-                                  final WalletViewModel walletVM = WalletViewModel();
-                                  await walletVM.affectWallet(userId, walletId);
+                                  // final WalletViewModel walletVM = WalletViewModel();
+                                  // await walletVM.affectWallet(userId, walletId);
 
                                   // Navigate to WalletPage
                                   Navigator.push(

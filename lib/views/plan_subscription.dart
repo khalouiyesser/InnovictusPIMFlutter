@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:piminnovictus/Models/ClientModels/packs.dart';
+import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Services/payment_service%20.dart';
 import 'package:piminnovictus/Views/Visitor/card_content.dart';
@@ -23,7 +24,7 @@ class SubscriptionCarousel extends StatefulWidget {
 }
 
 class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
-    List<Pack> packs = [];
+  List<Pack> packs = [];
 
   late final SubscriptionViewModel _viewModel;
   late final PacksViewModel _packsViewModel;
@@ -40,7 +41,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
     if (widget.preselectedPackId != null) {
       _viewModel.selectedPackId = widget.preselectedPackId;
     }
-     _packsViewModel = Provider.of<PacksViewModel>(context, listen: false);
+    _packsViewModel = Provider.of<PacksViewModel>(context, listen: false);
     _loadPacks();
   }
 
@@ -52,7 +53,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
 
     try {
       await _packsViewModel.getAllPacks();
-      
+
       setState(() {
         packs = _packsViewModel.packs;
         _isLoadingPacks = false;
@@ -65,12 +66,10 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
     }
   }
 
-
   void _selectPack(String packId) {
     setState(() {
       _selectedPackId = _selectedPackId == packs ? null : packId;
-            _viewModel.selectedPackId = _selectedPackId;
-
+      _viewModel.selectedPackId = _selectedPackId;
     });
   }
 
@@ -126,18 +125,26 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
           print('Selected pack ID: ${_viewModel.selectedPackId}');
           print('Available pack IDs: ${packs.map((p) => p.id).toList()}');
           // If pack not found, show error
+          final _theme = AuthScreenThemeDetector.getTheme();
+          final isDarkMode = AuthScreenThemeDetector.isSystemDarkMode();
           showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                backgroundColor: const Color.fromARGB(255, 8, 16, 9),
+                backgroundColor: isDarkMode
+                    ? const Color.fromARGB(255, 8, 16, 9)
+                    : Colors.white.withOpacity(0.7),
                 title: Text(
                   AppLocalizations.of(context).translate('error'),
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(
+                    color: _theme.textColor,
+                  ),
                 ),
                 content: Text(
                   AppLocalizations.of(context).translate('packNotFound'),
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(
+                    color: _theme.textColor,
+                  ),
                 ),
                 actions: <Widget>[
                   TextButton(
@@ -164,6 +171,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
 
         // If we found the pack, proceed with the API call
         final success = await _viewModel.updatePackForPendingSignup();
+        final AuthScreenTheme _theme = AuthScreenThemeDetector.getTheme();
 
         // Close loading dialog
         if (Navigator.canPop(context)) {
@@ -177,16 +185,20 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
         } else {
           // Check if it's the email verification error
           if (_viewModel.error == "EMAIL_VERIFICATION_REQUIRED") {
+            final _theme = AuthScreenThemeDetector.getTheme();
+            final isDarkMode = AuthScreenThemeDetector.isSystemDarkMode();
             showDialog(
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  backgroundColor: const Color.fromARGB(255, 8, 16, 9),
+                  backgroundColor: isDarkMode
+                      ? const Color.fromARGB(255, 8, 16, 9)
+                      : Colors.white.withOpacity(0.8), // Blanc avec opacité
                   title: Text(
                     AppLocalizations.of(context).translate('emailConfirmation'),
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: _theme.textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
@@ -194,8 +206,8 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
                   content: Text(
                     AppLocalizations.of(context)
                         .translate('emailVerificationRequired'),
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: _theme.textColor,
                       fontWeight: FontWeight.normal,
                       fontSize: 14,
                     ),
@@ -218,20 +230,28 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
               },
             );
           } else {
+            final isDarkMode = AuthScreenThemeDetector.isSystemDarkMode();
+
             // Handle other errors
             showDialog(
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  backgroundColor: const Color.fromARGB(255, 8, 16, 9),
+                  backgroundColor: isDarkMode
+                      ? const Color.fromARGB(255, 8, 16, 9)
+                      : Colors.white.withOpacity(0.7),
                   title: Text(
                     AppLocalizations.of(context).translate('error'),
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      color: _theme.textColor,
+                    ),
                   ),
                   content: Text(
                     _viewModel.error ??
                         AppLocalizations.of(context).translate('genericError'),
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      color: _theme.textColor,
+                    ),
                   ),
                   actions: <Widget>[
                     TextButton(
@@ -259,20 +279,28 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
         }
 
         print('Error in _proceedToPayment: $e');
+        final _theme = AuthScreenThemeDetector.getTheme();
+        final isDarkMode = AuthScreenThemeDetector.isSystemDarkMode();
 
         // Show error dialog
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              backgroundColor: const Color.fromARGB(255, 8, 16, 9),
+              backgroundColor: isDarkMode
+                  ? const Color.fromARGB(255, 8, 16, 9)
+                  : Colors.white.withOpacity(0.7),
               title: Text(
                 AppLocalizations.of(context).translate('error'),
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                  color: _theme.textColor,
+                ),
               ),
               content: Text(
                 e.toString(),
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                  color: _theme.textColor,
+                ),
               ),
               actions: <Widget>[
                 TextButton(
@@ -297,19 +325,27 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
         });
       }
     } else {
+      final _theme = AuthScreenThemeDetector.getTheme();
+      final isDarkMode = AuthScreenThemeDetector.isSystemDarkMode();
       // No pack selected dialog remains the same
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            backgroundColor: const Color.fromARGB(255, 8, 16, 9),
+            backgroundColor: isDarkMode
+                ? const Color.fromARGB(255, 8, 16, 9)
+                : Colors.white.withOpacity(0.7),
             title: Text(
               AppLocalizations.of(context).translate('noPackSelected'),
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: _theme.textColor,
+              ),
             ),
             content: Text(
               AppLocalizations.of(context).translate('selectPackPrompt'),
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: _theme.textColor,
+              ),
             ),
             actions: <Widget>[
               TextButton(
@@ -336,6 +372,8 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
     final screenSize = MediaQuery.of(context).size;
     final screenHeight = screenSize.height;
     final screenWidth = screenSize.width;
+    final AuthScreenTheme _theme = AuthScreenThemeDetector.getTheme();
+    final isDarkMode = AuthScreenThemeDetector.isSystemDarkMode();
 
     return Scaffold(
       body: Stack(
@@ -343,15 +381,20 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
           SingleChildScrollView(
             child: Stack(
               children: [
-                // Background image
                 Positioned.fill(
-                  child: Image.asset(
-                    "assets/Pulse.png",
-                    fit: BoxFit.cover,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: _theme.backgroundGradientColors,
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                    child: isDarkMode
+                        ? Image.asset("assets/Pulse.png", fit: BoxFit.cover)
+                        : null, // Utilise l'image uniquement en mode sombre
                   ),
                 ),
-
-                // Safe area wrapper for content
                 SafeArea(
                   child: Column(
                     children: [
@@ -371,7 +414,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
                               AppLocalizations.of(context)
                                   .translate('selectPack'),
                               style: TextStyle(
-                                color: Colors.white,
+                                color: _theme.textColor,
                                 fontSize: screenWidth * 0.06,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -405,7 +448,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
                       ),
 
                       SizedBox(height: screenHeight * 0.03),
-   if (_isLoadingPacks)
+                      if (_isLoadingPacks)
                         Center(
                           child: Column(
                             children: [
@@ -416,9 +459,10 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
                               ),
                               SizedBox(height: 16),
                               Text(
-                                AppLocalizations.of(context).translate('loading'),
+                                AppLocalizations.of(context)
+                                    .translate('loading'),
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: _theme.textColor,
                                   fontSize: screenWidth * 0.04,
                                 ),
                               ),
@@ -431,14 +475,15 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
                             children: [
                               Icon(
                                 Icons.error_outline,
-                                color: Colors.white,
+                                color: _theme.textColor,
                                 size: screenWidth * 0.1,
                               ),
                               SizedBox(height: 16),
                               Text(
-                                AppLocalizations.of(context).translate('errorLoadingPacks'),
+                                AppLocalizations.of(context)
+                                    .translate('errorLoadingPacks'),
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: _theme.textColor,
                                   fontSize: screenWidth * 0.05,
                                 ),
                               ),
@@ -446,7 +491,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
                               Text(
                                 _errorMessage!,
                                 style: TextStyle(
-                                  color: Colors.white70,
+                                  color: _theme.textColor,
                                   fontSize: screenWidth * 0.04,
                                 ),
                                 textAlign: TextAlign.center,
@@ -455,15 +500,17 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
                               ElevatedButton(
                                 onPressed: _loadPacks,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color.fromARGB(255, 31, 219, 59),
+                                  backgroundColor:
+                                      Color.fromARGB(255, 31, 219, 59),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                 ),
                                 child: Text(
-                                  AppLocalizations.of(context).translate('retry'),
+                                  AppLocalizations.of(context)
+                                      .translate('retry'),
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: _theme.textColor,
                                     fontSize: screenWidth * 0.04,
                                   ),
                                 ),
@@ -474,7 +521,8 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
                       else if (packs.isEmpty)
                         Center(
                           child: Text(
-                            AppLocalizations.of(context).translate('noPacksAvailable'),
+                            AppLocalizations.of(context)
+                                .translate('noPacksAvailable'),
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: screenWidth * 0.05,
@@ -482,96 +530,99 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
                           ),
                         )
                       else
-                      // GridView with 2 cards per line
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.04),
-                        child: GridView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: screenWidth * 0.04,
-                            mainAxisSpacing: screenHeight * 0.02,
-                            childAspectRatio: 0.75,
-                          ),
-                          itemCount: packs.length,
-                          itemBuilder: (context, index) {
-                            final pack = packs[index];
-                            final translatedTitle = AppLocalizations.of(context)
-                                .translate(pack.title);
-                            final translatedDescription =
-                                AppLocalizations.of(context)
-                                    .translate(pack.description);
-
-                            return GestureDetector(
-                              onTap: () => _selectPack(pack.id??""),
-                              child: FlipCard(
-                                front: CardContent(
-                                  image: pack.image,
-                                  title: translatedTitle,
-                                  text: pack.price.toString(),
-                                  pack: pack,
-                                  isSelected: _selectedPackId == pack.id,
-                                ),
-                                back: CardContent(
-                                  text: translatedDescription,
-                                  selectButtont: AppLocalizations.of(context)
-                                      .translate('select'),
-                                  pack: pack,
-                                  isSelected: _selectedPackId == pack.id,
-                                  onSelectPressed: () => _selectPack(pack.id??""),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.05),
-  if (!_isLoadingPacks && _errorMessage == null)
-                      // Bottom button with responsive padding
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(
-                          screenWidth * 0.05,
-                          screenHeight * 0.03,
-                          screenWidth * 0.05,
-                          screenHeight * 0.05,
-                        ),
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: screenHeight * 0.05,
-                          child: ElevatedButton(
-                            onPressed: _isLoading ? null : _proceedToPayment,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: _isLoading
-                                  ? Colors.grey
-                                  : const Color.fromARGB(255, 31, 219, 59),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
+                        // GridView with 2 cards per line
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.04),
+                          child: GridView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: screenWidth * 0.04,
+                              mainAxisSpacing: screenHeight * 0.02,
+                              childAspectRatio: 0.75,
                             ),
-                            child: _isLoading
-                                ? SizedBox(
-                                    height: screenHeight * 0.025,
-                                    width: screenHeight * 0.025,
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.white),
-                                      strokeWidth: 2.0,
-                                    ),
-                                  )
-                                : Text(
-                                    AppLocalizations.of(context)
-                                        .translate('proceedToPayment'),
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: screenWidth * 0.045,
-                                    ),
+                            itemCount: packs.length,
+                            itemBuilder: (context, index) {
+                              final pack = packs[index];
+                              final translatedTitle =
+                                  AppLocalizations.of(context)
+                                      .translate(pack.title);
+                              final translatedDescription =
+                                  AppLocalizations.of(context)
+                                      .translate(pack.description);
+
+                              return GestureDetector(
+                                onTap: () => _selectPack(pack.id ?? ""),
+                                child: FlipCard(
+                                  front: CardContent(
+                                    image: pack.image,
+                                    title: translatedTitle,
+                                    text: pack.price.toString(),
+                                    pack: pack,
+                                    isSelected: _selectedPackId == pack.id,
                                   ),
+                                  back: CardContent(
+                                    text: translatedDescription,
+                                    selectButtont: AppLocalizations.of(context)
+                                        .translate('select'),
+                                    pack: pack,
+                                    isSelected: _selectedPackId == pack.id,
+                                    onSelectPressed: () =>
+                                        _selectPack(pack.id ?? ""),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
-                      ),
+                      SizedBox(height: screenHeight * 0.05),
+                      if (!_isLoadingPacks && _errorMessage == null)
+                        // Bottom button with responsive padding
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            screenWidth * 0.05,
+                            screenHeight * 0.03,
+                            screenWidth * 0.05,
+                            screenHeight * 0.05,
+                          ),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: screenHeight * 0.05,
+                            child: ElevatedButton(
+                              onPressed: _isLoading ? null : _proceedToPayment,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: _isLoading
+                                    ? Colors.grey
+                                    : const Color.fromARGB(255, 31, 219, 59),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: _isLoading
+                                  ? SizedBox(
+                                      height: screenHeight * 0.025,
+                                      width: screenHeight * 0.025,
+                                      child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
+                                        strokeWidth: 2.0,
+                                      ),
+                                    )
+                                  : Text(
+                                      AppLocalizations.of(context)
+                                          .translate('proceedToPayment'),
+                                      style: TextStyle(
+                                        color: _theme.textColor,
+                                        fontSize: screenWidth * 0.045,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -601,16 +652,18 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
     required String text,
     required double screenWidth,
   }) {
+    final _theme = AuthScreenThemeDetector.getTheme();
     return Row(
       children: [
-        Icon(icon, color: Colors.white, size: screenWidth * 0.05),
+        Icon(icon, color: _theme.textColor, size: screenWidth * 0.05),
         SizedBox(width: 8),
         Expanded(
           child: Text(
             text,
             style: TextStyle(
               fontSize: screenWidth * 0.04,
-              color: Colors.white,
+              color: _theme
+                  .textColor, // Utilisation de la couleur du thème au lieu de Colors.white
             ),
           ),
         ),

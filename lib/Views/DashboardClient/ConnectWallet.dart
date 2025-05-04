@@ -191,13 +191,30 @@ class _ConnectWalletPageState extends State<ConnectWalletPage> {
                                         accountId, privateKey);
 
                                     if (walletViewModel.errorMessage != null) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              walletViewModel.errorMessage!),
-                                          backgroundColor: Colors.red,
-                                        ),
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text(
+                                              "Connection Problem",
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            content: Text(walletViewModel.errorMessage!),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop(); // Close the dialog
+                                                },
+                                                child: const Text("OK", style: TextStyle(color: Color.fromARGB(255, 255, 255, 255),
+                                                  fontWeight: FontWeight.bold,
+                                                ),),
+                                              ),
+                                            ],
+                                          );
+                                        },
                                       );
                                     } else {
                                       //ajbouni
@@ -206,6 +223,14 @@ class _ConnectWalletPageState extends State<ConnectWalletPage> {
                                           key: 'privateKey', value: privateKey);
                                       await secureStorage.write(
                                           key: 'accountId', value: accountId);
+
+                                      //final userId = await secureStorage.read(key: 'userId');
+                                      //ajbouni
+                                      final userId = "67fc0fc891dd216a7100505e"; // make sure it's already stored
+                                      final walletId = await secureStorage.read(key: 'accountId');
+                                      //Call the API to update the wallet
+                                          final WalletViewModel walletVM = WalletViewModel();
+                                          await walletVM.affectWallet(userId, walletId!);
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
