@@ -6,7 +6,7 @@ class Const {
   //final String url = "http://192.168.1.114:3009"; // dar hadhemi
 
   // final String url = "http://10.0.2.2:3009"; // Dar yesser
-  final String urlSocket = "http://192.168.1.175:3000";
+  final String urlSocket = "http://172.16.1.39:3000";
 }
 
 class SessionConstants {
