@@ -79,6 +79,43 @@ class ProfileSwitcherViewModel with ChangeNotifier {
     }
   }
 
+  // New method to update energy sale percentage
+  Future<bool> updateEnergySalePercentage(double percentage) async {
+    if (_currentProfile == null) return false;
+    _setLoading(true);
+    
+    try {
+      final token = await _sessionManager.getAccessToken();
+      if (token == null) return false;
+
+      final response = await http.patch(
+        Uri.parse('$_baseUrl/profile/${_currentProfile!.id}/sale'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'sale': percentage.toInt()
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Update local data if needed
+        await _loadProfileData(_currentProfile!.id);
+        return true;
+      } else {
+        print('Error updating energy sale: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error updating energy sale: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   Future<void> _loadProfileData(String profileId) async {
     try {
       final token = await _sessionManager.getAccessToken();
@@ -144,6 +181,11 @@ class ProfileSwitcherViewModel with ChangeNotifier {
       print('Error loading profile pack: $e');
       return null;
     }
+  }
+
+  // Gets current profile ID, useful for other ViewModels
+  String? getCurrentProfileId() {
+    return _currentProfile?.id;
   }
 
   Future<void> loadRecentUsers() async {
@@ -296,7 +338,7 @@ class ProfileSwitcherViewModel with ChangeNotifier {
     return sortedProfiles;
   }
 
-// If you want newest to oldest, use this version instead:
+  // If you want newest to oldest, use this version instead:
   List<ProfileModel> get profilesSortedByCreationDateDesc {
     List<ProfileModel> sortedProfiles = List.from(_profiles);
     sortedProfiles.sort((a, b) => b.createdAt.compareTo(a.createdAt));

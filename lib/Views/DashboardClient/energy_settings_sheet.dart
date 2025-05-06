@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
+import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
 import 'package:provider/provider.dart';
 
 class EnergySettingsSheet extends StatefulWidget {
@@ -22,8 +23,7 @@ class EnergySettingsSheet extends StatefulWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      isScrollControlled:
-          true, // Permet à la feuille de s'adapter à la taille de l'écran
+      isScrollControlled: true, // Allows sheet to adapt to screen size
       builder: (BuildContext context) {
         return EnergySettingsSheet(
           initialPercentage: initialPercentage,
@@ -39,11 +39,64 @@ class EnergySettingsSheet extends StatefulWidget {
 
 class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
   late double _energyPercentage;
+  bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
     _energyPercentage = widget.initialPercentage;
+  }
+
+  // Method to save energy sale percentage
+  Future<void> _saveEnergySalePercentage(BuildContext context) async {
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      // Get the profile switcher view model
+      final profileSwitcherViewModel = 
+          Provider.of<ProfileSwitcherViewModel>(context, listen: false);
+      
+      // Call the API to update energy sale percentage
+      final success = await profileSwitcherViewModel.updateEnergySalePercentage(_energyPercentage);
+      
+      if (success) {
+        // Call the onSave callback to update UI in parent component
+        widget.onSave(_energyPercentage);
+        
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Energy sale percentage updated successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        
+        // Close the bottom sheet
+        Navigator.pop(context);
+      } else {
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update energy sale percentage'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error saving energy sale percentage: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred while updating energy sale percentage'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        _isSaving = false;
+      });
+    }
   }
 
   @override
@@ -58,7 +111,7 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Facteurs d'échelle pour les polices et les espacements
+    // Scale factors for fonts and spacing
     final double fontSizeTitle = screenWidth * 0.05;
     final double fontSizePercentage = screenWidth * 0.06;
     final double fontSizeButton = screenWidth * 0.04;
@@ -67,6 +120,7 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
     final double iconSize = screenWidth * 0.08;
     final double buttonHeight = screenHeight * 0.06;
     final double borderRadius = screenWidth * 0.1;
+    
     return Container(
       width: MediaQuery.of(context).size.width, // 90% of the screen width
 
@@ -101,15 +155,15 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-                        AppLocalizations.of(context).translate("setEnergySalePercentage"),
-                        textAlign:TextAlign.center,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontSize: screenWidth * 0.05,
-              ),
+            AppLocalizations.of(context).translate("setEnergySalePercentage"),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontSize: screenWidth * 0.05,
             ),
+          ),
           
 
-          SizedBox(height: screenHeight * 0.03), // 3% de la hauteur de l'écran
+          SizedBox(height: screenHeight * 0.03), // 3% of screen height
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -123,9 +177,9 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
                 ),
                 onPressed: () {
                   setState(() {
-                     if (_energyPercentage > 0) {
-        _energyPercentage -= 5;
-      }
+                    if (_energyPercentage > 0) {
+                      _energyPercentage -= 5;
+                    }
                   });
                 },
               ),
@@ -160,7 +214,7 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
               ),
             ],
           ),
-          SizedBox(height: screenHeight * 0.03), // 3% de la hauteur de l'écran
+          SizedBox(height: screenHeight * 0.03), // 3% of screen height
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF29E33C),
@@ -169,20 +223,28 @@ class _EnergySettingsSheetState extends State<EnergySettingsSheet> {
                 borderRadius: BorderRadius.circular(borderRadius),
               ),
             ),
-            onPressed: () {
-              widget.onSave(_energyPercentage);
-              Navigator.pop(context);
-            },
-            child: Text(
-              'Save',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: fontSizeButton,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            onPressed: _isSaving 
+                ? null 
+                : () => _saveEnergySalePercentage(context),
+            child: _isSaving
+                ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      strokeWidth: 2,
+                    ),
+                  )
+                : Text(
+                    'Save',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: fontSizeButton,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
           ),
-          SizedBox(height: screenHeight * 0.02), // 2% de la hauteur de l'écran
+          SizedBox(height: screenHeight * 0.02), // 2% of screen height
         ],
       ),
     );

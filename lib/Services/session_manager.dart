@@ -173,4 +173,6 @@ class SessionManager {
     await _storage.write(key: _keyUserId, value: user.id);
     await addRecentUser(userData);
   }
+
+  
 }
