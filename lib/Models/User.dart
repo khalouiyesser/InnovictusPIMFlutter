@@ -27,4 +27,5 @@ class User {
           json['lastSeen'] != null ? DateTime.tryParse(json['lastSeen']) : null,
     );
   }
+  
 }

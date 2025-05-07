@@ -160,19 +160,18 @@ class SessionManager {
     }
     return [];
   }
-
-  Future<void> saveUser(User user) async {
-    final Map<String, dynamic> userData = {
-      'userId': user.id,
-      'name': user.name,
-      'email': user.email,
-      'phoneNumber': user.phoneNumber,
-      // Include other fields as needed
-    };
-    await _storage.write(key: _keyUser, value: jsonEncode(user));
-    await _storage.write(key: _keyUserId, value: user.id);
-    await addRecentUser(userData);
-  }
-
+Future<void> saveUser(User user) async {
+  final Map<String, dynamic> userData = {
+    'userId': user.id,
+    'name': user.name,
+    'email': user.email,
+    'phoneNumber': user.phoneNumber,
+  };
+  print("Saving user to session: $userData"); // Log pour débogage
+  await _storage.write(key: _keyUserData, value: jsonEncode(userData));
+  await _storage.write(key: _keyUserId, value: user.id);
+  await addRecentUser(userData);
+  print("User saved successfully"); // Log pour débogage
+}
   
 }
