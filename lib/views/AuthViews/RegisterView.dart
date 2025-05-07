@@ -853,15 +853,19 @@ class _RegisterViewState extends State<RegisterView>
         phoneNumber: PhoneNumberController.text,
         packId: "67be43394925465e90de0b98", // Make sure to handle null packId
       );
+                          print("hhhhhhhhhhhhhhhhhhhhhh" + signupResponse.defaultProfileId);
 
       // Handle successful signup
       if (mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
+
             builder: (context) => SubscriptionCarousel(
               preselectedPackId: widget.packId,
               pendingSignupId: signupResponse.pendingSignupId,
+              profileId :signupResponse.defaultProfileId,
+              email :  emailController.text,
             ),
           ),
         );
@@ -904,6 +908,9 @@ class _RegisterViewState extends State<RegisterView>
             builder: (context) => SubscriptionCarousel(
               preselectedPackId: "67be43394925465e90de0b98",
               pendingSignupId: signupResponse.pendingSignupId,
+                            profileId :signupResponse.defaultProfileId , email:  emailController.text,
+
+
             ),
           ),
         );
