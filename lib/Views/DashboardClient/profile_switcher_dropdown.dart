@@ -171,7 +171,7 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
         children: [
           CircleAvatar(
             radius: 20,
-             backgroundImage: AssetImage('assets/user.jpg'),
+             backgroundImage: AssetImage('assets/yassine.jpg'),
 ),
           const SizedBox(width: 12),
           Expanded(
@@ -222,7 +222,7 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
           children: [
             CircleAvatar(
               radius: 20,
-                           backgroundImage: AssetImage('assets/user.jpg'),
+                           backgroundImage: AssetImage('assets/yassine.jpg'),
 
             ),
             const SizedBox(width: 12),

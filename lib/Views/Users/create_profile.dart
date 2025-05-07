@@ -23,7 +23,7 @@ class _CreateProfileDialogState extends State<CreateProfileDialog> {
 
   Future<void> _pickImage() async {
     setState(() {
-      _selectedImagePath = 'assets/user.jpg';
+      _selectedImagePath = 'assets/yassine.jpg';
     });
   }
 

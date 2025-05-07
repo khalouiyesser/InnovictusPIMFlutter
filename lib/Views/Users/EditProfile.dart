@@ -2761,7 +2761,7 @@ class _EditProfileState extends State<EditProfile> {
                                   radius: 50,
                                   backgroundImage: _image != null
                                       ? FileImage(_image!)
-                                      : const AssetImage('assets/user.jpg')
+                                      : const AssetImage('assets/yassine.jpg')
                                           as ImageProvider,
                                 ),
                                 Positioned(

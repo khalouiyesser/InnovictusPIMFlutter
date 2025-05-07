@@ -232,12 +232,16 @@ class _DashboardPageState extends State<DashboardPage> {
                                     ),
                                   );
                                 }
-
-                                return ProfileSwitcherDropdown(
-                                  customRadius: screenWidth * 0.06,
-                                  borderColor: theme.colorScheme.primary,
-                                  borderWidth: screenWidth * 0.006,
+                                return const CircleAvatar(
+                                  radius: 24,
+                                  backgroundImage:
+                                      AssetImage('assets/yassine.jpg'),
                                 );
+                                // return ProfileSwitcherDropdown(
+                                //   customRadius: screenWidth * 0.06,
+                                //   borderColor: theme.colorScheme.primary,
+                                //   borderWidth: screenWidth * 0.006,
+                                // );
                               },
                             ),
                           ),
@@ -320,7 +324,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
                       SizedBox(height: screenHeight * 0.01),
 
-// Température (Météo reste inchangée)
+                      // Température (Météo reste inchangée)
                       BlocBuilder<WeatherBlocBloc, WeatherBlocState>(
                         builder: (context, state) {
                           if (state is WeatherBlocSuccess) {
@@ -369,7 +373,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 SizedBox(height: screenHeight * 0.02),
                                 Text(
                                   AppLocalizations.of(context)
-                                      .translate('energyUsages'),
+                                      .translate('totalEnergy'),
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     fontSize: 16,
                                     color: theme.textTheme.titleMedium?.color
@@ -423,7 +427,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             _buildInfoCard(
                                 context,
                                 AppLocalizations.of(context)
-                                    .translate('totalEnergy'),
+                                    .translate('energyUsages'),
                                 '${this.totalEnergy} ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.lightbulb),
                             _buildInfoCard(
@@ -436,13 +440,13 @@ class _DashboardPageState extends State<DashboardPage> {
                                 context,
                                 AppLocalizations.of(context)
                                     .translate('capacity'),
-                                '42.0 ${AppLocalizations.of(context).translate('kwh')}',
+                                '50.0 ${AppLocalizations.of(context).translate('kwh')}',
                                 Icons.battery_full),
                             _buildInfoCard(
                                 context,
                                 AppLocalizations.of(context)
                                     .translate('co2Reduction'),
-                                '${this.co2Reduction} ${AppLocalizations.of(context).translate('kwh')}',
+                                '${this.co2Reduction} ${AppLocalizations.of(context).translate('%')}',
                                 Icons.eco),
                           ],
                         ),

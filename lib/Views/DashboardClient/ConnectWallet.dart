@@ -216,7 +216,7 @@ class _ConnectWalletPageState extends State<ConnectWalletPage> {
                                           );
                                         },
                                       );
-                                    } else {
+                                    /*} else {
                                       //ajbouni
                                       // Securely store credentials
                                       await secureStorage.write(
@@ -226,7 +226,8 @@ class _ConnectWalletPageState extends State<ConnectWalletPage> {
 
                                       //final userId = await secureStorage.read(key: 'userId');
                                       //ajbouni
-                                      final userId = "67fc0fc891dd216a7100505e"; // make sure it's already stored
+                                      
+                                      final userId = "6817da255242a900debdb58f"; 
                                       final walletId = await secureStorage.read(key: 'accountId');
                                       //Call the API to update the wallet
                                           final WalletViewModel walletVM = WalletViewModel();
@@ -238,7 +239,31 @@ class _ConnectWalletPageState extends State<ConnectWalletPage> {
                                                 WalletCreatePasswordPage()),
                                       );
                                     }
-                                  },
+                                  },*/
+                                  } else {
+                                    // Securely store credentials
+                                    await secureStorage.write(key: 'privateKey', value: privateKey);
+                                    await secureStorage.write(key: 'accountId', value: accountId);
+
+                                    final userId1 = currentUser?.id;
+                                    final userId = await secureStorage.read(key: 'userId');
+
+                                    // Read walletId from secure storage
+                                    final walletId = await secureStorage.read(key: 'accountId');
+
+                                    // Call the API to update the wallet
+                                    final WalletViewModel walletVM = WalletViewModel();
+                                    await walletVM.affectWallet(userId1!, walletId!);
+
+                                    // Navigate to password creation page
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => WalletCreatePasswordPage(),
+                                      ),
+                                    );
+                                  }},
+
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
                               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -299,7 +324,7 @@ class _ConnectWalletPageState extends State<ConnectWalletPage> {
                         const CircleAvatar(
                           radius: 24,
                           backgroundImage: AssetImage(
-                            'assets/user.jpg',
+                            'assets/yassine.jpg',
                           ),
                         ),
                         const SizedBox(width: 12),
