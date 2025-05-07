@@ -15,22 +15,54 @@ class EnergySettingsSheet extends StatefulWidget {
     required this.onSave,
   }) : super(key: key);
 
-  static void show(
+  static Future<void> show(
     BuildContext context, {
-    double initialPercentage = 0.0,
     required Function(double) onSave,
-  }) {
-    showModalBottomSheet(
+  }) async {
+    // Afficher un indicateur de chargement pendant la récupération des données
+    showDialog(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true, // Allows sheet to adapt to screen size
-      builder: (BuildContext context) {
-        return EnergySettingsSheet(
-          initialPercentage: initialPercentage,
-          onSave: onSave,
-        );
-      },
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
     );
+
+    try {
+      // Récupérer le profileSwitcherViewModel
+      final profileSwitcherViewModel = 
+          Provider.of<ProfileSwitcherViewModel>(context, listen: false);
+      
+      // Récupérer le pourcentage de vente actuel via l'API
+      final currentPercentage = await profileSwitcherViewModel.getEnergySalePercentage();
+      
+      // Fermer le dialogue de chargement
+      Navigator.pop(context);
+      
+      // Afficher la bottom sheet avec la valeur récupérée
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return EnergySettingsSheet(
+            initialPercentage: currentPercentage,
+            onSave: onSave,
+          );
+        },
+      );
+    } catch (e) {
+      // Fermer le dialogue de chargement en cas d'erreur
+      Navigator.pop(context);
+      
+      // Afficher un message d'erreur
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur lors de la récupération du pourcentage de vente: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override

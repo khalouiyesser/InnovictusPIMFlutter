@@ -344,4 +344,36 @@ class ProfileSwitcherViewModel with ChangeNotifier {
     sortedProfiles.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return sortedProfiles;
   }
+
+   Future<double> getEnergySalePercentage() async {
+    if (_currentProfile == null) return 0.0;
+    
+    try {
+      final token = await _sessionManager.getAccessToken();
+      if (token == null) return 0.0;
+
+      final response = await http.get(
+        Uri.parse('$_baseUrl/profile/${_currentProfile!.id}/sale'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        // Utilise la clé 'salePourcentage' comme spécifié dans la réponse API
+        if (data.containsKey('salePourcentage')) {
+          return data['salePourcentage'].toDouble();
+        }
+      }
+      
+      // Valeur par défaut si la requête échoue ou si la clé n'existe pas
+      return 0.0;
+    } catch (e) {
+      print('Error getting energy sale percentage: $e');
+      return 0.0;
+    }
+  }
+
 }

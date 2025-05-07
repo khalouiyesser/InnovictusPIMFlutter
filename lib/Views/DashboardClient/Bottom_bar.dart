@@ -131,7 +131,6 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
       // Show the energy settings sheet
       EnergySettingsSheet.show(
         context,
-        initialPercentage: _currentEnergyPercentage,
         onSave: (newPercentage) {
           setState(() {
             _currentEnergyPercentage = newPercentage;
