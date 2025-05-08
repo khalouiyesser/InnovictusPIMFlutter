@@ -7,6 +7,7 @@ import 'package:piminnovictus/Views/Visitor/Sections/achievement_section.dart';
 import 'package:piminnovictus/Views/Visitor/Sections/introduction_section.dart';
 import 'package:piminnovictus/Views/Visitor/Sections/packs_section.dart';
 import 'package:piminnovictus/Views/Visitor/Sections/team_section.dart';
+import 'package:piminnovictus/views/Visitor/AssistantView.dart';
 import 'package:piminnovictus/views/background.dart';
 import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
 
@@ -239,6 +240,73 @@ class _VisitorPageState extends State<VisitorPage> with WidgetsBindingObserver {
                 },
               ),
             ),
+            // Logo Assistant
+            Positioned(
+              right: 20,
+              bottom: 100, // Position au-dessus du bouton de login
+              child: TweenAnimationBuilder(
+                tween: Tween<double>(begin: 0, end: 1),
+                duration: const Duration(seconds: 2),
+                builder: (context, double value, child) {
+                  return Transform.scale(
+                    scale: value,
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.transparent, // Cercle transparent
+                        border: Border.all(
+                          color: const Color(0xFF29E33C), // Bordure verte
+                          width: 2.0,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AssistantView(),
+                              ),
+                            );
+                          },
+                          child: Center(
+                            child: Image.asset(
+                              'assets/assistant_icon.png', // Chemin vers votre image d'assistant
+                              width: 35,
+                              height: 35,
+                              color: const Color(
+                                  0xFF29E33C), // Couleur verte pour l'image
+                              // Utilisez une icône par défaut si l'image n'est pas disponible
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(
+                                  Icons
+                                      .support_agent, // Icône d'assistant par défaut
+                                  color: Color(0xFF29E33C),
+                                  size: 30,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            // Bouton Login existant
             Positioned(
               right: 20,
               bottom: 20,

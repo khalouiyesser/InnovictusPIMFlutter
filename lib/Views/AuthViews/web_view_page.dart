@@ -11,7 +11,7 @@ class WebViewPage extends StatefulWidget {
   final String pendingSignupId; // Add pendingSignupId
 
   const WebViewPage(
-      {Key? key, required this.url, required this.pendingSignupId})
+      {Key? key, required this.url, required this.pendingSignupId, required String defaultProfileId})
       : super(key: key);
 
   @override
