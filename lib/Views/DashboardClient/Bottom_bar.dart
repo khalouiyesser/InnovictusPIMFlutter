@@ -6,6 +6,7 @@ import 'package:piminnovictus/Views/DashboardClient/Dashboard.dart';
 import 'package:piminnovictus/Views/DashboardClient/WalletPage.dart';
 import 'package:piminnovictus/Views/DashboardClient/WalletPasswordPage.dart';
 import 'package:piminnovictus/Views/Users/EditProfile.dart';
+import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
 import 'package:piminnovictus/views/DashboardClient/WalletCreatePasswordPage.dart';
 import 'package:provider/provider.dart';
 import 'buyEnergie.dart';
@@ -47,6 +48,22 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
     Container(),
     EditProfile(),
   ];
+ Future<void> _loadCurrentEnergyPercentage() async {
+    final profileSwitcherViewModel = 
+        Provider.of<ProfileSwitcherViewModel>(context, listen: false);
+    
+    // Check if profile data is available
+    if (profileSwitcherViewModel.currentProfileData != null) {
+      final profileData = profileSwitcherViewModel.currentProfileData!;
+      
+      // Check if energySale field exists in the profile data
+      if (profileData.containsKey('energySale')) {
+        setState(() {
+          _currentEnergyPercentage = profileData['energySale'].toDouble();
+        });
+      }
+    }
+  }
 
 //ajbouni
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
@@ -102,12 +119,18 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
     _animationController.dispose();
     super.dispose();
   }
-
-  void _onItemTapped(int index) {
+ void _onItemTapped(int index) {
     if (index == 3) {
+      // Get the current profile switcher view model
+      final profileSwitcherViewModel = 
+          Provider.of<ProfileSwitcherViewModel>(context, listen: false);
+          
+      // Make sure we have loaded the latest energy percentage
+      _loadCurrentEnergyPercentage();
+      
+      // Show the energy settings sheet
       EnergySettingsSheet.show(
         context,
-        initialPercentage: _currentEnergyPercentage,
         onSave: (newPercentage) {
           setState(() {
             _currentEnergyPercentage = newPercentage;
@@ -120,6 +143,7 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
       });
     }
   }
+
 
   Widget _buildFloatingButton() {
     return AnimatedBuilder(

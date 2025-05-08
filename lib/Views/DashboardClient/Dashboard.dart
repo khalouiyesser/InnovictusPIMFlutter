@@ -232,16 +232,16 @@ class _DashboardPageState extends State<DashboardPage> {
                                     ),
                                   );
                                 }
-                                return const CircleAvatar(
-                                  radius: 24,
-                                  backgroundImage:
-                                      AssetImage('assets/yassine.jpg'),
-                                );
-                                // return ProfileSwitcherDropdown(
-                                //   customRadius: screenWidth * 0.06,
-                                //   borderColor: theme.colorScheme.primary,
-                                //   borderWidth: screenWidth * 0.006,
+                                // return const CircleAvatar(
+                                //   radius: 24,
+                                //   backgroundImage:
+                                //       AssetImage('assets/yassine.jpg'),
                                 // );
+                                return ProfileSwitcherDropdown(
+                                  customRadius: screenWidth * 0.06,
+                                  borderColor: theme.colorScheme.primary,
+                                  borderWidth: screenWidth * 0.006,
+                                );
                               },
                             ),
                           ),

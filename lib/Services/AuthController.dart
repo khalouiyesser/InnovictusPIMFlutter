@@ -85,40 +85,7 @@ class AuthController {
     }
   }
 
-
-/*
- Future<SignupResponse> signupSimple({
-    required String name,
-    required String email,
-    required String password,
-    required String phoneNumber,
-    required String packId,
-  }) async {
-    try {
-      final response = await http.post(
-        Uri.parse("$api/auth/signup"),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'name': name,
-          'email': email,
-          'password': password,
-          'phoneNumber': phoneNumber,
-          'packId': packId,
-        }),
-      );
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        final responseData = json.decode(response.body);
-        return SignupResponse.fromJson(responseData);
-      } else {
-        throw Exception('Signup failed: ${response.body}');
-      }
-    } catch (e) {
-      throw Exception('Error during signup: $e');
-    }
-  }
-*/
-Future<SignupResponse> signupSimple({
+/*Future<SignupResponse> signupSimple({
   required String name,
   required String email,
   required String password,
@@ -149,7 +116,72 @@ Future<SignupResponse> signupSimple({
   } catch (e) {
     throw Exception('Error during signup: $e');
   }
-}
+}*/
+
+Future<SignupResponse> signupSimple({
+    required String name,
+    required String email,
+    required String password,
+    required String phoneNumber,
+    required String packId,
+    BuildContext? context,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$api/auth/signup"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'name': name,
+          'email': email,
+          'password': password,
+          'phoneNumber': phoneNumber,
+          'packId': packId,
+        }),
+      );
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final responseData = json.decode(response.body);
+        final signupResponse = SignupResponse.fromJson(responseData);
+        
+        // Extract userId from response (adjust field name if needed)
+        final String userId = responseData['userId'] ?? responseData['_id'] ?? '';
+        
+        // Get token from response (adjust field name if needed)
+        final String token = responseData['accessToken'] ?? responseData['token'] ?? '';
+        
+        // Save session immediately after signup
+        await _sessionManager.saveSession(
+          token: token,
+          userData: {
+            'email': email,
+            'userId': userId,
+            'name': name,
+            'phoneNumber': phoneNumber,
+            'refreshToken': responseData['refreshToken'] ?? '',
+            // Add any other user fields you need
+          },
+        );
+        
+        // Navigate to main screen if context is provided
+        if (context != null) {
+          Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => 
+                BottomNavBarExample(),
+              transitionDuration: Duration.zero,
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        }
+        
+        return signupResponse;
+      } else {
+        throw Exception('Signup failed: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Error during signup: $e');
+    }
+  }
 
 
 
