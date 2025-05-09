@@ -24,6 +24,7 @@ final String email;
   State<SubscriptionCarousel> createState() => _SubscriptionCarouselState();
 }
 
+
 class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
   List<Pack> packs = [];
 
@@ -40,6 +41,7 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
     super.initState();
     print("signuid" + widget.pendingSignupId);
         print("signuid" + widget.profileId);
+    print("emil " + widget.email);
 
     _viewModel = SubscriptionViewModel(pendingSignupId: widget.pendingSignupId , profileId: widget.profileId);
     if (widget.preselectedPackId != null) {
@@ -107,6 +109,9 @@ class _SubscriptionCarouselState extends State<SubscriptionCarousel> {
 
   void _proceedToPayment() async {
     if (_viewModel.selectedPackId != null) {
+
+
+      print("55555555555555555555555555555555555555555555555555555555555555");
       try {
         setState(() {
           _isLoading = true;

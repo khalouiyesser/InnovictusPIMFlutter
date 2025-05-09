@@ -295,6 +295,9 @@ class ProfileSwitcherViewModel with ChangeNotifier {
       final userId = await _sessionManager.getUserId();
       final token = await _sessionManager.getAccessToken();
 
+      print("haseeeeeeeeeeeeeeeeeeeennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+      print(userId);
+      print("heeeeeeeeeeeeeeeeeeeeehehehehehheehhehehehhehehehehhehehehhehehehhehehehehehhehehehehheheh");
       if (userId == null || token == null) {
         _setLoading(false);
         return;
@@ -313,6 +316,8 @@ class ProfileSwitcherViewModel with ChangeNotifier {
         _profiles =
             profilesJson.map((json) => ProfileModel.fromJson(json)).toList();
 
+        print(_profiles.toString());
+        print("wwwwwaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         // Sort profiles by last used date if available
         _profiles.sort((a, b) => b.lastUsed.compareTo(a.lastUsed));
 

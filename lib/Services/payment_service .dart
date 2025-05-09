@@ -81,10 +81,10 @@ class PaymentService {
 
       // Récupérer les informations de l'utilisateur à partir de la réponse
       final user = responseData['user'];
-      final String userId = user['_id'];
-      final String name = user['name'];
-      final String email = user['email'];
-      final String phoneNumber = user['phoneNumber'];
+      final String userId = user['_id'] ?? "";
+      final String name = user['name'] ?? "";
+      final String email = user['email'] ?? "";
+      final String phoneNumber = user['phoneNumber'] ?? "";
 
       // Créez un objet User avec les données de l'utilisateur
       User userObj = User(
@@ -95,10 +95,10 @@ class PaymentService {
       );
 
       // Enregistrez l'utilisateur dans la session
-      await SessionManager().saveUser(userObj);  // Enregistrez l'utilisateur avec la méthode saveUser()
+      await SessionManager().saveUser(userObj);
 
       // Mettre à jour l'état de connexion à true
-      await SessionManager().setIsLogged(true);  // Marquer l'utilisateur comme connecté
+      await SessionManager().setIsLogged(true);
 
       print("✅ Finalize signup success: ${responseData['message']}");
       print("🔒 User saved to session: $userObj");

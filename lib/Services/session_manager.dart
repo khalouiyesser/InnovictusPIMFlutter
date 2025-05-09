@@ -12,6 +12,7 @@ class SessionManager {
   static const String _keyRefreshToken = 'refresh_token';
   static const String _keyUserId = 'user_id';
   static const String _keyEmail = 'user_email';
+  static const String _keyPhoneNumber = 'user_phoneNumber';
   static const String _keyUserData = 'user_data';
   static const String _keyUserProfiles = 'user_profiles'; //
 // Clé pour le champ isLogged
@@ -96,6 +97,8 @@ class SessionManager {
     // Add user to recent users list
     await addRecentUser(userData);
   }
+
+
   Future<void> saveSessionAA({
 
     required Map<String, dynamic> userData,
@@ -134,7 +137,7 @@ class SessionManager {
       var decodedData = json.decode(userDataStr);
 
       print('Session Data: $decodedData'); // Print the full session data
-      print('User name from session: ${decodedData['name']}');
+      print('User name from session: ${decodedData['user_phoneNumber']}');
       return json.decode(userDataStr);
     }
     return null;
@@ -147,7 +150,9 @@ class SessionManager {
       _storage.delete(key: _keyRefreshToken),
       _storage.delete(key: _keyUserId),
       _storage.delete(key: _keyUserData),
+
     ]);
+    this.setIsLogged(false);
   }
 
   Future<User?> getCurrentUser() async {
@@ -215,6 +220,7 @@ class SessionManager {
     }
     return [];
   }
+
 Future<void> saveUser(User user) async {
   final Map<String, dynamic> userData = {
     'userId': user.id,
@@ -222,11 +228,13 @@ Future<void> saveUser(User user) async {
     'email': user.email,
     'phoneNumber': user.phoneNumber,
   };
+
   print("Saving user to session: $userData"); // Log pour débogage
   await _storage.write(key: _keyUserData, value: jsonEncode(userData));
   await _storage.write(key: _keyUserId, value: user.id);
   await addRecentUser(userData);
   print("User saved successfully"); // Log pour débogage
+
 }
 
 

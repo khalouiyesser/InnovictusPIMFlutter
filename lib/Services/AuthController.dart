@@ -47,6 +47,45 @@ class AuthController {
       throw Exception('Error fetching user details: $e');
     }
   }
+  //
+  // Future<Map<String, dynamic>> loginSimple(
+  //     String email, String password) async {
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse("$api/auth/login"),
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: json.encode({'email': email, 'password': password}),
+  //     );
+  //
+  //     if (response.statusCode >= 200 && response.statusCode < 300) {
+  //       final responseData = json.decode(response.body);
+  //
+  //       // Fetch user details after successful login
+  //       final userDetails = await getUserDetails(
+  //           responseData['userId'], responseData['accessToken']);
+  //       await SessionManager().setIsLogged(true);  // Marquer l'utilisateur comme connecté
+  //       // Save complete session data
+  //       await _sessionManager.saveSession(
+  //         token: responseData['accessToken'],
+  //         userData: {
+  //           'email': email,
+  //           'userId': responseData['userId'],
+  //           'refreshToken': responseData['refreshToken'],
+  //           'name': userDetails?['name'], // Add name from user details
+  //           'phoneNumber' : userDetails?['phoneNumber']
+  //           // Add any other user fields you need
+  //         },
+  //       );
+  //
+  //       return responseData;
+  //     } else {
+  //       throw Exception('Login failed: ${response.body}');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Error during login: $e');
+  //   }
+  // }
+
 
   Future<Map<String, dynamic>> loginSimple(
       String email, String password) async {
@@ -63,16 +102,20 @@ class AuthController {
         // Fetch user details after successful login
         final userDetails = await getUserDetails(
             responseData['userId'], responseData['accessToken']);
+        await SessionManager().setIsLogged(true);
 
-        // Save complete session data
+        // ✅ Utilisation des valeurs par défaut si null
+        final String name = userDetails?['name'] ?? "";
+        final String phoneNumber = userDetails?['phoneNumber'] ?? "";
+
         await _sessionManager.saveSession(
           token: responseData['accessToken'],
           userData: {
             'email': email,
             'userId': responseData['userId'],
             'refreshToken': responseData['refreshToken'],
-            'name': userDetails?['name'], // Add name from user details
-            // Add any other user fields you need
+            'name': name,
+            'phoneNumber': phoneNumber,
           },
         );
 
@@ -85,40 +128,9 @@ class AuthController {
     }
   }
 
-/*Future<SignupResponse> signupSimple({
-  required String name,
-  required String email,
-  required String password,
-  required String phoneNumber,
-  required String packId,
-  String? idGoogle, // Nouveau paramètre optionnel
-}) async {
-  try {
-    final response = await http.post(
-      Uri.parse("$api/auth/signup"),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'name': name,
-        'email': email,
-        'password': password,
-        'phoneNumber': phoneNumber,
-        'packId': packId,
-        'idGoogle': idGoogle, // Inclure idGoogle s'il est fourni
-      }),
-    );
 
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      final responseData = json.decode(response.body);
-      return SignupResponse.fromJson(responseData);
-    } else {
-      throw Exception('Signup failed: ${response.body}');
-    }
-  } catch (e) {
-    throw Exception('Error during signup: $e');
-  }
-}*/
 
-Future<SignupResponse> signupSimple({
+  Future<SignupResponse> signupSimple({
     required String name,
     required String email,
     required String password,
@@ -136,6 +148,7 @@ Future<SignupResponse> signupSimple({
           'password': password,
           'phoneNumber': phoneNumber,
           'packId': packId,
+
         }),
       );
 
@@ -259,87 +272,25 @@ Future<SignupResponse> signupSimple({
     }
   }
 
-/*
-  /// Signup with google
-  Future<SignupResponse?> signUpWithGoogle(BuildContext context) async {
-    try {
-      print("🔄 Déconnexion des sessions existantes...");
-      await _googleSignIn.signOut();
-      await FirebaseAuth.instance.signOut(); // Utilisez directement l'instance
-      await Future.delayed(Duration(seconds: 1));
-
-      print("🚀 Tentative de connexion avec Google...");
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-
-      if (googleUser == null) {
-        print("❌ Connexion Google annulée par l'utilisateur.");
-        return null;
-      }
-
-
-      
-      // Envoi des données au backend
-       
-      final response = await http.post(
-        Uri.parse("$api/auth/signupGoogle"),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'email': googleUser.email,
-          'name': googleUser.displayName,
-          'idGoogle': googleUser.id,
-          'photoUrl': googleUser.photoUrl,
-          'packId': "67be43394925465e90de0b98",
-        }),
-      );
-    
-
-      print("📩 Réponse brute du backend : ${response.body}");
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        final responseData = json.decode(response.body);
-
-        if (responseData is List && responseData.isNotEmpty) {
-          print("✅ Inscription réussie sur le backend !");
-          return SignupResponse.fromJson(responseData[0]);
-        } else if (responseData is Map<String, dynamic>) {
-          return SignupResponse.fromJson(responseData);
-        } else {
-          print("❌ Réponse inattendue du backend.");
-        }
-      } else {
-        throw Exception('❌ Échec de l\'inscription Google : ${response.body}');
-      }
-
-    } catch (e, stackTrace) {
-      print("❌ Erreur lors de la connexion Google: $e");
-      print(stackTrace);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erreur: ${e.toString()}")),
-      );
-      return null;
-    }
-  }
-*/
 Future<SignupResponse?> signUpWithGoogle(BuildContext context) async {
   try {
     print("🔄 Déconnexion des sessions existantes...");
     await _googleSignIn.signOut();
     await FirebaseAuth.instance.signOut();
     await Future.delayed(Duration(seconds: 1));
-    
+
     print("🚀 Tentative de connexion avec Google...");
     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-    
+
     if (googleUser == null) {
       print("❌ Connexion Google annulée par l'utilisateur.");
       return null;
     }
-    
+
     // Obtenir les jetons d'authentification Google (important pour la persistance)
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
     final String? idToken = googleAuth.idToken;
-    
+
     // Envoi des données au backend
     final response = await http.post(
       Uri.parse("$api/auth/signupGoogle"),
@@ -352,16 +303,16 @@ Future<SignupResponse?> signUpWithGoogle(BuildContext context) async {
         'packId': "67be43394925465e90de0b98",
       }),
     );
-    
+
     print("📩 Réponse brute du backend : ${response.body}");
-    
+
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final responseData = json.decode(response.body);
       SignupResponse signupResponse;
-      
+
       Map<String, dynamic> userData;
       String userId = '';
-      
+
       if (responseData is List && responseData.isNotEmpty) {
         print("✅ Inscription réussie sur le backend !");
         signupResponse = SignupResponse.fromJson(responseData[0]);
@@ -375,53 +326,29 @@ Future<SignupResponse?> signUpWithGoogle(BuildContext context) async {
         print("❌ Réponse inattendue du backend.");
         throw Exception("Format de réponse inattendu");
       }
-      
+
       print("🔐 Sauvegarde de la session utilisateur avec ID: $userId");
-      
+
       // Utiliser idToken de Google comme token d'authentification
       final String authToken = idToken ?? 'google_auth_$userId';
-      
-      // Sauvegarder toutes les données de l'utilisateur plus le token Google
-      await _sessionManager.saveSession(
-        token: authToken,
-        userData: {
-          ...userData, // Inclure toutes les données du backend
-          'email': googleUser.email,
-          'userId': userId,
-          'idGoogle': googleUser.id,
-          'name': googleUser.displayName,
-          'photoUrl': googleUser.photoUrl,
-          'idToken': idToken, // Stocker le token d'authentification Google
-        },
-      );
-      
-      print("✅ Session sauvegardée avec succès");
-      
-      // Rediriger vers l'écran principal
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => 
-            BottomNavBarExample(),
-          transitionDuration: Duration.zero,
-          reverseTransitionDuration: Duration.zero,
-        ),
-      );
-      
+
       return signupResponse;
     } else {
       throw Exception('❌ Échec de l\'inscription Google : ${response.body}');
     }
-    
+
   } catch (e, stackTrace) {
     print("❌ Erreur lors de la connexion Google: $e");
     print(stackTrace);
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Erreur: ${e.toString()}")),
     );
     return null;
   }
 }
+
+
  Future<Map<String, dynamic>> loginWithGoogle(BuildContext context) async {
   try {
     print("🔄 Déconnexion des sessions existantes...");
@@ -452,33 +379,37 @@ Future<SignupResponse?> signUpWithGoogle(BuildContext context) async {
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final responseData = json.decode(response.body);
-      
-      // Based on your response, we need to create a proper userData map
-      // The response doesn't have accessToken or userId like simple login
+
+      // Récupérer les champs avec fallback s'ils sont nuls
+      final email = responseData['email'] ?? "";
+      final userId = responseData['_id'] ?? "";
+      final name = responseData['name'] ?? "";
+      final idGoogle = responseData['idGoogle'] ?? "";
+      final phoneNumber = responseData['phoneNumber'] ?? "";
+
+
+      _sessionManager.setIsLogged(true);
       await _sessionManager.saveSession(
-        // Since token is not provided in the Google response, we'll use a placeholder
-        // You may need to adjust your backend to provide tokens or implement another approach
-        token: 'google_auth_${responseData['_id']}', // Using _id as a fallback
+        token: 'google_auth_$userId',
         userData: {
-          'email': responseData['email'],
-          'userId': responseData['_id'], // Using _id from response as userId
-          'refreshToken': 'google_auth_refresh', // Placeholder
-          'name': responseData['name'],
-          'idGoogle': responseData['idGoogle'],
-          // Add other fields as needed
+          'email': email,
+          'userId': userId,
+          'refreshToken': 'google_auth_refresh',
+          'name': name,
+          'idGoogle': idGoogle,
+          'phoneNumber': phoneNumber,
         },
       );
-      
-      // Navigate to BottomNavBarExample
+
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => 
+          pageBuilder: (context, animation, secondaryAnimation) =>
               BottomNavBarExample(),
           transitionDuration: Duration.zero,
           reverseTransitionDuration: Duration.zero,
         ),
       );
-      
+
       return responseData;
     } else {
       throw Exception('❌ Échec de la connexion Google : ${response.body}');

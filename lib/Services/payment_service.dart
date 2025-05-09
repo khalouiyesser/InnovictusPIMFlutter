@@ -23,7 +23,7 @@ class PaymentService {
       print("🔍 packId: $packId");
       print("🔍 pendingSignupId: $pendingSignupId");
       print("🔍 profileId: $profileId");
-
+print("emil $email");
       print("🔍 Response Status: ${response.statusCode}");
       print("🔍 Response Body: ${response.body}");
 
