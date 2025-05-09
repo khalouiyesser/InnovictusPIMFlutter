@@ -17,6 +17,7 @@ import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import '../../Services/payment_service .dart';
 import '../../Services/socket_service.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -131,8 +132,11 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
+    // _initialize();
     _loadUserData();
     _requestLocationPermission();
+
+
 
     _socketService.connectToSocket((data) {
       if (mounted) {
@@ -155,6 +159,37 @@ class _DashboardPageState extends State<DashboardPage> {
     });
   }
 
+
+  Future<void> _initialize() async {
+
+
+    print("1111111111111111111111111111111111111111111");
+
+    // Créer l'instance de SessionManager
+    SessionManager _sessionManager = SessionManager();
+
+    // Récupérer l'email stocké
+    String? email = await _sessionManager.getEmail();  // Assurer que l'email est récupéré correctement
+
+    // Vérifier que l'email n'est pas nul avant de faire la requête
+    if (email != null) {
+      try {
+        // Appeler le service pour récupérer les données utilisateur
+        PaymentService _paymentService = PaymentService();
+        final userData = await _paymentService.getUserData(email);
+
+        // Sauvegarder les données utilisateur et les profils dans la session
+        await _sessionManager.setDonne(userData);
+
+        print("Données utilisateur et profils sauvegardées dans la session");
+      } catch (e) {
+        print("❌ Erreur lors de la récupération des données utilisateur: $e");
+      }
+    } else {
+      print('❌ L\'email n\'est pas disponible');
+    }
+  }
+
   Future<void> _requestLocationPermission() async {
     try {
       Position position = await _determinePosition();
@@ -170,6 +205,12 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future<void> _loadUserData() async {
     final user = await _sessionManager.getCurrentUser();
+    print("11111111111111111111111111111111111111111111111");
+
+    print(user);
+
+
+    print("22222222222222222222222222222222");
     setState(() {
       currentUser = user;
     });

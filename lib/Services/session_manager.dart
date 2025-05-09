@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 
@@ -9,7 +11,14 @@ class SessionManager {
   static const String _keyAccessToken = 'access_token';
   static const String _keyRefreshToken = 'refresh_token';
   static const String _keyUserId = 'user_id';
+  static const String _keyEmail = 'user_email';
   static const String _keyUserData = 'user_data';
+  static const String _keyUserProfiles = 'user_profiles'; //
+// Clé pour le champ isLogged
+  static const String _keyIsLogged = 'isLogged';
+
+
+
   final _storage = const FlutterSecureStorage();
   static const String _keyRecentUsers = 'recent_users';
   static const int maxRecentUsers = 5;
@@ -21,6 +30,32 @@ class SessionManager {
   }
 
   SessionManager._internal();
+
+
+  // Setter pour isLogged
+  Future<void> setIsLogged(bool isLogged) async {
+    await _storage.write(key: _keyIsLogged, value: isLogged.toString());
+    print("Login status saved: $isLogged");
+  }
+
+// Getter pour isLogged
+  Future<bool> getIsLogged() async {
+    String? isLoggedStr = await _storage.read(key: _keyIsLogged);
+    return isLoggedStr != null && isLoggedStr.toLowerCase() == 'true';
+  }
+
+  // Check if user is logged in
+  // Vérifier si l'utilisateur est connecté (par isLogged et token)
+  Future<bool> isLoggedIn() async {
+    // Vérifier si l'utilisateur est marqué comme connecté dans le stockage
+    bool isLogged = await getIsLogged();
+
+    // Vérifier si un token valide est présent
+    String? token = await getAccessToken();  // Vous devez définir cette méthode ailleurs
+
+    // Retourner true si l'utilisateur est connecté (par isLogged ou par le token)
+    return isLogged && (token != null && token.isNotEmpty);
+  }
 
   // Save user session
   /* Future<void> saveSession({
@@ -66,11 +101,7 @@ class SessionManager {
     return null;
   }
 
-  // Check if user is logged in
-  Future<bool> isLoggedIn() async {
-    String? token = await getAccessToken();
-    return token != null && token.isNotEmpty;
-  }
+
 
   // Get all session data
   Future<Map<String, dynamic>?> getSessionData() async {
@@ -173,5 +204,32 @@ Future<void> saveUser(User user) async {
   await addRecentUser(userData);
   print("User saved successfully"); // Log pour débogage
 }
-  
+
+
+
+
+  Future<void> saveEmail(String email) async {
+    // Sauvegarder l'email de l'utilisateur dans la session
+    await _storage.write(key: _keyEmail, value: email);
+    print("Email de l'utilisateur sauvegardé dans la session : $email");
+  }
+  Future<String?> getEmail() async {
+    return await _storage.read(key: _keyEmail);
+  }
+
+
+
+  Future<void> setDonne(Map<String, dynamic> response) async {
+    // Extraire les données utilisateur et les profils du JSON
+    final user = response['user'];
+    final profiles = response['profiles'];
+
+    // Sauvegarder les données de l'utilisateur et des profils dans la session
+    await Future.wait([
+      _storage.write(key: _keyUserData, value: json.encode(user)),
+      _storage.write(key: _keyUserProfiles, value: json.encode(profiles)),
+    ]);
+    print("Donnees utilisateur et profils sauvegardées dans la session");
+  }
+
 }

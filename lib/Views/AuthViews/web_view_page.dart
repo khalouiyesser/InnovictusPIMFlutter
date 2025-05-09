@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
 import 'package:piminnovictus/Services/payment_service%20.dart';
+import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/AuthViews/login_view.dart';
 import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
 import 'package:piminnovictus/main.dart';
@@ -31,6 +32,9 @@ class _WebViewPageState extends State<WebViewPage> {
   final PaymentService _paymentService = PaymentService();
   bool _isLoading = false;
   String _statusMessage = "";
+
+  final SessionManager _sessionManager = SessionManager();
+
 
   @override
   void initState() {
@@ -167,7 +171,10 @@ class _WebViewPageState extends State<WebViewPage> {
                           // Close dialogs and navigate
                           Navigator.of(context).pop(); // Close the popup
                           Navigator.of(context).pop(); // Close the WebView
-                          
+
+
+                          await _sessionManager.saveEmail(widget.userEmail);
+
                           // Navigate to the BottomNavBarExample page
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(

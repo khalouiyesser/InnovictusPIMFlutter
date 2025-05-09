@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
+import 'package:piminnovictus/Services/payment_service%20.dart';
+import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/DashboardClient/ConnectWallet.dart';
 import 'package:piminnovictus/Views/DashboardClient/Dashboard.dart';
 import 'package:piminnovictus/Views/DashboardClient/WalletPage.dart';
@@ -87,8 +89,10 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
   }
 
   @override
-  void initState() {
+  initState()  {
     super.initState();
+
+     // _initialize();
     _animationController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
@@ -100,10 +104,43 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
         curve: Curves.easeInOut,
       ),
     );
-
     _startLoopAnimation();
     _loadWalletData();
   }
+
+  Future<void> _initialize() async {
+
+
+
+    // Créer l'instance de SessionManager
+    SessionManager _sessionManager = SessionManager();
+
+    // Récupérer l'email stocké
+    String? email = await _sessionManager.getEmail();  // Assurer que l'email est récupéré correctement
+
+
+    print("2222222222222222222222222222222222222222222222222222233333333333333333333333333333333333333");
+    print(email);
+    print("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444");
+    // Vérifier que l'email n'est pas nul avant de faire la requête
+    if (email != null) {
+      try {
+        // Appeler le service pour récupérer les données utilisateur
+        PaymentService _paymentService = PaymentService();
+        final userData = await _paymentService.getUserData(email);
+
+        // Sauvegarder les données utilisateur et les profils dans la session
+        await _sessionManager.setDonne(userData);
+
+        print("Données utilisateur et profils sauvegardées dans la session");
+      } catch (e) {
+        print("❌ Erreur lors de la récupération des données utilisateur: $e");
+      }
+    } else {
+      print('❌ L\'email n\'est pas disponible');
+    }
+  }
+
 
   void _startLoopAnimation() {
     Future.doWhile(() async {
@@ -113,6 +150,8 @@ class _BottomNavBarExampleState extends State<BottomNavBarExample>
       return true;
     });
   }
+
+
 
   @override
   void dispose() {

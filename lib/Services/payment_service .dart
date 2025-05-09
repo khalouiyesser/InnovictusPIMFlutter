@@ -2,7 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:piminnovictus/Services/Const.dart';
+import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/AuthViews/web_view_page.dart';
+
+import '../Models/User.dart';
 
 class PaymentService {
   static Future<void> openPayment(
@@ -64,22 +67,88 @@ class PaymentService {
   Future<void> finalizeSignup(String userId, String profileId) async {
     print("🔍 Finalizing signup for userId: $userId");
     final String apiUrl = "${Const().url}/auth/finalize-signup/$userId";
+
     final response = await http.patch(
       Uri.parse(apiUrl),
       headers: <String, String>{
         'Content-Type': 'application/json',
       },
-      body: jsonEncode({}),
+      body: jsonEncode({}), // Vous pouvez ajouter des données dans le corps si nécessaire
     );
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
+
+      // Récupérer les informations de l'utilisateur à partir de la réponse
+      final user = responseData['user'];
+      final String userId = user['_id'];
+      final String name = user['name'];
+      final String email = user['email'];
+      final String phoneNumber = user['phoneNumber'];
+
+      // Créez un objet User avec les données de l'utilisateur
+      User userObj = User(
+        id: userId,
+        name: name,
+        email: email,
+        phoneNumber: phoneNumber,
+      );
+
+      // Enregistrez l'utilisateur dans la session
+      await SessionManager().saveUser(userObj);  // Enregistrez l'utilisateur avec la méthode saveUser()
+
+      // Mettre à jour l'état de connexion à true
+      await SessionManager().setIsLogged(true);  // Marquer l'utilisateur comme connecté
+
       print("✅ Finalize signup success: ${responseData['message']}");
+      print("🔒 User saved to session: $userObj");
     } else {
       print('❌ Error finalizing signup: ${response.statusCode}');
     }
   }
-  
+
+
+  Future<Map<String, dynamic>> getUserData(String userId) async {
+    print("🔍 Fetching user data for userId: $userId");
+    final String apiUrl = "${Const().url}/auth/yesser/hetDonnee/$userId";
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+
+        // Exemple d'accès aux données
+        print("✅ User name: ${responseData['user']['name']}");
+        print("📧 Email: ${responseData['user']['email']}");
+        print("🖼️ Image: ${responseData['user']['image']}");
+        print("📱 Phone: ${responseData['user']['phoneNumber']}");
+
+        // Retourner les données nécessaires (utilisateur et profils)
+        return {
+          'user': responseData['user'],
+          'profiles': responseData['profiles'],
+        };
+      } else {
+        print('❌ Error fetching user data: ${response.statusCode}');
+        return {}; // Retourner un objet vide en cas d'erreur
+      }
+    } catch (e) {
+      print('❌ Exception occurred: $e');
+      return {}; // Retourner un objet vide en cas d'exception
+    }
+  }
+
+
+
+
+
+
   // Updated to use the dynamically provided packId
   Future<Map<String, dynamic>> sendConfirmationEmail(String packId, String email, String userName) async {
     try {

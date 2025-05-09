@@ -10,8 +10,18 @@ plugins {
 
 android {
     namespace = "tn.esprit.piminnovictus"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+
+    // yassin ta7an
+//    compileSdk = flutter.compileSdkVersion
+//    ndkVersion = flutter.ndkVersion
+
+
+
+    //yesser
+    compileSdk = 35
+    ndkVersion = "29.0.13113456"
+
+
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -29,7 +39,15 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         //minSdk = flutter.minSdkVersion
         minSdkVersion 23       // Augmente à 23
-        targetSdk = flutter.targetSdkVersion
+
+        // yassin ta7an
+//        targetSdk = flutter.targetSdkVersion
+
+
+        ///////// yesser
+        targetSdk = 35
+
+
         //versionCode = flutter.versionCode
         //versionName = flutter.versionName
         versionCode 1 
