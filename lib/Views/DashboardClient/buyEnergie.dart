@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:piminnovictus/Models/Transaction%20.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
+import 'package:piminnovictus/Providers/TransferStateProvider.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/Const.dart';
 import 'package:piminnovictus/Services/profile_service.dart';
@@ -166,76 +167,133 @@ Future<bool> _checkPassword() async {
   final SocketService _socketService = SocketService();
   double surplusAvail = 0.0;
 
-@override
+ @override
   void initState() {
     super.initState();
     _loadWalletData();
-    //fetchTokenBalance(this.accountId.toString(),this.privateKey.toString());
-    _socketService.connectToSocket((data) {
-      if (mounted) {
-        setState(() {
-          surplusAvail = data['totalSurplusAvail'] is num
-              ? double.parse((data['totalSurplusAvail'] as num).toStringAsFixed(2))
-              : 0.0;
-        });
-      }
-      print("-----------------------------print(surplusAvail);---------------------------------");
-      print(surplusAvail);
-    });
+    
+    // Access the TransferStateProvider
+    final transferProvider = Provider.of<TransferStateProvider>(context, listen: false);
+    
+    // Create socket service with transfer provider
+    _socketService.connectToSocket(
+      (data) {
+        if (mounted) {
+          setState(() {
+            surplusAvail = data['totalEnergy'] is num
+                ? double.parse((data['totalEnergy'] as num).toStringAsFixed(2))
+                : 0.0;
+          });
+        }
+        print("-----------------------------print(surplusAvail);---------------------------------");
+        print(surplusAvail);
+      },
+      transferProvider: transferProvider,
+    );
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
-
-
-    final languageProvider =
-        Provider.of<LanguageProvider>(context, listen: false);
-
-    // Récupérer le ThemeProvider
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     final themeProvider = Provider.of<ThemeProvider>(context);
-
-    final theme = themeProvider.currentTheme ??
-        ThemeData
-            .light(); // Ajouter une valeur par défaut au cas où le thème est null
+    final transferProvider = Provider.of<TransferStateProvider>(context);
+    final theme = themeProvider.currentTheme ?? ThemeData.light();
 
     return Scaffold(
       extendBody: true,
-
-      backgroundColor: theme
-          .scaffoldBackgroundColor, // Ajout d'une couleur de fond par défaut
+      backgroundColor: theme.scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            BlurredRadialBackground(
-              height: MediaQuery.of(context).size.height,
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                    ),
-                    _buildEnergyIndicator(theme),
-                    const SizedBox(height: 20),
-                    _buildStepProgress(theme),
-                    const SizedBox(height: 20),
-                    _buildStepContent(),
-                    const SizedBox(height: 30),
-                    _buildNavigationButtons(),
-                    const SizedBox(
-                        height:
-                            20), // Pour éviter que les boutons soient collés en bas
-                  ],
-                ),
+      body: Stack(
+        children: [
+          BlurredRadialBackground(
+            height: MediaQuery.of(context).size.height,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                  ),
+                  _buildEnergyIndicator(theme),
+                  const SizedBox(height: 20),
+                  _buildStepProgress(theme),
+                  const SizedBox(height: 20),
+                  _buildStepContent(),
+                  const SizedBox(height: 30),
+                  _buildNavigationButtons(),
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+          // Affiche une alerte personnalisée si un transfert est en cours
+          if (transferProvider.isTransferInProgress)
+            _buildTransferInProgressAlert(context, transferProvider.transferMessage),
+        ],
       ),
     );
   }
 
+Widget _buildTransferInProgressAlert(BuildContext context, String message) {
+  final theme = Theme.of(context);
+  return Container(
+    color: Colors.black.withOpacity(0.6),
+    child: Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.85,
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: theme.cardColor.withOpacity(0.95),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              spreadRadius: 5,
+              blurRadius: 10,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Icône animée
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.hourglass_empty,
+                color: theme.colorScheme.primary,
+                size: 40,
+              ),
+            ),
+            SizedBox(height: 20),
+            // Titre
+            Text(
+              AppLocalizations.of(context).translate("transfer_in_progress") ?? "Transfer in Progress",
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: theme.textTheme.titleLarge?.color,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            // Indicateur de progression
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+            ),
+            SizedBox(height: 20),
+            // Message supprimé
+          ],
+        ),
+      ),
+    ),
+  );
+}
   Widget _buildEnergyIndicator(ThemeData theme) {
     return Column(
       children: [

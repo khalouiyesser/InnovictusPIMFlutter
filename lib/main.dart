@@ -4,7 +4,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
+import 'package:piminnovictus/Providers/TransferStateProvider.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
+import 'package:piminnovictus/Services/socket_service.dart';
 import 'package:piminnovictus/Views/DashboardClient/ConnectWallet.dart';
 import 'package:piminnovictus/Views/DashboardClient/Dashboard.dart';
 import 'package:piminnovictus/Views/DashboardClient/WalletCreatePasswordPage.dart';
@@ -57,6 +59,7 @@ void main() async {
     final languageProvider = LanguageProvider();
     final sessionManager = SessionManager();
     final isLoggedIn = await sessionManager.isLoggedIn();
+final socketService = SocketService();
 
     await Future.wait([
       themeProvider.init(),
@@ -75,7 +78,11 @@ void main() async {
           BlocProvider(
             create: (context) => WeatherBlocBloc(),
           ),
+              ChangeNotifierProvider(
+      create: (context) => TransferStateProvider(),
+    ),
           ChangeNotifierProvider(create: (_) => WalletViewModel()),
+   
         ],
         child: MyApp(isLoggedIn: isLoggedIn),
       ),
