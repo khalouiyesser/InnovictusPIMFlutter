@@ -57,6 +57,17 @@ class SessionManager {
     return isLogged && (token != null && token.isNotEmpty);
   }
 
+  Future<bool> isLoggedInYesser() async {
+    // Vérifier si l'utilisateur est marqué comme connecté dans le stockage
+    bool isLogged = await getIsLogged();
+
+    // Vérifier si un token valide est présent
+    // String? token = await getAccessToken();  // Vous devez définir cette méthode ailleurs
+
+    // Retourner true si l'utilisateur est connecté (par isLogged ou par le token)
+    return isLogged;
+  }
+
   // Save user session
   /* Future<void> saveSession({
     required String token,
@@ -78,6 +89,19 @@ class SessionManager {
     await Future.wait([
       _storage.write(key: _keyAccessToken, value: token),
       _storage.write(key: _keyRefreshToken, value: userData['refreshToken']),
+      _storage.write(key: _keyUserId, value: userData['userId']),
+      _storage.write(key: _keyUserData, value: json.encode(userData)),
+    ]);
+    print(userData);
+    // Add user to recent users list
+    await addRecentUser(userData);
+  }
+  Future<void> saveSessionAA({
+
+    required Map<String, dynamic> userData,
+  }) async {
+    print("userData before saving: $userData");
+    await Future.wait([
       _storage.write(key: _keyUserId, value: userData['userId']),
       _storage.write(key: _keyUserData, value: json.encode(userData)),
     ]);

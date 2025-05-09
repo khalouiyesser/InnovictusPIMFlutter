@@ -56,8 +56,11 @@ void main() async {
     final themeProvider = ThemeProvider();
     final languageProvider = LanguageProvider();
     final sessionManager = SessionManager();
-    final isLoggedIn = await sessionManager.isLoggedIn();
+    final isLoggedIn = await sessionManager.isLoggedInYesser();
 
+    print("11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
+    print(isLoggedIn);
+    print("9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999");
     await Future.wait([
       themeProvider.init(),
       languageProvider.initializeLocale(),
@@ -90,6 +93,10 @@ class MyApp extends StatelessWidget {
   final bool isLoggedIn;
 
   const MyApp({Key? key, required this.isLoggedIn}) : super(key: key);
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
