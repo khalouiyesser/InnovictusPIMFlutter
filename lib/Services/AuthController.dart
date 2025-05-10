@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:piminnovictus/Models/Auth/signup_response.dart';
 import 'package:piminnovictus/Services/Const.dart';
 import 'package:http/http.dart' as http;
+import 'package:piminnovictus/Views/AuthViews/login_view.dart';
 import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 
@@ -167,7 +168,8 @@ Future<SignupResponse> signupSimple({
           Navigator.of(context).pushReplacement(
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) => 
-                BottomNavBarExample(),
+                //ajbouni//BottomNavBarExample(),
+              LoginView(),
               transitionDuration: Duration.zero,
               reverseTransitionDuration: Duration.zero,
             ),
@@ -401,7 +403,8 @@ Future<SignupResponse?> signUpWithGoogle(BuildContext context) async {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) => 
-            BottomNavBarExample(),
+            //ajbouni//BottomNavBarExample(),
+            LoginView(),
           transitionDuration: Duration.zero,
           reverseTransitionDuration: Duration.zero,
         ),
@@ -473,7 +476,8 @@ Future<SignupResponse?> signUpWithGoogle(BuildContext context) async {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) => 
-              BottomNavBarExample(),
+              //ajbouni//BottomNavBarExample(),
+              LoginView(),
           transitionDuration: Duration.zero,
           reverseTransitionDuration: Duration.zero,
         ),

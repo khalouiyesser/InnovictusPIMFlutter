@@ -119,6 +119,55 @@ class ProfileService {
 
 
 //
+// Updated transaction method that supports batching multiple recipients
+Future<Map<String, dynamic>> transaction({
+  required String senderId,
+  required List<String> receiverIds,  // Now accepts a list of receiver IDs
+  required List<double> amounts,      // Now accepts a list of amounts
+  required String senderPrivateKey,
+}) async {
+  try {
+    // Input validation
+    if (receiverIds.isEmpty || amounts.isEmpty) {
+      throw Exception('Receiver IDs and amounts cannot be empty');
+    }
+    
+    if (receiverIds.length != amounts.length) {
+      throw Exception('Receiver IDs and amounts must have the same length');
+    }
+    
+    final url = Uri.parse('$baseBcUrl/transferTokens');
+
+    // Log what we're about to send
+    print('📤 Sending batch transaction to $receiverIds with amounts $amounts');
+    
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'senderId': senderId,
+        'receiverIds': receiverIds,  // Already a list
+        'amounts': amounts,          // Already a list
+        'senderPrivateKey': senderPrivateKey,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      print('✅ Batch transaction success: $data');
+      return data;
+    } else {
+      print('🔴 Batch transaction failed: ${response.statusCode} - ${response.body}');
+      throw Exception('Failed batch transaction: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('🔴 Error calling /transferTokens: $e');
+    throw Exception('Transaction error: $e');
+  }
+}
+/*
 Future<Map<String, dynamic>> transaction({
     required String senderId,
     required String receiverId,
@@ -135,8 +184,8 @@ Future<Map<String, dynamic>> transaction({
         },
         body: json.encode({
           'senderId': senderId,
-          'receiverId': receiverId,
-          'amount': amount,
+          'receiverIds': [receiverId],  // Wrap in list
+          'amounts': [amount], 
           'senderPrivateKey': senderPrivateKey,
         }),
       );
@@ -154,8 +203,7 @@ Future<Map<String, dynamic>> transaction({
       throw Exception('Transaction error: $e');
     }
   }
-
-
+*/
 
 
 

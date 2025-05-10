@@ -85,7 +85,7 @@ Future<void> fetchTokenBalance(String operatorAccountId, String operatorPrivateK
   }
 }
 
-
+/*
 Future<bool> handleTransferAndSendTokens(double quantity) async {
   try {
     final List<dynamic> usersList =
@@ -110,18 +110,56 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
         amount: price,
         senderPrivateKey: this.privateKey.toString(),
       );
-      print("🔁 Transaction result for $receiverId: $result");
-      final result2 = await profileService.transaction(
-        senderId: this.accountId.toString(),
-        receiverId: "0.0.5492800",
-        amount: price*0.01,
-        senderPrivateKey: this.privateKey.toString(),
-      );
-      print("🔁 Transaction result for Greeno: $result2");
+      print("🔁 Transaction result for Greeno: $result");
       
     }
 
     return true; // ✅ Success
+  } catch (e) {
+    print("❌ Error during transfer and token distribution: $e");
+    return false; // ❌ Failure
+  }
+}
+*/
+// Updated method to handle transfers in a single batch transaction
+Future<bool> handleTransferAndSendTokens(double quantity) async {
+  try {
+    final List<dynamic> usersList = await profileService.transfer(quantity.toString());
+    print("✅ Received users list: $usersList");
+
+    // Filter out users without wallets and prepare batch data
+    final List<String> validReceiverIds = [];
+    final List<double> validAmounts = [];
+
+    for (var user in usersList) {
+      final int amount = user['amount'];
+      final double price = amount * 2.5;
+      final String? receiverId = user['wallet'];
+
+      if (receiverId == null || receiverId.isEmpty) {
+        print("⚠️ Skipping user with no wallet: $user");
+        continue;
+      }
+
+      validReceiverIds.add(receiverId);
+      validAmounts.add(price);
+    }
+
+    // If there are valid receivers, process the batch transaction
+    if (validReceiverIds.isNotEmpty) {
+      final result = await profileService.transaction(
+        senderId: this.accountId.toString(),
+        receiverIds: validReceiverIds,
+        amounts: validAmounts,
+        senderPrivateKey: this.privateKey.toString(),
+      );
+      
+      print("🔁 Batch transaction result for Greeno tokens: $result");
+      return true; // ✅ Success
+    } else {
+      print("⚠️ No valid recipients found for token distribution");
+      return false; // No transactions were made
+    }
   } catch (e) {
     print("❌ Error during transfer and token distribution: $e");
     return false; // ❌ Failure
