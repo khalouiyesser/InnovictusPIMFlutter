@@ -112,7 +112,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                 child: const CircleAvatar(
                                   radius: 24,
                                   backgroundImage:
-                                      AssetImage('assets/yassine.jpg'),
+                                      AssetImage('assets/user.jpg'),
                                 ),
                               ),
                               const Text('10 Février, 2025',

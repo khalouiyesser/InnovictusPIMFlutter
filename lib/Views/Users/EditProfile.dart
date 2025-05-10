@@ -538,7 +538,7 @@ Future<void> _updateUserProfile() async {
                                   radius: 50,
                                   backgroundImage: _image != null
                                       ? FileImage(_image!)
-                                      : const AssetImage('assets/yassine.jpg')
+                                      : const AssetImage('assets/user.jpg')
                                           as ImageProvider,
                                 ),
                                 Positioned(

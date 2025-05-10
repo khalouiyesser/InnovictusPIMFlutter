@@ -120,11 +120,17 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
                 width: widget.borderWidth,
               ),
             ),
+
+
+
+            //lahneee tetsala7 pdp
+
+            ////////////////////////////////////////////// hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
             child: CircleAvatar(
               radius: widget.customRadius,
               backgroundImage: viewModel.currentProfile?.imageUrl != null
                   ? NetworkImage(viewModel.currentProfile!.imageUrl!)
-                  : const AssetImage('assets/yassine.jpg') as ImageProvider,
+                  : const AssetImage('assets/user.jpg') as ImageProvider,
             ),
           ),
           itemBuilder: (BuildContext context) => [
@@ -171,7 +177,7 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
         children: [
           CircleAvatar(
             radius: 20,
-             backgroundImage: AssetImage('assets/yassine.jpg'),
+             backgroundImage: AssetImage('assets/user.jpg'),
 ),
           const SizedBox(width: 12),
           Expanded(
@@ -222,7 +228,7 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
           children: [
             CircleAvatar(
               radius: 20,
-                           backgroundImage: AssetImage('assets/yassine.jpg'),
+                           backgroundImage: AssetImage('assets/user.jpg'),
 
             ),
             const SizedBox(width: 12),

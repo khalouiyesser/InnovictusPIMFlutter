@@ -80,7 +80,7 @@ class TeamSection extends StatelessWidget {
             name: "Yassine Ajbouni",
             email: "yassine.ajbouni@esprit.tn",
             phone: "+216 23 990 938",
-            image: "assets/yassine.jpg",
+            image: "assets/user.jpg",
             linkedinUrl:
                 "https://www.linkedin.com/in/yassine-ajbouni-1616b01a0/",
             nameFontSize: teamMemberNameSize,

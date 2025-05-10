@@ -208,7 +208,7 @@ Future<void> _showSwitchProfileDialog(BuildContext context, String profileName, 
             children: [
               ...viewModel.profilesSortedByCreationDate.map((profile) => ListTile(
                 leading: CircleAvatar(             
-                  backgroundImage: AssetImage('assets/yassine.jpg'),
+                  backgroundImage: AssetImage('assets/user.jpg'),
                 ),
                 title: Text(profile.name),
                 subtitle: Text(
@@ -299,7 +299,7 @@ Future<void> _showSwitchProfileDialog(BuildContext context, String profileName, 
               else
                 ..._recentUsers.map((user) => ListTile(
                   leading: CircleAvatar(
-                                 backgroundImage: AssetImage('assets/yassine.jpg'),
+                                 backgroundImage: AssetImage('assets/user.jpg'),
 
                     backgroundColor: Colors.grey.shade200,
                   ),

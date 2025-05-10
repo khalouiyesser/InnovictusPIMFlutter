@@ -245,7 +245,7 @@ Future<void> saveUser(User user) async {
     await _storage.write(key: _keyEmail, value: email);
     print("Email de l'utilisateur sauvegardé dans la session : $email");
   }
-  Future<String?> getEmail() async {
+    Future<String?> getEmail() async {
     return await _storage.read(key: _keyEmail);
   }
 

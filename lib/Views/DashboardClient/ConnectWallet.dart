@@ -324,7 +324,7 @@ class _ConnectWalletPageState extends State<ConnectWalletPage> {
                         const CircleAvatar(
                           radius: 24,
                           backgroundImage: AssetImage(
-                            'assets/yassine.jpg',
+                            'assets/user.jpg',
                           ),
                         ),
                         const SizedBox(width: 12),

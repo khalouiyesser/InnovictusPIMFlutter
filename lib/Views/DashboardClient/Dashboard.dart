@@ -30,6 +30,8 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final SessionManager _sessionManager = SessionManager();
   User? currentUser;
+  ProfileSwitcherViewModel profileLoader = ProfileSwitcherViewModel();
+
 
   late WebSocketChannel channel;
 
@@ -135,8 +137,7 @@ class _DashboardPageState extends State<DashboardPage> {
     // _initialize();
     _loadUserData();
     _requestLocationPermission();
-
-
+    profileLoader.loadProfiles;
 
     _socketService.connectToSocket((data) {
       if (mounted) {
@@ -276,7 +277,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 // return const CircleAvatar(
                                 //   radius: 24,
                                 //   backgroundImage:
-                                //       AssetImage('assets/yassine.jpg'),
+                                //       AssetImage('assets/user.jpg'),
                                 // );
                                 return ProfileSwitcherDropdown(
                                   customRadius: screenWidth * 0.06,
