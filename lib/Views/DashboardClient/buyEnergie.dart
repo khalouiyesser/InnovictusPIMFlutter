@@ -85,43 +85,8 @@ Future<void> fetchTokenBalance(String operatorAccountId, String operatorPrivateK
   }
 }
 
-/*
-Future<bool> handleTransferAndSendTokens(double quantity) async {
-  try {
-    final List<dynamic> usersList =
-        await profileService.transfer(quantity.toString());
 
-    print("✅ Received users list: $usersList");
-
-    for (var user in usersList) {
-      final int amount = user['amount'];
-      final double price = amount * 0.25;
-
-      final String? receiverId = user['wallet'];
-
-      if (receiverId == null) {
-        print("⚠️ Skipping user with no wallet: $user");
-        continue;
-      }
-
-      final result = await profileService.transaction(
-        senderId: this.accountId.toString(),
-        receiverId: receiverId,
-        amount: price,
-        senderPrivateKey: this.privateKey.toString(),
-      );
-      print("🔁 Transaction result for Greeno: $result");
-      
-    }
-
-    return true; // ✅ Success
-  } catch (e) {
-    print("❌ Error during transfer and token distribution: $e");
-    return false; // ❌ Failure
-  }
-}
-*/
-// Updated method to handle transfers in a single batch transaction
+// Fixed method to handle transfers in a single batch transaction
 Future<bool> handleTransferAndSendTokens(double quantity) async {
   try {
     final List<dynamic> usersList = await profileService.transfer(quantity.toString());
@@ -129,11 +94,15 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
 
     // Filter out users without wallets and prepare batch data
     final List<String> validReceiverIds = [];
-    final List<double> validAmounts = [];
+    final List<double> validsPrices = [];
 
-    for (var user in usersList) {
-      final int amount = user['amount'];
-      final double price = amount * 2.5;
+    for (var user in usersList) { 
+      // Cast or convert numeric values to double explicitly
+      final double powers = (user['amount'] is int) 
+          ? (user['amount'] as int).toDouble() 
+          : (user['amount'] as double);
+          
+      final double price = powers;  // No need for conversion here
       final String? receiverId = user['wallet'];
 
       if (receiverId == null || receiverId.isEmpty) {
@@ -142,7 +111,9 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
       }
 
       validReceiverIds.add(receiverId);
-      validAmounts.add(price);
+      validsPrices.add(price);
+      print("validReceiverIds $validReceiverIds");
+      print("validsPrices $validsPrices");
     }
 
     // If there are valid receivers, process the batch transaction
@@ -150,7 +121,7 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
       final result = await profileService.transaction(
         senderId: this.accountId.toString(),
         receiverIds: validReceiverIds,
-        amounts: validAmounts,
+        prices: validsPrices,
         senderPrivateKey: this.privateKey.toString(),
       );
       
@@ -165,6 +136,7 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
     return false; // ❌ Failure
   }
 }
+
 ////////////////
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
@@ -421,7 +393,7 @@ Future<bool> _checkPassword() async {
             onChanged: (value) {
               setState(() {
                 _quantity = double.tryParse(value) ?? 0;
-                _coin = _quantity * 2.5;
+                _coin = _quantity ;
               });
             },
           ),
@@ -649,7 +621,6 @@ Widget _buildCodeBox(int index) {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          //EnergyPurchaseConfirmationPage(energyAmount: _quantity),
                           BottomNavBarExample(),
                     ),
                   );

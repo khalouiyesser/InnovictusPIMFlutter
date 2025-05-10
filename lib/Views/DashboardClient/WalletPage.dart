@@ -130,31 +130,6 @@ class _WalletPageState extends State<WalletPage> {
                     Padding(
                       padding: const EdgeInsets.all(0),
                     ), // Décalage pour éviter le chevauchement du bouton
-
-                    // // Header (avatar + nom)
-                    // Row(
-                    //   children: [
-                    //     const CircleAvatar(
-                    //       radius: 24,
-                    //       backgroundImage: AssetImage(
-                    //         'assets/user.jpg',
-                    //       ),
-                    //     ),
-                    //     const SizedBox(width: 12),
-                    //     Expanded(
-                    //       child: currentUser == null
-                    //           ? const CircularProgressIndicator()
-                    //           : Text(
-                    //               currentUser!.name,
-                    //               style: theme.textTheme.titleLarge?.copyWith(
-                    //                 fontSize: screenWidth * 0.05,
-                    //                 fontWeight: FontWeight.bold,
-                    //               ),
-                    //               overflow: TextOverflow.ellipsis,
-                    //             ),
-                    //     ),
-                    //   ],
-                    // ),
                     
 Align(
   alignment: Alignment.centerLeft,
@@ -257,10 +232,6 @@ Align(
                             //initState();
                             print("*********** Claim button pressed");
                             print(coinCounter);
-                            // setState(() {
-                            //   generatedEnergy = 0;
-                            //   coinCounter = 0; // Compute whole numbers
-                            // });
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context).colorScheme.primary, // Button color

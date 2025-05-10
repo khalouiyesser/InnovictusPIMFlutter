@@ -120,26 +120,27 @@ class ProfileService {
 
 //
 // Updated transaction method that supports batching multiple recipients
+/*
 Future<Map<String, dynamic>> transaction({
   required String senderId,
   required List<String> receiverIds,  // Now accepts a list of receiver IDs
-  required List<double> amounts,      // Now accepts a list of amounts
+  required List<double> prices,      // Now accepts a list of powers
   required String senderPrivateKey,
 }) async {
   try {
     // Input validation
-    if (receiverIds.isEmpty || amounts.isEmpty) {
-      throw Exception('Receiver IDs and amounts cannot be empty');
+    if (receiverIds.isEmpty || prices.isEmpty) {
+      throw Exception('Receiver IDs and powers cannot be empty');
     }
     
-    if (receiverIds.length != amounts.length) {
-      throw Exception('Receiver IDs and amounts must have the same length');
+    if (receiverIds.length != prices.length) {
+      throw Exception('Receiver IDs and powers must have the same length');
     }
     
     final url = Uri.parse('$baseBcUrl/transferTokens');
 
     // Log what we're about to send
-    print('📤 Sending batch transaction to $receiverIds with amounts $amounts');
+    print('📤 Sending batch transaction to $receiverIds with powers $prices');
     
     final response = await http.post(
       url,
@@ -149,7 +150,7 @@ Future<Map<String, dynamic>> transaction({
       body: json.encode({
         'senderId': senderId,
         'receiverIds': receiverIds,  // Already a list
-        'amounts': amounts,          // Already a list
+        'amounts': prices,          // Already a list
         'senderPrivateKey': senderPrivateKey,
       }),
     );
@@ -167,56 +168,55 @@ Future<Map<String, dynamic>> transaction({
     throw Exception('Transaction error: $e');
   }
 }
-/*
-Future<Map<String, dynamic>> transaction({
-    required String senderId,
-    required String receiverId,
-    required double amount,
-    required String senderPrivateKey,
-  }) async {
-    try {
-      final url = Uri.parse('$baseBcUrl/transferTokens');
-
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'senderId': senderId,
-          'receiverIds': [receiverId],  // Wrap in list
-          'amounts': [amount], 
-          'senderPrivateKey': senderPrivateKey,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        print('✅ Transaction success: $data');
-        return data;
-      } else {
-        print('🔴 Transaction failed: ${response.statusCode} - ${response.body}');
-        throw Exception('Failed transaction: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('🔴 Error calling /transferTokens: $e');
-      throw Exception('Transaction error: $e');
-    }
-  }
 */
+// Updated transaction method that supports batching multiple recipients
+Future<Map<String, dynamic>> transaction({
+  required String senderId,
+  required List<String> receiverIds,  // Now accepts a list of receiver IDs
+  required List<double> prices,      // Now accepts a list of prices (must be double)
+  required String senderPrivateKey,
+}) async {
+  try {
+    // Input validation
+    if (receiverIds.isEmpty || prices.isEmpty) {
+      throw Exception('Receiver IDs and prices cannot be empty');
+    }
+    
+    if (receiverIds.length != prices.length) {
+      throw Exception('Receiver IDs and prices must have the same length');
+    }
+    
+    final url = Uri.parse('$baseBcUrl/transferTokens');
+
+    // Log what we're about to send
+    print('📤 Sending batch transaction to $receiverIds with prices $prices');
+    
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'senderId': senderId,
+        'receiverIds': receiverIds,  // Already a list
+        'amounts': prices,          // Already a list of doubles
+        'senderPrivateKey': senderPrivateKey,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      print('✅ Batch transaction success: $data');
+      return data;
+    } else {
+      print('🔴 Batch transaction failed: ${response.statusCode} - ${response.body}');
+      throw Exception('Failed batch transaction: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('🔴 Error calling /transferTokens: $e');
+    throw Exception('Transaction error: $e');
+  }
+}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-  // Other API methods...
 }
