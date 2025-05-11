@@ -80,8 +80,9 @@ class ProfileService {
           print("**********************************tryyyy");
       // Prepare the request body
       final Map<String, dynamic> body = {
-        'quantite': quantite,
+        'amount': quantite,
       };
+      print("useeeeeeeer hne d profile service wakt transfer+ $userId");
 
       // Send the POST request to the API
       final response = await http.post(

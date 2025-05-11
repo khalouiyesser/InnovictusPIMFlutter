@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:piminnovictus/Models/Transaction%20.dart';
 import 'package:piminnovictus/Models/config/Theme/theme_provider.dart';
 import 'package:piminnovictus/Models/config/language/translations.dart';
+import 'package:piminnovictus/Providers/TransferStateProvider.dart';
 import 'package:piminnovictus/Providers/language_provider.dart';
 import 'package:piminnovictus/Services/Const.dart';
 import 'package:piminnovictus/Services/profile_service.dart';
@@ -31,22 +32,28 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
   double _coin = 0.0;
   List<String> _codeDigits = List.filled(4, "");
 
-// Instantiate ProfileService (make sure to pass the base URL and session manager properly)
-final profileService = ProfileService(
-  baseUrl: Const().url, // Your base URL here
-  sessionManager: SessionManager(),
-);
+  // Instantiate ProfileService (make sure to pass the base URL and session manager properly)
+  final profileService = ProfileService(
+    baseUrl: Const().url, // Your base URL here
+    sessionManager: SessionManager(),
+  );
 
   get screenWidth => MediaQuery.of(context).size.width;
 
-String? accountId;
-String? privateKey;
+  String? accountId;
+  String? privateKey;
+  String? userId;
 
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   Future<void> _loadWalletData() async {
-     this.privateKey = await secureStorage.read(key: 'privateKey');
-     this.accountId = await secureStorage.read(key: 'accountId');
-
+    this.privateKey = await secureStorage.read(key: 'privateKey');
+    this.accountId = await secureStorage.read(key: 'accountId');
+this.userId = await SessionManager().getUserId();    
+    // Update the transfer state provider with current userId
+    if (userId != null) {
+      final transferProvider = Provider.of<TransferStateProvider>(context, listen: false);
+      transferProvider.setUserId(userId!);
+    }
     if (accountId != null && privateKey != null) {
       print('-****************CCC***********************-');
       print('Account ID: $accountId');
@@ -58,32 +65,33 @@ String? privateKey;
       print('-****************CCC***********************-');
     }
 
-  fetchTokenBalance(accountId.toString(),privateKey.toString());
+    fetchTokenBalance(accountId.toString(), privateKey.toString());
   }
 
-String _tokenBalance = "0";
-String get tokenBalance => _tokenBalance;
-final String baseBcUrl = "${Const().urlBlockChain}";
-Future<void> fetchTokenBalance(String operatorAccountId, String operatorPrivateKey) async {
-  try {
-    final uri = Uri.parse(
-      "$baseBcUrl/tokenBalance"
-      "?operatorAccountId=$operatorAccountId&operatorPrivateKey=$operatorPrivateKey",
-    );
+  String _tokenBalance = "0";
+  String get tokenBalance => _tokenBalance;
+  final String baseBcUrl = "${Const().urlBlockChain}";
+  Future<void> fetchTokenBalance(String operatorAccountId, String operatorPrivateKey) async {
+    try {
+      final uri = Uri.parse(
+        "$baseBcUrl/tokenBalance"
+        "?operatorAccountId=$operatorAccountId&operatorPrivateKey=$operatorPrivateKey",
+      );
 
-    final response = await http.get(uri);
+      final response = await http.get(uri);
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      _tokenBalance = data["balance"].toString();
-      
-    } else {
-      throw Exception("Failed to fetch balance: ${response.reasonPhrase}");
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _tokenBalance = data["balance"].toString();
+        });
+      } else {
+        throw Exception("Failed to fetch balance: ${response.reasonPhrase}");
+      }
+    } catch (error) {
+      print("❌ Error fetching token balance: $error");
     }
-  } catch (error) {
-    print("❌ Error fetching token balance: $error");
   }
-}
 
 
 // Fixed method to handle transfers in a single batch transaction
@@ -113,12 +121,15 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
 
       validReceiverIds.add(receiverId);
       validsPrices.add(price);
-      print("validReceiverIds $validReceiverIds");
-      print("validReceiverIds $validReceiverIds");
-      print("token recivers  ");
-    }
 
       
+    }
+
+      print("token recivers  ");
+      print("validReceiverIds $validReceiverIds");
+      print("validReceiverIds $validReceiverIds");
+
+
       comission = quantity * 0.02 ;
       // Rounding logic
       int x = comission.floor();
@@ -130,12 +141,15 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
         validsPrices.add(comission);
       } else {
         comission = x.toDouble();
+        validReceiverIds.add("0.0.5492800");
+        validsPrices.add(comission);
       }
       print("----------------------------------------------------- comission : $comission");
       // validsPrices.add(comission);
-      print("validReceiverIds $validReceiverIds");
-      print("validReceiverIds $validReceiverIds");
       print("token recievers with our comission");
+      print("validReceiverIds 22 $validReceiverIds");
+      print("validReceiverIds 22 $validReceiverIds");
+      
 
 
     // If there are valid receivers, process the batch transaction
@@ -164,7 +178,7 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
   bool _isPasswordVisible = false;
   String? _errorMessage;
 
-Future<bool> _checkPassword() async {
+  Future<bool> _checkPassword() async {
     String? storedPassword = await secureStorage.read(key: 'walletPassword');
     print("**************_check Wallet Password Srarted ********************");
     String enteredPassword = _passwordController.text.trim();
@@ -191,18 +205,21 @@ Future<bool> _checkPassword() async {
       });
       return false;
     }
-    print("**************_check Wallet Password ENDED ********************");
   }
 
-  late WebSocketChannel channel;
-  final SocketService _socketService = SocketService();
+  late SocketService _socketService;
   double surplusAvail = 0.0;
 
-@override
+  @override
   void initState() {
     super.initState();
     _loadWalletData();
-    //fetchTokenBalance(this.accountId.toString(),this.privateKey.toString());
+    
+    // Create a reference to the transfer state provider
+    final transferProvider = Provider.of<TransferStateProvider>(context, listen: false);
+    
+    // Initialize socket service with transfer provider
+    _socketService = SocketService();
     _socketService.connectToSocket((data) {
       if (mounted) {
         setState(() {
@@ -213,28 +230,28 @@ Future<bool> _checkPassword() async {
       }
       print("-----------------------------print(surplusAvail);---------------------------------");
       print(surplusAvail);
-    });
+    }, transferStateProvider: transferProvider);
+  }
+
+  @override
+  void dispose() {
+    _socketService.disconnect();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
-
-    final languageProvider =
-        Provider.of<LanguageProvider>(context, listen: false);
-
-    // Récupérer le ThemeProvider
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     final themeProvider = Provider.of<ThemeProvider>(context);
-
-    final theme = themeProvider.currentTheme ??
-        ThemeData
-            .light(); // Ajouter une valeur par défaut au cas où le thème est null
+    final theme = themeProvider.currentTheme ?? ThemeData.light();
+    
+    // Listen to transfer state changes
+    final transferProvider = Provider.of<TransferStateProvider>(context);
+    final bool isTransferInProgress = transferProvider.state != TransferState.idle;
 
     return Scaffold(
       extendBody: true,
-
-      backgroundColor: theme
-          .scaffoldBackgroundColor, // Ajout d'une couleur de fond par défaut
+      backgroundColor: theme.scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
       body: SafeArea(
         child: Stack(
@@ -255,20 +272,21 @@ Future<bool> _checkPassword() async {
                     _buildStepContent(),
                     const SizedBox(height: 30),
                     _buildNavigationButtons(),
-                    const SizedBox(
-                        height:
-                            20), // Pour éviter que les boutons soient collés en bas
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
             ),
+            // Overlay that blocks interaction when a transfer is in progress
+            if (isTransferInProgress)
+              _buildTransferOverlay(transferProvider, theme),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildEnergyIndicator(ThemeData theme) {
+ Widget _buildEnergyIndicator(ThemeData theme) {
     return Column(
       children: [
         Text(
@@ -295,7 +313,6 @@ Future<bool> _checkPassword() async {
                   ),
                 ),
                 Text(
-                  //"250KW",
                   '${this.surplusAvail} ${AppLocalizations.of(context).translate('KW')}',
                   style: theme.textTheme.headlineLarge?.copyWith(
                     fontSize: screenWidth * 0.1,
@@ -338,14 +355,12 @@ Future<bool> _checkPassword() async {
                     height: 2,
                     color: isActive
                         ? theme.colorScheme.primary
-                        : Color.fromARGB(255, 162, 162,
-                            162), // Utilisation de colorScheme.secondary
+                        : Color.fromARGB(255, 162, 162, 162),
                   ),
                 CircleAvatar(
                   backgroundColor: isActive
                       ? theme.colorScheme.secondary
-                      : Color.fromARGB(255, 171, 171,
-                          171), // Utilisation de colorScheme.secondary
+                      : Color.fromARGB(255, 171, 171, 171),
                   radius: 18,
                   child: Icon(
                     icons[index],
@@ -438,7 +453,6 @@ Future<bool> _checkPassword() async {
     return Column(
       children: [
         Text(
-          // AppLocalizations.of(context).translate("enter_code"),
           "Enter Your Wallet Password",
           style: theme.textTheme.titleMedium
               ?.copyWith(fontSize: screenWidth * 0.04),
@@ -451,89 +465,56 @@ Future<bool> _checkPassword() async {
       ],
     );
   }
-/*
+
   Widget _buildCodeBox(int index) {
     final theme = Theme.of(context);
 
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5),
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: theme.cardColor.withOpacity(0.70),
-        border: Border.all(
-          color: theme.colorScheme.primary.withOpacity(0.88) ??
-              MyThemes.primaryColor.withOpacity(0.11),
-          width: 1,
-        ),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: TextField(
-        textAlign: TextAlign.center,
-        style: theme.textTheme.bodyLarge,
-        keyboardType: TextInputType.number,
-        maxLength: 1,
-        decoration: InputDecoration(counterText: "", border: InputBorder.none),
-        onChanged: (value) {
-          setState(() {
-            _codeDigits[index] = value;
-          });
-        },
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: _passwordController,
+            obscureText: !_isPasswordVisible,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: theme.cardColor.withOpacity(0.70),
+              hintText: 'Password',
+              hintStyle: theme.textTheme.bodyLarge?.copyWith(
+                fontSize: screenWidth * 0.03,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  color: theme.iconTheme.color,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isPasswordVisible = !_isPasswordVisible;
+                  });
+                },
+              ),
+            ),
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontSize: screenWidth * 0.04,
+            ),
+          ),
+          if (_errorMessage != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
+                _errorMessage!,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
+        ],
       ),
     );
-   }*/
-
-///
-Widget _buildCodeBox(int index) {
-  final theme = Theme.of(context);
-
-  return Expanded(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TextField(
-          controller: _passwordController,
-          obscureText: !_isPasswordVisible,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: theme.cardColor.withOpacity(0.70),
-            hintText: 'Password',
-            hintStyle: theme.textTheme.bodyLarge?.copyWith(
-              fontSize: screenWidth * 0.03,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-            suffixIcon: IconButton(
-              icon: Icon(
-                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                color: theme.iconTheme.color,
-              ),
-              onPressed: () {
-                setState(() {
-                  _isPasswordVisible = !_isPasswordVisible;
-                });
-              },
-            ),
-          ),
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontSize: screenWidth * 0.04,
-          ),
-        ),
-        if (_errorMessage != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Text(
-              _errorMessage!,
-              style: const TextStyle(color: Colors.red),
-            ),
-          ),
-      ],
-    ),
-  );
-}
-
+  }
 
   Widget _buildConfirmation() {
     final theme = Theme.of(context);
@@ -547,142 +528,196 @@ Widget _buildCodeBox(int index) {
           ),
         ),
         const SizedBox(height: 10),
-        // Text(
-        //   AppLocalizations.of(context).translate("check_email"),
-        //   style: TextStyle(color: const Color(0xFF29E33C)),
-        // ),
       ],
     );
   }
-
-  Widget _buildNavigationButtons() {
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 30),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Opacity(
-            opacity: _currentStep == 0 ? 0 : 1.0,
-            child: ElevatedButton(
-              onPressed: _currentStep > 0
-                  ? () => setState(() => _currentStep--)
-                  : null,
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15)),
-              child: Text(AppLocalizations.of(context).translate("back"),
-                  style: TextStyle(color: Colors.white, fontSize: 16)),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() async {
-                if (_currentStep == 0) {
-                  bool hasEnough = this._coin < double.parse(this._tokenBalance);
-                  print("fffffffffffffffffffffffffffffffffffffffffff   "+this._tokenBalance);
-                  bool thersEnoughSur = this._quantity <= this.surplusAvail && this._quantity > 0  ;
-
-                  if (!hasEnough || !thersEnoughSur) {
-                    String message = '';
-
-                    if (!hasEnough && !thersEnoughSur) {
-                      message = "Not enough coins AND not enough surplus.";
-                    } else if (!hasEnough) {
-                      message = "You don't have enough coins.";
-                    } else if (!thersEnoughSur) {
-                      message = "Not enough surplus available.";
-                    }
-
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text("Validation Error"),
-                        content: Text(message),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: Text("OK"),
-                          ),
-                        ],
-                      ),
-                    );
-                    return;
-                  }
-                }
-                 if (_currentStep == 1) {
-                if (await _checkPassword()) {
-                    // do something if password is valid
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text("Invalid Password"),
-                        content: Text(_errorMessage ?? "Incorrect password. Please try again."),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: Text("OK"),
-                          )
-                        ],
-                      ),
-                    );
-                    return;
-                  }
-              }
-                if (_currentStep < 2) {
-                  _currentStep++;
-                }
-                else {
-                print("---------------------------------------------------- preseeeeeed");
-                bool success = await handleTransferAndSendTokens(_quantity);
-                if (success) {
-                  // ✅ Navigate to confirmation page only if successful
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          BottomNavBarExample(),
-                    ),
-                  );
-                } else {
-                  // ❌ Show error dialog instead
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text(
-                          "Transaction Failed",
-                          style: TextStyle(color: Colors.red),
-                        ),
-                        content: const Text("Something went wrong!! Your coins still on your wallet"),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: const Text("OK",style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }}
-              });
-            },
-            style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF29E33C),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 15)),
-            child: Text(AppLocalizations.of(context).translate("next"),
-                style: TextStyle(color: Colors.white, fontSize: 16)),
-          ),
-        ],
-      ),
-    );
+  Widget _buildTransferOverlay(TransferStateProvider provider, ThemeData theme) {
+  String message = provider.getStateMessage();
+  String subtitle;
+  IconData statusIcon;
+  Color statusColor;
+  
+  switch (provider.state) {
+    case TransferState.transferring:
+      statusIcon = Icons.upload;
+      statusColor = Colors.blue;
+      subtitle = "Transfert d'énergie en cours.";
+      break;
+    case TransferState.receiving:
+      statusIcon = Icons.download;
+      statusColor = Colors.green;
+      subtitle = "Réception d'énergie en cours.";
+      break;
+    case TransferState.systemBusy:
+      statusIcon = Icons.access_time;
+      statusColor = Colors.orange;
+      subtitle = "Opération de transfert en cours par d'autres utilisateurs.";
+      break;
+    default:
+      statusIcon = Icons.info;
+      statusColor = theme.colorScheme.primary;
+      subtitle = "Traitement en cours...";
   }
+
+  return Container(
+    color: Colors.black.withOpacity(0.7),
+    width: double.infinity,
+    height: double.infinity,
+    child: Center(
+      child: Card(
+        margin: EdgeInsets.symmetric(horizontal: 40),
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(statusIcon, size: 48, color: statusColor),
+              SizedBox(height: 16),
+              CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(statusColor)),
+              SizedBox(height: 20),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium,
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
-// Classe pour dessiner l'indicateur circulaire
+Widget _buildNavigationButtons() {
+  final transferProvider = Provider.of<TransferStateProvider>(context);
+  final bool isTransferInProgress = transferProvider.state != TransferState.idle;
+
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: 30),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Opacity(
+          opacity: _currentStep == 0 ? 0 : 1.0,
+          child: ElevatedButton(
+            onPressed: isTransferInProgress ? null : (_currentStep > 0 ? () => setState(() => _currentStep--) : null),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.grey,
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+            ),
+            child: Text(
+              AppLocalizations.of(context).translate("back"),
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: isTransferInProgress
+              ? () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text(AppLocalizations.of(context).translate("operation_in_progress")),
+                      content: Text(transferProvider.getStateMessage()),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: Text(AppLocalizations.of(context).translate("ok")),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              : () async {
+                  if (_currentStep == 0) {
+                    bool hasEnough = _coin <= double.parse(_tokenBalance);
+                    bool thersEnoughSur = _quantity <= surplusAvail && _quantity > 0;
+
+                    if (!hasEnough || !thersEnoughSur) {
+                      String message = '';
+                      if (!hasEnough && !thersEnoughSur) {
+                        message = "Not enough coins AND not enough surplus.";
+                      } else if (!hasEnough) {
+                        message = "You don't have enough coins.";
+                      } else if (!thersEnoughSur) {
+                        message = "Not enough surplus available.";
+                      }
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text("Validation Error"),
+                          content: Text(message),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: Text("OK"),
+                            ),
+                          ],
+                        ),
+                      );
+                      return;
+                    }
+                    setState(() => _currentStep++);
+                  } else if (_currentStep == 1) {
+                    if (await _checkPassword()) {
+                      setState(() => _currentStep++);
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text("Invalid Password"),
+                          content: Text(_errorMessage ?? "Incorrect password. Please try again."),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: Text("OK"),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  } else {
+                    bool success = await handleTransferAndSendTokens(_quantity);
+                    if (success) {
+                      // Wait for transferComplete before navigating (handled by provider)
+                      // Navigation will occur after transferComplete resets the state
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text("Transaction Failed", style: TextStyle(color: Colors.red)),
+                          content: Text("Something went wrong! Your coins are still in your wallet."),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: Text("OK", style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  }
+                },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFF29E33C),
+            padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+          ),
+          child: Text(
+            AppLocalizations.of(context).translate("next"),
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+}// Classe pour dessiner l'indicateur circulaire
 class CircularProgressPainter extends CustomPainter {
   final double percentage;
 
