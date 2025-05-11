@@ -56,11 +56,9 @@ void main() async {
     final themeProvider = ThemeProvider();
     final languageProvider = LanguageProvider();
     final sessionManager = SessionManager();
-    final isLoggedIn = await sessionManager.isLoggedInYesser();
+    final isLoggedIn = await sessionManager.isLoggedIn();
+final socketService = SocketService();
 
-    print("11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
-    print(isLoggedIn);
-    print("9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999");
     await Future.wait([
       themeProvider.init(),
       languageProvider.initializeLocale(),
@@ -78,7 +76,11 @@ void main() async {
           BlocProvider(
             create: (context) => WeatherBlocBloc(),
           ),
+              ChangeNotifierProvider(
+      create: (context) => TransferStateProvider(),
+    ),
           ChangeNotifierProvider(create: (_) => WalletViewModel()),
+
         ],
         child: MyApp(isLoggedIn: isLoggedIn),
       ),
@@ -93,10 +95,6 @@ class MyApp extends StatelessWidget {
   final bool isLoggedIn;
 
   const MyApp({Key? key, required this.isLoggedIn}) : super(key: key);
-
-
-
-
 
   @override
   Widget build(BuildContext context) {

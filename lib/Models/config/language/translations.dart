@@ -319,7 +319,9 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
    "enterNewPassword": "Enter New Password",
   "passwordsDoNotMatch": "Passwords do not match!",
   "passwordRequireNumber": "Password must contain at least one number!",
-
+'transfer_in_progress': 'Transfer in Progress',
+      'wait_for_transfer': 'Please wait until the transfer is complete to proceed with your energy purchase.',
+      'navigate_freely': 'You can still navigate to other sections using the bottom bar.',
 
 
 
@@ -645,8 +647,10 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
   "incorrectCode": "Code incorrect, veuillez réessayer.",
   "enterNewPassword": "Entrer le nouveau mot de passe",
   "passwordsDoNotMatch": "Les mots de passe ne correspondent pas !",
-  "passwordRequireNumber": "Le mot de passe doit contenir au moins un chiffre !"
-
+  "passwordRequireNumber": "Le mot de passe doit contenir au moins un chiffre !",
+'transfer_in_progress': 'Transfert en cours',
+      'wait_for_transfer': "Veuillez attendre la fin du transfert pour procéder à votre achat d'énergie.",
+      'navigate_freely': 'Vous pouvez toujours naviguer vers d\'autres sections en utilisant la barre inférieure.',
 },
 };
 

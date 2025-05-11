@@ -9,30 +9,50 @@ class TransactionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      //color: transaction.type == "buy" ? Colors.green[100] : const Color.fromARGB(255, 109, 109, 109),
-      color: const Color.fromARGB(255, 109, 109, 109),
+      color: const Color.fromARGB(55, 109, 109, 109),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: ListTile(
         leading: Icon(
-          transaction.type == "buy" ? Icons.arrow_downward : Icons.arrow_upward,
-          color: transaction.type == "buy" ? Colors.green : Colors.red,
+          transaction.type == "sell" ? Icons.arrow_downward : Icons.arrow_upward,
+          color: transaction.type == "sell" ? Colors.green : Colors.red,
         ),
-        title: Text(
-          "Power: ${transaction.power.toStringAsFixed(2)}",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text("Amount: ${transaction.amount.toStringAsFixed(2)} GRE"),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        title: Row(
           children: [
-            Text("Price: ${transaction.price.toStringAsFixed(2)}"),
             Text(
-              transaction.type.toUpperCase(),
+              "Power: ${transaction.power.toStringAsFixed(2)}",
               style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: transaction.type == "sell" ? Colors.green.withOpacity(0.2) : Colors.red.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                transaction.type.toUpperCase(),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: transaction.type == "sell" ? Colors.green[800] : Colors.red[800],
+                ),
+              ),
             ),
           ],
         ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Price: ${transaction.price?.toStringAsFixed(2) ?? 'N/A'} GRE"),
+            Text(
+              "Date: ${transaction.date.day}/${transaction.date.month}/${transaction.date.year} ${transaction.date.hour}:${transaction.date.minute.toString().padLeft(2, '0')}",
+              style: TextStyle(fontSize: 12),
+            ),
+          ],
+        ),
+        isThreeLine: true,
       ),
     );
+ 
   }
 }

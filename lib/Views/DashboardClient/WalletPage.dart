@@ -41,11 +41,13 @@ class _WalletPageState extends State<WalletPage> {
 
   double generatedEnergy = 0.0;
   int coinCounter = 0;
+  String accountId = "";
   
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   Future<void> _loadWalletData() async {
     String? privateKey = await secureStorage.read(key: 'privateKey');
-    String? accountId = await secureStorage.read(key: 'accountId');
+    //String? accountId = await secureStorage.read(key: 'accountId');
+    accountId = await secureStorage.read(key: 'accountId') ?? "0.0.x";
 
     if (accountId != null && privateKey != null) {
       print('-****************AAA***********************-');
@@ -130,56 +132,31 @@ class _WalletPageState extends State<WalletPage> {
                     Padding(
                       padding: const EdgeInsets.all(0),
                     ), // Décalage pour éviter le chevauchement du bouton
-
-                    // // Header (avatar + nom)
-                    // Row(
-                    //   children: [
-                    //     const CircleAvatar(
-                    //       radius: 24,
-                    //       backgroundImage: AssetImage(
-                    //         'assets/user.jpg',
-                    //       ),
-                    //     ),
-                    //     const SizedBox(width: 12),
-                    //     Expanded(
-                    //       child: currentUser == null
-                    //           ? const CircularProgressIndicator()
-                    //           : Text(
-                    //               currentUser!.name,
-                    //               style: theme.textTheme.titleLarge?.copyWith(
-                    //                 fontSize: screenWidth * 0.05,
-                    //                 fontWeight: FontWeight.bold,
-                    //               ),
-                    //               overflow: TextOverflow.ellipsis,
-                    //             ),
-                    //     ),
-                    //   ],
-                    // ),
                     
-Align(
-  alignment: Alignment.centerLeft,
- child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => BottomNavBarExample()), // Navigate to Contact Page (index 2)
-                      (route) => false, // Remove all previous routes from the stack
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    // backgroundColor: Colors.white.withOpacity(0.4),
-                    backgroundColor:  Color(0xFF161E35).withOpacity(0.4),
-                    padding: const EdgeInsets.all(12),
-                    shape: const CircleBorder(),
-                    elevation: 2,
-                  ),
-                  child: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 24,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => BottomNavBarExample()), // Navigate to Contact Page (index 2)
+                        (route) => false, // Remove all previous routes from the stack
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      // backgroundColor: Colors.white.withOpacity(0.4),
+                      backgroundColor:  Color(0xFF161E35).withOpacity(0.4),
+                      padding: const EdgeInsets.all(12),
+                      shape: const CircleBorder(),
+                      elevation: 2,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                   ),
                 ),
-),
                     const SizedBox(height: 0),
 
                     // Solde principal centré et responsive
@@ -240,31 +217,30 @@ Align(
                     ),
                     const SizedBox(height: 10),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildInfoCard(
-                          context,
-                          AppLocalizations.of(context).translate('Generated Energy'),
-                          '${this.generatedEnergy} ${AppLocalizations.of(context).translate('kwh')}',
-                          Icons.flash_on,
-                          '${this.coinCounter}',
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.63, // Adjust width as needed (e.g., 60% of screen)
+                          child: _buildInfoCard(
+                            context,
+                            AppLocalizations.of(context).translate('Generated Energy'),
+                            '${this.generatedEnergy} ${AppLocalizations.of(context).translate('kwh')}',
+                            Icons.flash_on,
+                            '${this.coinCounter}',
+                          ),
                         ),
-                        const SizedBox(width: 30), // Add spacing between the card and button
+                        const SizedBox(width: 16),
                         ElevatedButton(
                           onPressed: () {
-                            // Add your claim logic here
-                            Transaction.mintTokens(coinCounter);
+                             print("*********** Claim button pressed  $accountId");
+                            Transaction.mintTokens(coinCounter,accountId);
                             _loadWalletData();
-                            //initState();
                             print("*********** Claim button pressed");
                             print(coinCounter);
-                            // setState(() {
-                            //   generatedEnergy = 0;
-                            //   coinCounter = 0; // Compute whole numbers
-                            // });
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.primary, // Button color
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -274,7 +250,7 @@ Align(
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white, // Adjust text color
+                              color: Colors.white,
                             ),
                           ),
                         ),
