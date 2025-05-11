@@ -147,7 +147,6 @@ class _WebViewPageYesserState extends State<WebViewPageYesser> {
                         _isLoading = false;
                         _statusMessage = result['message'] ?? 'Profil créé avec succès';
                       });
-t
                       Navigator.of(context).pop();
                       Navigator.of(context).pop();
                       Navigator.of(context).pushReplacement(
