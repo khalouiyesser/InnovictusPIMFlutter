@@ -20,6 +20,9 @@ import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
 
+import 'Providers/TransferStateProvider.dart';
+import 'Services/socket_service.dart';
+
 /*Future<Position> _determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;

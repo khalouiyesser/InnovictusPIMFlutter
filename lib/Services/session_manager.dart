@@ -144,16 +144,29 @@ class SessionManager {
   }
 
   // Clear session (logout)
+
   Future<void> clearSession() async {
     await Future.wait([
       _storage.delete(key: _keyAccessToken),
       _storage.delete(key: _keyRefreshToken),
       _storage.delete(key: _keyUserId),
       _storage.delete(key: _keyUserData),
-
+      _storage.delete(key: 'privateKey'),
+      _storage.delete(key: 'accountId'),
     ]);
     this.setIsLogged(false);
   }
+
+  // Future<void> clearSession() async {
+  //   await Future.wait([
+  //     _storage.delete(key: _keyAccessToken),
+  //     _storage.delete(key: _keyRefreshToken),
+  //     _storage.delete(key: _keyUserId),
+  //     _storage.delete(key: _keyUserData),
+  //
+  //   ]);
+  //   this.setIsLogged(false);
+  // }
 
   Future<User?> getCurrentUser() async {
     final userData = await getSessionData();
