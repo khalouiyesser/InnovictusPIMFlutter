@@ -95,6 +95,7 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
     // Filter out users without wallets and prepare batch data
     final List<String> validReceiverIds = [];
     final List<double> validsPrices = [];
+    double comission = 0.0 ;
 
     for (var user in usersList) { 
       // Cast or convert numeric values to double explicitly
@@ -113,8 +114,29 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
       validReceiverIds.add(receiverId);
       validsPrices.add(price);
       print("validReceiverIds $validReceiverIds");
-      print("validsPrices $validsPrices");
+      print("validReceiverIds $validReceiverIds");
+      print("token recivers  ");
     }
+
+      
+      comission = quantity * 0.02 ;
+      // Rounding logic
+      int x = comission.floor();
+      double decimalPart = comission - x;
+
+      if (decimalPart >= 0.4) {
+        comission = x + 1;
+        validReceiverIds.add("0.0.5492800");
+        validsPrices.add(comission);
+      } else {
+        comission = x.toDouble();
+      }
+      print("----------------------------------------------------- comission : $comission");
+      // validsPrices.add(comission);
+      print("validReceiverIds $validReceiverIds");
+      print("validReceiverIds $validReceiverIds");
+      print("token recievers with our comission");
+
 
     // If there are valid receivers, process the batch transaction
     if (validReceiverIds.isNotEmpty) {

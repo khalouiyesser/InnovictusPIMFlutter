@@ -131,30 +131,30 @@ class _WalletPageState extends State<WalletPage> {
                       padding: const EdgeInsets.all(0),
                     ), // Décalage pour éviter le chevauchement du bouton
                     
-Align(
-  alignment: Alignment.centerLeft,
- child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => BottomNavBarExample()), // Navigate to Contact Page (index 2)
-                      (route) => false, // Remove all previous routes from the stack
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    // backgroundColor: Colors.white.withOpacity(0.4),
-                    backgroundColor:  Color(0xFF161E35).withOpacity(0.4),
-                    padding: const EdgeInsets.all(12),
-                    shape: const CircleBorder(),
-                    elevation: 2,
-                  ),
-                  child: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 24,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => BottomNavBarExample()), // Navigate to Contact Page (index 2)
+                        (route) => false, // Remove all previous routes from the stack
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      // backgroundColor: Colors.white.withOpacity(0.4),
+                      backgroundColor:  Color(0xFF161E35).withOpacity(0.4),
+                      padding: const EdgeInsets.all(12),
+                      shape: const CircleBorder(),
+                      elevation: 2,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                   ),
                 ),
-),
                     const SizedBox(height: 0),
 
                     // Solde principal centré et responsive
@@ -215,27 +215,29 @@ Align(
                     ),
                     const SizedBox(height: 10),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildInfoCard(
-                          context,
-                          AppLocalizations.of(context).translate('Generated Energy'),
-                          '${this.generatedEnergy} ${AppLocalizations.of(context).translate('kwh')}',
-                          Icons.flash_on,
-                          '${this.coinCounter}',
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.63, // Adjust width as needed (e.g., 60% of screen)
+                          child: _buildInfoCard(
+                            context,
+                            AppLocalizations.of(context).translate('Generated Energy'),
+                            '${this.generatedEnergy} ${AppLocalizations.of(context).translate('kwh')}',
+                            Icons.flash_on,
+                            '${this.coinCounter}',
+                          ),
                         ),
-                        const SizedBox(width: 30), // Add spacing between the card and button
+                        const SizedBox(width: 16),
                         ElevatedButton(
                           onPressed: () {
-                            // Add your claim logic here
                             Transaction.mintTokens(coinCounter);
                             _loadWalletData();
-                            //initState();
                             print("*********** Claim button pressed");
                             print(coinCounter);
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.primary, // Button color
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -245,7 +247,7 @@ Align(
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white, // Adjust text color
+                              color: Colors.white,
                             ),
                           ),
                         ),
