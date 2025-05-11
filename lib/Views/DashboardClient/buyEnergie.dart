@@ -32,22 +32,28 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
   double _coin = 0.0;
   List<String> _codeDigits = List.filled(4, "");
 
-// Instantiate ProfileService (make sure to pass the base URL and session manager properly)
-final profileService = ProfileService(
-  baseUrl: Const().url, // Your base URL here
-  sessionManager: SessionManager(),
-);
+  // Instantiate ProfileService (make sure to pass the base URL and session manager properly)
+  final profileService = ProfileService(
+    baseUrl: Const().url, // Your base URL here
+    sessionManager: SessionManager(),
+  );
 
   get screenWidth => MediaQuery.of(context).size.width;
 
-String? accountId;
-String? privateKey;
+  String? accountId;
+  String? privateKey;
+  String? userId;
 
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   Future<void> _loadWalletData() async {
-     this.privateKey = await secureStorage.read(key: 'privateKey');
-     this.accountId = await secureStorage.read(key: 'accountId');
-
+    this.privateKey = await secureStorage.read(key: 'privateKey');
+    this.accountId = await secureStorage.read(key: 'accountId');
+this.userId = await SessionManager().getUserId();    
+    // Update the transfer state provider with current userId
+    if (userId != null) {
+      final transferProvider = Provider.of<TransferStateProvider>(context, listen: false);
+      transferProvider.setUserId(userId!);
+    }
     if (accountId != null && privateKey != null) {
       print('-****************CCC***********************-');
       print('Account ID: $accountId');
@@ -59,81 +65,99 @@ String? privateKey;
       print('-****************CCC***********************-');
     }
 
-  fetchTokenBalance(accountId.toString(),privateKey.toString());
+    fetchTokenBalance(accountId.toString(), privateKey.toString());
   }
 
-String _tokenBalance = "0";
-String get tokenBalance => _tokenBalance;
-final String baseBcUrl = "${Const().urlBlockChain}";
-Future<void> fetchTokenBalance(String operatorAccountId, String operatorPrivateKey) async {
-  try {
-    final uri = Uri.parse(
-      "$baseBcUrl/tokenBalance"
-      "?operatorAccountId=$operatorAccountId&operatorPrivateKey=$operatorPrivateKey",
-    );
+  String _tokenBalance = "0";
+  String get tokenBalance => _tokenBalance;
+  final String baseBcUrl = "${Const().urlBlockChain}";
+  Future<void> fetchTokenBalance(String operatorAccountId, String operatorPrivateKey) async {
+    try {
+      final uri = Uri.parse(
+        "$baseBcUrl/tokenBalance"
+        "?operatorAccountId=$operatorAccountId&operatorPrivateKey=$operatorPrivateKey",
+      );
 
-    final response = await http.get(uri);
+      final response = await http.get(uri);
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      _tokenBalance = data["balance"].toString();
-      
-    } else {
-      throw Exception("Failed to fetch balance: ${response.reasonPhrase}");
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _tokenBalance = data["balance"].toString();
+        });
+      } else {
+        throw Exception("Failed to fetch balance: ${response.reasonPhrase}");
+      }
+    } catch (error) {
+      print("❌ Error fetching token balance: $error");
     }
-  } catch (error) {
-    print("❌ Error fetching token balance: $error");
   }
-}
 
+  // Fixed method to handle transfers in a single batch transaction
+  Future<bool> handleTransferAndSendTokens(double quantity) async {
+    try {
+      // Get reference to transfer provider
+      final transferProvider = Provider.of<TransferStateProvider>(context, listen: false);
+      
+      final List<dynamic> usersList = await profileService.transfer(quantity.toString());
+      print("✅ Received users list: $usersList");
 
-Future<bool> handleTransferAndSendTokens(double quantity) async {
-  try {
-    final List<dynamic> usersList =
-        await profileService.transfer(quantity.toString());
+      // Filter out users without wallets and prepare batch data
+      final List<String> validReceiverIds = [];
+      final List<double> validsPrices = [];
 
-    print("✅ Received users list: $usersList");
+      for (var user in usersList) {
+        // Cast or convert numeric values to double explicitly
+        final double powers = (user['amount'] is int)
+            ? (user['amount'] as int).toDouble()
+            : (user['amount'] as double);
 
-    for (var user in usersList) {
-      final int amount = user['amount'];
-      final double price = amount * 0.25;
+        final double price = powers; // No need for conversion here
+        final String? receiverId = user['wallet'];
 
-      final String? receiverId = user['wallet'];
+        if (receiverId == null || receiverId.isEmpty) {
+          print("⚠️ Skipping user with no wallet: $user");
+          continue;
+        }
 
-      if (receiverId == null) {
-        print("⚠️ Skipping user with no wallet: $user");
-        continue;
+        validReceiverIds.add(receiverId);
+        validsPrices.add(price);
+        print("validReceiverIds $validReceiverIds");
+        print("validsPrices $validsPrices");
+        print("/////////////////////////////////////////////////////////////////////user connecté ye hadhemi  + $userId");
+
       }
 
-      final result = await profileService.transaction(
-        senderId: this.accountId.toString(),
-        receiverId: receiverId,
-        amount: price,
-        senderPrivateKey: this.privateKey.toString(),
-      );
-      print("🔁 Transaction result for $receiverId: $result");
-      final result2 = await profileService.transaction(
-        senderId: this.accountId.toString(),
-        receiverId: "0.0.5492800",
-        amount: price*0.01,
-        senderPrivateKey: this.privateKey.toString(),
-      );
-      print("🔁 Transaction result for Greeno: $result2");
-      
+      // If there are valid receivers, process the batch transaction
+      if (validReceiverIds.isNotEmpty) {
+        // Notify via socket that we're starting a transfer (will be picked up by socket listeners)
+        // This is assuming your backend emits a 'startTransfer' event on socket when transfer API is called
+        // If not, you might need to manually call transferProvider.startTransfer() here
+        
+        final result = await profileService.transaction(
+          senderId: this.accountId.toString(),
+          receiverIds: validReceiverIds,
+          prices: validsPrices,
+          senderPrivateKey: this.privateKey.toString(),
+        );
+        
+        print("🔁 Batch transaction result for Greeno tokens: $result");
+        return true; // ✅ Success
+      } else {
+        print("⚠️ No valid recipients found for token distribution");
+        return false; // No transactions were made
+      }
+    } catch (e) {
+      print("❌ Error during transfer and token distribution: $e");
+      return false; // ❌ Failure
     }
-
-    return true; // ✅ Success
-  } catch (e) {
-    print("❌ Error during transfer and token distribution: $e");
-    return false; // ❌ Failure
   }
-}
-////////////////
+
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   String? _errorMessage;
 
-Future<bool> _checkPassword() async {
+  Future<bool> _checkPassword() async {
     String? storedPassword = await secureStorage.read(key: 'walletPassword');
     print("**************_check Wallet Password Srarted ********************");
     String enteredPassword = _passwordController.text.trim();
@@ -160,141 +184,88 @@ Future<bool> _checkPassword() async {
       });
       return false;
     }
-    print("**************_check Wallet Password ENDED ********************");
   }
 
-  late WebSocketChannel channel;
-  final SocketService _socketService = SocketService();
+  late SocketService _socketService;
   double surplusAvail = 0.0;
 
- @override
+  @override
   void initState() {
     super.initState();
     _loadWalletData();
     
-    // Access the TransferStateProvider
+    // Create a reference to the transfer state provider
     final transferProvider = Provider.of<TransferStateProvider>(context, listen: false);
     
-    // Create socket service with transfer provider
-    _socketService.connectToSocket(
-      (data) {
-        if (mounted) {
-          setState(() {
-            surplusAvail = data['totalEnergy'] is num
-                ? double.parse((data['totalEnergy'] as num).toStringAsFixed(2))
-                : 0.0;
-          });
-        }
-        print("-----------------------------print(surplusAvail);---------------------------------");
-        print(surplusAvail);
-      },
-      transferProvider: transferProvider,
-    );
+    // Initialize socket service with transfer provider
+    _socketService = SocketService();
+    _socketService.connectToSocket((data) {
+      if (mounted) {
+        setState(() {
+          surplusAvail = data['totalSurplusAvail'] is num
+              ? double.parse((data['totalSurplusAvail'] as num).toStringAsFixed(2))
+              : 0.0;
+        });
+      }
+      print("-----------------------------print(surplusAvail);---------------------------------");
+      print(surplusAvail);
+    }, transferStateProvider: transferProvider);
   }
 
-@override
+  @override
+  void dispose() {
+    _socketService.disconnect();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final transferProvider = Provider.of<TransferStateProvider>(context);
     final theme = themeProvider.currentTheme ?? ThemeData.light();
+    
+    // Listen to transfer state changes
+    final transferProvider = Provider.of<TransferStateProvider>(context);
+    final bool isTransferInProgress = transferProvider.state != TransferState.idle;
 
     return Scaffold(
       extendBody: true,
       backgroundColor: theme.scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
-          BlurredRadialBackground(
-            height: MediaQuery.of(context).size.height,
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                  ),
-                  _buildEnergyIndicator(theme),
-                  const SizedBox(height: 20),
-                  _buildStepProgress(theme),
-                  const SizedBox(height: 20),
-                  _buildStepContent(),
-                  const SizedBox(height: 30),
-                  _buildNavigationButtons(),
-                  const SizedBox(height: 20),
-                ],
+      body: SafeArea(
+        child: Stack(
+          children: [
+            BlurredRadialBackground(
+              height: MediaQuery.of(context).size.height,
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                    ),
+                    _buildEnergyIndicator(theme),
+                    const SizedBox(height: 20),
+                    _buildStepProgress(theme),
+                    const SizedBox(height: 20),
+                    _buildStepContent(),
+                    const SizedBox(height: 30),
+                    _buildNavigationButtons(),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
-          ),
-          // Affiche une alerte personnalisée si un transfert est en cours
-          if (transferProvider.isTransferInProgress)
-            _buildTransferInProgressAlert(context, transferProvider.transferMessage),
-        ],
+            // Overlay that blocks interaction when a transfer is in progress
+            if (isTransferInProgress)
+              _buildTransferOverlay(transferProvider, theme),
+          ],
+        ),
       ),
     );
   }
 
-Widget _buildTransferInProgressAlert(BuildContext context, String message) {
-  final theme = Theme.of(context);
-  return Container(
-    color: Colors.black.withOpacity(0.6),
-    child: Center(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.85,
-        padding: EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: theme.cardColor.withOpacity(0.95),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 5,
-              blurRadius: 10,
-              offset: Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Icône animée
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.hourglass_empty,
-                color: theme.colorScheme.primary,
-                size: 40,
-              ),
-            ),
-            SizedBox(height: 20),
-            // Titre
-            Text(
-              AppLocalizations.of(context).translate("transfer_in_progress") ?? "Transfer in Progress",
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: theme.textTheme.titleLarge?.color,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 20),
-            // Indicateur de progression
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
-            ),
-            SizedBox(height: 20),
-            // Message supprimé
-          ],
-        ),
-      ),
-    ),
-  );
-}
-  Widget _buildEnergyIndicator(ThemeData theme) {
+ Widget _buildEnergyIndicator(ThemeData theme) {
     return Column(
       children: [
         Text(
@@ -321,7 +292,6 @@ Widget _buildTransferInProgressAlert(BuildContext context, String message) {
                   ),
                 ),
                 Text(
-                  //"250KW",
                   '${this.surplusAvail} ${AppLocalizations.of(context).translate('KW')}',
                   style: theme.textTheme.headlineLarge?.copyWith(
                     fontSize: screenWidth * 0.1,
@@ -364,14 +334,12 @@ Widget _buildTransferInProgressAlert(BuildContext context, String message) {
                     height: 2,
                     color: isActive
                         ? theme.colorScheme.primary
-                        : Color.fromARGB(255, 162, 162,
-                            162), // Utilisation de colorScheme.secondary
+                        : Color.fromARGB(255, 162, 162, 162),
                   ),
                 CircleAvatar(
                   backgroundColor: isActive
                       ? theme.colorScheme.secondary
-                      : Color.fromARGB(255, 171, 171,
-                          171), // Utilisation de colorScheme.secondary
+                      : Color.fromARGB(255, 171, 171, 171),
                   radius: 18,
                   child: Icon(
                     icons[index],
@@ -441,7 +409,7 @@ Widget _buildTransferInProgressAlert(BuildContext context, String message) {
             onChanged: (value) {
               setState(() {
                 _quantity = double.tryParse(value) ?? 0;
-                _coin = _quantity * 2.5;
+                _coin = _quantity;
               });
             },
           ),
@@ -464,7 +432,6 @@ Widget _buildTransferInProgressAlert(BuildContext context, String message) {
     return Column(
       children: [
         Text(
-          // AppLocalizations.of(context).translate("enter_code"),
           "Enter Your Wallet Password",
           style: theme.textTheme.titleMedium
               ?.copyWith(fontSize: screenWidth * 0.04),
@@ -477,89 +444,56 @@ Widget _buildTransferInProgressAlert(BuildContext context, String message) {
       ],
     );
   }
-/*
+
   Widget _buildCodeBox(int index) {
     final theme = Theme.of(context);
 
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5),
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: theme.cardColor.withOpacity(0.70),
-        border: Border.all(
-          color: theme.colorScheme.primary.withOpacity(0.88) ??
-              MyThemes.primaryColor.withOpacity(0.11),
-          width: 1,
-        ),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: TextField(
-        textAlign: TextAlign.center,
-        style: theme.textTheme.bodyLarge,
-        keyboardType: TextInputType.number,
-        maxLength: 1,
-        decoration: InputDecoration(counterText: "", border: InputBorder.none),
-        onChanged: (value) {
-          setState(() {
-            _codeDigits[index] = value;
-          });
-        },
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: _passwordController,
+            obscureText: !_isPasswordVisible,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: theme.cardColor.withOpacity(0.70),
+              hintText: 'Password',
+              hintStyle: theme.textTheme.bodyLarge?.copyWith(
+                fontSize: screenWidth * 0.03,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  color: theme.iconTheme.color,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isPasswordVisible = !_isPasswordVisible;
+                  });
+                },
+              ),
+            ),
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontSize: screenWidth * 0.04,
+            ),
+          ),
+          if (_errorMessage != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
+                _errorMessage!,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
+        ],
       ),
     );
-   }*/
-
-///
-Widget _buildCodeBox(int index) {
-  final theme = Theme.of(context);
-
-  return Expanded(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TextField(
-          controller: _passwordController,
-          obscureText: !_isPasswordVisible,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: theme.cardColor.withOpacity(0.70),
-            hintText: 'Password',
-            hintStyle: theme.textTheme.bodyLarge?.copyWith(
-              fontSize: screenWidth * 0.03,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-            suffixIcon: IconButton(
-              icon: Icon(
-                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                color: theme.iconTheme.color,
-              ),
-              onPressed: () {
-                setState(() {
-                  _isPasswordVisible = !_isPasswordVisible;
-                });
-              },
-            ),
-          ),
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontSize: screenWidth * 0.04,
-          ),
-        ),
-        if (_errorMessage != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Text(
-              _errorMessage!,
-              style: const TextStyle(color: Colors.red),
-            ),
-          ),
-      ],
-    ),
-  );
-}
-
+  }
 
   Widget _buildConfirmation() {
     final theme = Theme.of(context);
@@ -573,143 +507,196 @@ Widget _buildCodeBox(int index) {
           ),
         ),
         const SizedBox(height: 10),
-        // Text(
-        //   AppLocalizations.of(context).translate("check_email"),
-        //   style: TextStyle(color: const Color(0xFF29E33C)),
-        // ),
       ],
     );
   }
-
-  Widget _buildNavigationButtons() {
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 30),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Opacity(
-            opacity: _currentStep == 0 ? 0 : 1.0,
-            child: ElevatedButton(
-              onPressed: _currentStep > 0
-                  ? () => setState(() => _currentStep--)
-                  : null,
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15)),
-              child: Text(AppLocalizations.of(context).translate("back"),
-                  style: TextStyle(color: Colors.white, fontSize: 16)),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() async {
-                if (_currentStep == 0) {
-                  bool hasEnough = this._coin < double.parse(this._tokenBalance);
-                  print("fffffffffffffffffffffffffffffffffffffffffff   "+this._tokenBalance);
-                  bool thersEnoughSur = this._quantity <= this.surplusAvail && this._quantity > 0  ;
-
-                  if (!hasEnough || !thersEnoughSur) {
-                    String message = '';
-
-                    if (!hasEnough && !thersEnoughSur) {
-                      message = "Not enough coins AND not enough surplus.";
-                    } else if (!hasEnough) {
-                      message = "You don't have enough coins.";
-                    } else if (!thersEnoughSur) {
-                      message = "Not enough surplus available.";
-                    }
-
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text("Validation Error"),
-                        content: Text(message),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: Text("OK"),
-                          ),
-                        ],
-                      ),
-                    );
-                    return;
-                  }
-                }
-                 if (_currentStep == 1) {
-                if (await _checkPassword()) {
-                    // do something if password is valid
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text("Invalid Password"),
-                        content: Text(_errorMessage ?? "Incorrect password. Please try again."),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: Text("OK"),
-                          )
-                        ],
-                      ),
-                    );
-                    return;
-                  }
-              }
-                if (_currentStep < 2) {
-                  _currentStep++;
-                }
-                else {
-                print("---------------------------------------------------- preseeeeeed");
-                bool success = await handleTransferAndSendTokens(_quantity);
-                if (success) {
-                  // ✅ Navigate to confirmation page only if successful
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          //EnergyPurchaseConfirmationPage(energyAmount: _quantity),
-                          BottomNavBarExample(),
-                    ),
-                  );
-                } else {
-                  // ❌ Show error dialog instead
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text(
-                          "Transaction Failed",
-                          style: TextStyle(color: Colors.red),
-                        ),
-                        content: const Text("Something went wrong!! Your coins still on your wallet"),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: const Text("OK",style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }}
-              });
-            },
-            style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF29E33C),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 15)),
-            child: Text(AppLocalizations.of(context).translate("next"),
-                style: TextStyle(color: Colors.white, fontSize: 16)),
-          ),
-        ],
-      ),
-    );
+  Widget _buildTransferOverlay(TransferStateProvider provider, ThemeData theme) {
+  String message = provider.getStateMessage();
+  String subtitle;
+  IconData statusIcon;
+  Color statusColor;
+  
+  switch (provider.state) {
+    case TransferState.transferring:
+      statusIcon = Icons.upload;
+      statusColor = Colors.blue;
+      subtitle = "Transfert d'énergie en cours.";
+      break;
+    case TransferState.receiving:
+      statusIcon = Icons.download;
+      statusColor = Colors.green;
+      subtitle = "Réception d'énergie en cours.";
+      break;
+    case TransferState.systemBusy:
+      statusIcon = Icons.access_time;
+      statusColor = Colors.orange;
+      subtitle = "Opération de transfert en cours par d'autres utilisateurs.";
+      break;
+    default:
+      statusIcon = Icons.info;
+      statusColor = theme.colorScheme.primary;
+      subtitle = "Traitement en cours...";
   }
+
+  return Container(
+    color: Colors.black.withOpacity(0.7),
+    width: double.infinity,
+    height: double.infinity,
+    child: Center(
+      child: Card(
+        margin: EdgeInsets.symmetric(horizontal: 40),
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(statusIcon, size: 48, color: statusColor),
+              SizedBox(height: 16),
+              CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(statusColor)),
+              SizedBox(height: 20),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium,
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
-// Classe pour dessiner l'indicateur circulaire
+Widget _buildNavigationButtons() {
+  final transferProvider = Provider.of<TransferStateProvider>(context);
+  final bool isTransferInProgress = transferProvider.state != TransferState.idle;
+
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: 30),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Opacity(
+          opacity: _currentStep == 0 ? 0 : 1.0,
+          child: ElevatedButton(
+            onPressed: isTransferInProgress ? null : (_currentStep > 0 ? () => setState(() => _currentStep--) : null),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.grey,
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+            ),
+            child: Text(
+              AppLocalizations.of(context).translate("back"),
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: isTransferInProgress
+              ? () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text(AppLocalizations.of(context).translate("operation_in_progress")),
+                      content: Text(transferProvider.getStateMessage()),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: Text(AppLocalizations.of(context).translate("ok")),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              : () async {
+                  if (_currentStep == 0) {
+                    bool hasEnough = _coin <= double.parse(_tokenBalance);
+                    bool thersEnoughSur = _quantity <= surplusAvail && _quantity > 0;
+
+                    if (!hasEnough || !thersEnoughSur) {
+                      String message = '';
+                      if (!hasEnough && !thersEnoughSur) {
+                        message = "Not enough coins AND not enough surplus.";
+                      } else if (!hasEnough) {
+                        message = "You don't have enough coins.";
+                      } else if (!thersEnoughSur) {
+                        message = "Not enough surplus available.";
+                      }
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text("Validation Error"),
+                          content: Text(message),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: Text("OK"),
+                            ),
+                          ],
+                        ),
+                      );
+                      return;
+                    }
+                    setState(() => _currentStep++);
+                  } else if (_currentStep == 1) {
+                    if (await _checkPassword()) {
+                      setState(() => _currentStep++);
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text("Invalid Password"),
+                          content: Text(_errorMessage ?? "Incorrect password. Please try again."),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: Text("OK"),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  } else {
+                    bool success = await handleTransferAndSendTokens(_quantity);
+                    if (success) {
+                      // Wait for transferComplete before navigating (handled by provider)
+                      // Navigation will occur after transferComplete resets the state
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text("Transaction Failed", style: TextStyle(color: Colors.red)),
+                          content: Text("Something went wrong! Your coins are still in your wallet."),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: Text("OK", style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  }
+                },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFF29E33C),
+            padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+          ),
+          child: Text(
+            AppLocalizations.of(context).translate("next"),
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+}// Classe pour dessiner l'indicateur circulaire
 class CircularProgressPainter extends CustomPainter {
   final double percentage;
 
