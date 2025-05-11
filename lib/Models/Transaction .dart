@@ -202,8 +202,9 @@ class Transaction {
   }
 
   // Mint Tokens API, adjust according to the response you expect
-  static Future<String> mintTokens(int amount) async {
+  static Future<String> mintTokens(int amount, String accountId) async {
     try {
+      print ("Future<String> mintTokens called here");
       final response = await http.post(
         Uri.parse("$baseBcUrl/mintTokens"),
         headers: {
@@ -211,8 +212,12 @@ class Transaction {
         },
         body: json.encode({
           'amount': amount,
+          'userAccountId': accountId,
         }),
       );
+      
+      print("response.body");
+      print(response.body);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);

@@ -41,11 +41,13 @@ class _WalletPageState extends State<WalletPage> {
 
   double generatedEnergy = 0.0;
   int coinCounter = 0;
+  String accountId = "";
   
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   Future<void> _loadWalletData() async {
     String? privateKey = await secureStorage.read(key: 'privateKey');
-    String? accountId = await secureStorage.read(key: 'accountId');
+    //String? accountId = await secureStorage.read(key: 'accountId');
+    accountId = await secureStorage.read(key: 'accountId') ?? "0.0.x";
 
     if (accountId != null && privateKey != null) {
       print('-****************AAA***********************-');
@@ -230,7 +232,8 @@ class _WalletPageState extends State<WalletPage> {
                         const SizedBox(width: 16),
                         ElevatedButton(
                           onPressed: () {
-                            Transaction.mintTokens(coinCounter);
+                             print("*********** Claim button pressed  $accountId");
+                            Transaction.mintTokens(coinCounter,accountId);
                             _loadWalletData();
                             print("*********** Claim button pressed");
                             print(coinCounter);
