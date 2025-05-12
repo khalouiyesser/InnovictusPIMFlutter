@@ -35,14 +35,14 @@ class _WalletPageState extends State<WalletPage> {
   User? currentUser;
 
   //ajbouni
-  
+
   late WebSocketChannel channel;
   final SocketService _socketService = SocketService();
 
   double generatedEnergy = 0.0;
   int coinCounter = 0;
   String accountId = "";
-  
+
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   Future<void> _loadWalletData() async {
     String? privateKey = await secureStorage.read(key: 'privateKey');
@@ -61,9 +61,9 @@ class _WalletPageState extends State<WalletPage> {
     }
 
     final walletViewModel =
-        Provider.of<WalletViewModel>(context, listen: false);
-    walletViewModel.fetchTokenBalance(accountId!,privateKey!);
-    
+    Provider.of<WalletViewModel>(context, listen: false);
+    walletViewModel.fetchTokenBalance(accountId!, privateKey!);
+
     // Optional wait if needed
     //await Future.delayed(Duration(seconds: 3));
 
@@ -73,7 +73,6 @@ class _WalletPageState extends State<WalletPage> {
     });
   }
 
-  
   @override
   void initState() {
     super.initState();
@@ -84,13 +83,13 @@ class _WalletPageState extends State<WalletPage> {
       if (mounted) {
         setState(() {
           generatedEnergy = data['energyGenerated'] is num
-              ? double.parse((data['energyGenerated'] as num).toStringAsFixed(2))
+              ? double.parse(
+              (data['energyGenerated'] as num).toStringAsFixed(2))
               : 0.0;
           coinCounter = generatedEnergy ~/ 1000; // Compute whole numbers
         });
       }
     });
-
   }
 
   Future<void> _loadUserData() async {
@@ -107,7 +106,7 @@ class _WalletPageState extends State<WalletPage> {
     final walletViewModel = Provider.of<WalletViewModel>(context);
 
     final languageProvider =
-        Provider.of<LanguageProvider>(context, listen: false);
+    Provider.of<LanguageProvider>(context, listen: false);
 
     final theme = Theme.of(context);
     final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
@@ -132,31 +131,34 @@ class _WalletPageState extends State<WalletPage> {
                     Padding(
                       padding: const EdgeInsets.all(0),
                     ), // Décalage pour éviter le chevauchement du bouton
-                    
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => BottomNavBarExample()), // Navigate to Contact Page (index 2)
-                        (route) => false, // Remove all previous routes from the stack
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      // backgroundColor: Colors.white.withOpacity(0.4),
-                      backgroundColor:  Color(0xFF161E35).withOpacity(0.4),
-                      padding: const EdgeInsets.all(12),
-                      shape: const CircleBorder(),
-                      elevation: 2,
+
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    BottomNavBarExample()), // Navigate to Contact Page (index 2)
+                                (route) =>
+                            false, // Remove all previous routes from the stack
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          // backgroundColor: Colors.white.withOpacity(0.4),
+                          backgroundColor: Color(0xFF161E35).withOpacity(0.4),
+                          padding: const EdgeInsets.all(12),
+                          shape: const CircleBorder(),
+                          elevation: 2,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                ),
                     const SizedBox(height: 0),
 
                     // Solde principal centré et responsive
@@ -220,10 +222,12 @@ class _WalletPageState extends State<WalletPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.63, // Adjust width as needed (e.g., 60% of screen)
+                          width: MediaQuery.of(context).size.width *
+                              0.63, // Adjust width as needed (e.g., 60% of screen)
                           child: _buildInfoCard(
                             context,
-                            AppLocalizations.of(context).translate('Generated Energy'),
+                            AppLocalizations.of(context)
+                                .translate('Generated Energy'),
                             '${this.generatedEnergy} ${AppLocalizations.of(context).translate('kwh')}',
                             Icons.flash_on,
                             '${this.coinCounter}',
@@ -231,16 +235,30 @@ class _WalletPageState extends State<WalletPage> {
                         ),
                         const SizedBox(width: 16),
                         ElevatedButton(
-                          onPressed: () {
-                             print("*********** Claim button pressed  $accountId");
-                            Transaction.mintTokens(coinCounter,accountId);
-                            _loadWalletData();
-                            print("*********** Claim button pressed");
-                            print(coinCounter);
+                          onPressed: () async {
+                            print(
+                                "*********** Claim button pressed  $accountId");
+
+                            // Appeler la fonction pour minter les tokens avec la valeur actuelle de coinCounter
+                            await Transaction.mintTokens(
+                                coinCounter, accountId);
+
+                            // Recharger les données du wallet après le mint pour afficher le nouveau solde
+                            await _loadWalletData();
+
+                            // Réinitialiser le compteur d'énergie après réclamation
+                            setState(() {
+                              generatedEnergy = 0.0;
+                              coinCounter = 0;
+                            });
+
+                            print("*********** Claimed $coinCounter tokens");
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.primary,
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            backgroundColor:
+                            Theme.of(context).colorScheme.primary,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -253,7 +271,7 @@ class _WalletPageState extends State<WalletPage> {
                               color: Colors.white,
                             ),
                           ),
-                        ),
+                        )
                       ],
                     ),
                     const SizedBox(height: 32),
@@ -287,7 +305,7 @@ class _WalletPageState extends State<WalletPage> {
                                 itemBuilder: (context, index) {
                                   return TransactionCard(
                                       transaction:
-                                          walletViewModel.transactions[index]);
+                                      walletViewModel.transactions[index]);
                                 },
                               ),
                             ),
@@ -326,95 +344,97 @@ class _WalletPageState extends State<WalletPage> {
   }
 }
 
+// Carte d'information personnalisée
+Widget _buildInfoCard(BuildContext context, String title, String value,
+    IconData icon, String coinCounter) {
+  final theme = Theme.of(context);
+  final size = MediaQuery.of(context).size;
+  final width = size.width;
+  final height = size.height;
+  final cardHeight = height * 0.15; // 15% de la hauteur de l'écran
+  final constrainedHeight = cardHeight.clamp(80.0, 120.0);
+  // Tailles responsives pour les éléments internes
+  final iconSize = width * 0.055; // Taille d'icône responsive
+  final titleFontSize = width * 0.035; // Taille de police du titre responsive
+  final valueFontSize =
+      width * 0.045; // Taille de police de la valeur responsive
+  // Espacement responsive
+  final verticalPadding = height * 0.012;
+  final horizontalPadding = width * 0.03;
+  final iconSpacing = height * 0.008;
+  final titleSpacing = height * 0.003;
 
-
-  // Carte d'information personnalisée
-  Widget _buildInfoCard(
-      BuildContext context, String title, String value, IconData icon,String coinCounter) {
-    final theme = Theme.of(context);
-    final size = MediaQuery.of(context).size;
-    final width = size.width;
-    final height = size.height;
-    final cardHeight = height * 0.15; // 15% de la hauteur de l'écran
-    final constrainedHeight = cardHeight.clamp(80.0, 120.0);
-    // Tailles responsives pour les éléments internes
-    final iconSize = width * 0.055; // Taille d'icône responsive
-    final titleFontSize = width * 0.035; // Taille de police du titre responsive
-    final valueFontSize =
-        width * 0.045; // Taille de police de la valeur responsive
-    // Espacement responsive
-    final verticalPadding = height * 0.012;
-    final horizontalPadding = width * 0.03;
-    final iconSpacing = height * 0.008;
-    final titleSpacing = height * 0.003;
-
-    return Container(
-      height: constrainedHeight,
-      decoration: BoxDecoration(
-        color: theme.cardColor.withOpacity(0.70),
-        border: Border.all(
-          color: theme.colorScheme.primary.withOpacity(0.11) ??
-              const Color.fromRGBO(41, 227, 60, 1).withOpacity(0.11),
-          width: 1,
+  return Container(
+    height: constrainedHeight,
+    decoration: BoxDecoration(
+      color: theme.cardColor.withOpacity(0.70),
+      border: Border.all(
+        color: theme.colorScheme.primary.withOpacity(0.11) ??
+            const Color.fromRGBO(41, 227, 60, 1).withOpacity(0.11),
+        width: 1,
+      ),
+      borderRadius: BorderRadius.circular(15),
+    ),
+    padding: EdgeInsets.symmetric(
+      vertical: verticalPadding,
+      horizontal: horizontalPadding,
+    ),
+    child: Row(
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: theme.colorScheme.primary ?? MyThemes.primaryColor,
+              size: iconSize.clamp(
+                  18.0, 26.0), // Limiter la taille minimale et maximale
+            ),
+            SizedBox(height: titleSpacing),
+            Text(
+              title,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontSize: titleFontSize.clamp(
+                    12.0, 16.0), // Limiter la taille minimale et maximale
+                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+              ),
+            ),
+            SizedBox(height: titleSpacing),
+            Text(
+              value,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontSize: valueFontSize.clamp(
+                    14.0, 20.0), // Limiter la taille minimale et maximale
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      padding: EdgeInsets.symmetric(
-        vertical: verticalPadding,
-        horizontal: horizontalPadding,
-      ),
-      child: Row(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                color: theme.colorScheme.primary ?? MyThemes.primaryColor,
-                size: iconSize.clamp(
-                    18.0, 26.0), // Limiter la taille minimale et maximale
-              ),
-              SizedBox(height: titleSpacing),
-              Text(
-                title,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontSize: titleFontSize.clamp(
-                      12.0, 16.0), // Limiter la taille minimale et maximale
-                  color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
-                ),
-              ),
-              SizedBox(height: titleSpacing),
-              Text(
-                value,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontSize: valueFontSize.clamp(
-                      14.0, 20.0), // Limiter la taille minimale et maximale
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+        const SizedBox(
+          width: 15,
+        ),
+        Text(
+          coinCounter,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontSize: valueFontSize.clamp(
+                20.0, 20.0), // Limiter la taille minimale et maximale
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(width: 15,),
-          Text(
-            coinCounter,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontSize: valueFontSize.clamp(
-                  20.0, 20.0), // Limiter la taille minimale et maximale
-              fontWeight: FontWeight.bold,
-            ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        const CircleAvatar(
+          radius: 16,
+          backgroundImage: AssetImage(
+            'assets/GRE2.png',
           ),
-          const SizedBox(width: 10,),
-          const CircleAvatar(
-            radius: 16,
-            backgroundImage: AssetImage(
-              'assets/GRE2.png',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
 // -----------------------------------------------------------------------------
 // Bouton d'action (sent, receive, buy)
@@ -564,9 +584,9 @@ class _ChartSection extends StatelessWidget {
                     ),
                   ),
                   topTitles:
-                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   rightTitles:
-                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
                 borderData: FlBorderData(show: false),
                 lineBarsData: [
@@ -667,11 +687,11 @@ class _CalendarWithTrackingState extends State<CalendarWithTracking> {
             locale: Provider.of<LanguageProvider>(context).locale.languageCode,
             availableCalendarFormats: {
               CalendarFormat.month:
-                  AppLocalizations.of(context).translate('month'),
+              AppLocalizations.of(context).translate('month'),
               CalendarFormat.twoWeeks:
-                  AppLocalizations.of(context).translate('twoWeeks'),
+              AppLocalizations.of(context).translate('twoWeeks'),
               CalendarFormat.week:
-                  AppLocalizations.of(context).translate('week'),
+              AppLocalizations.of(context).translate('week'),
             },
             selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
             onDaySelected: (selectedDay, focusedDay) {
@@ -771,11 +791,11 @@ class _CalendarWithTrackingState extends State<CalendarWithTracking> {
 
   // Construit la cellule d'un jour, avec la date et le cercle de tracking
   Widget _buildDayCell(
-    DateTime day,
-    bool isSelected,
-    double trackingLevel, {
-    bool isToday = false,
-  }) {
+      DateTime day,
+      bool isSelected,
+      double trackingLevel, {
+        bool isToday = false,
+      }) {
     final dateString = day.day.toString();
     // Ne pas afficher le cercle si la date est après aujourd'hui
     if (day.isAfter(DateTime.now())) {
@@ -815,7 +835,7 @@ class _CalendarWithTrackingState extends State<CalendarWithTracking> {
                 color: isSelected
                     ? Colors.white
                     : theme.textTheme.bodyMedium?.color
-                        ?.withOpacity(0.7), // 🔹 Correction ici
+                    ?.withOpacity(0.7), // 🔹 Correction ici
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),

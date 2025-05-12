@@ -30,8 +30,9 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
   int _currentStep = 0;
   double _quantity = 20;
   double _coin = 0.0;
+  double _progressPercent = 0.0;
   List<String> _codeDigits = List.filled(4, "");
-
+  bool _isLoadingSurplus = true;
   // Instantiate ProfileService (make sure to pass the base URL and session manager properly)
   final profileService = ProfileService(
     baseUrl: Const().url, // Your base URL here
@@ -48,7 +49,7 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
   Future<void> _loadWalletData() async {
     this.privateKey = await secureStorage.read(key: 'privateKey');
     this.accountId = await secureStorage.read(key: 'accountId');
-this.userId = await SessionManager().getUserId();    
+    this.userId = await SessionManager().getUserId();
     // Update the transfer state provider with current userId
     if (userId != null) {
       final transferProvider = Provider.of<TransferStateProvider>(context, listen: false);
@@ -75,7 +76,7 @@ this.userId = await SessionManager().getUserId();
     try {
       final uri = Uri.parse(
         "$baseBcUrl/tokenBalance"
-        "?operatorAccountId=$operatorAccountId&operatorPrivateKey=$operatorPrivateKey",
+            "?operatorAccountId=$operatorAccountId&operatorPrivateKey=$operatorPrivateKey",
       );
 
       final response = await http.get(uri);
@@ -95,35 +96,35 @@ this.userId = await SessionManager().getUserId();
 
 
 // Fixed method to handle transfers in a single batch transaction
-Future<bool> handleTransferAndSendTokens(double quantity) async {
-  try {
-    final List<dynamic> usersList = await profileService.transfer(quantity.toString());
-    print("✅ Received users list: $usersList");
+  Future<bool> handleTransferAndSendTokens(double quantity) async {
+    try {
+      final List<dynamic> usersList = await profileService.transfer(quantity.toString());
+      print("✅ Received users list: $usersList");
 
-    // Filter out users without wallets and prepare batch data
-    final List<String> validReceiverIds = [];
-    final List<double> validsPrices = [];
-    double comission = 0.0 ;
+      // Filter out users without wallets and prepare batch data
+      final List<String> validReceiverIds = [];
+      final List<double> validsPrices = [];
+      double comission = 0.0 ;
 
-    for (var user in usersList) { 
-      // Cast or convert numeric values to double explicitly
-      final double powers = (user['amount'] is int) 
-          ? (user['amount'] as int).toDouble() 
-          : (user['amount'] as double);
-          
-      final double price = powers;  // No need for conversion here
-      final String? receiverId = user['wallet'];
+      for (var user in usersList) {
+        // Cast or convert numeric values to double explicitly
+        final double powers = (user['amount'] is int)
+            ? (user['amount'] as int).toDouble()
+            : (user['amount'] as double);
 
-      if (receiverId == null || receiverId.isEmpty) {
-        print("⚠️ Skipping user with no wallet: $user");
-        continue;
+        final double price = powers;  // No need for conversion here
+        final String? receiverId = user['wallet'];
+
+        if (receiverId == null || receiverId.isEmpty) {
+          print("⚠️ Skipping user with no wallet: $user");
+          continue;
+        }
+
+        validReceiverIds.add(receiverId);
+        validsPrices.add(price);
+
+
       }
-
-      validReceiverIds.add(receiverId);
-      validsPrices.add(price);
-
-      
-    }
 
       print("token recivers  ");
       print("validReceiverIds $validReceiverIds");
@@ -149,29 +150,29 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
       print("token recievers with our comission");
       print("validReceiverIds 22 $validReceiverIds");
       print("validReceiverIds 22 $validReceiverIds");
-      
 
 
-    // If there are valid receivers, process the batch transaction
-    if (validReceiverIds.isNotEmpty) {
-      final result = await profileService.transaction(
-        senderId: this.accountId.toString(),
-        receiverIds: validReceiverIds,
-        prices: validsPrices,
-        senderPrivateKey: this.privateKey.toString(),
-      );
-      
-      print("🔁 Batch transaction result for Greeno tokens: $result");
-      return true; // ✅ Success
-    } else {
-      print("⚠️ No valid recipients found for token distribution");
-      return false; // No transactions were made
+
+      // If there are valid receivers, process the batch transaction
+      if (validReceiverIds.isNotEmpty) {
+        final result = await profileService.transaction(
+          senderId: this.accountId.toString(),
+          receiverIds: validReceiverIds,
+          prices: validsPrices,
+          senderPrivateKey: this.privateKey.toString(),
+        );
+
+        print("🔁 Batch transaction result for Greeno tokens: $result");
+        return true; // ✅ Success
+      } else {
+        print("⚠️ No valid recipients found for token distribution");
+        return false; // No transactions were made
+      }
+    } catch (e) {
+      print("❌ Error during transfer and token distribution: $e");
+      return false; // ❌ Failure
     }
-  } catch (e) {
-    print("❌ Error during transfer and token distribution: $e");
-    return false; // ❌ Failure
   }
-}
 
 ////////////////
   final TextEditingController _passwordController = TextEditingController();
@@ -211,26 +212,55 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
   double surplusAvail = 0.0;
 
   @override
+  @override
   void initState() {
     super.initState();
-    _loadWalletData();
-    
-    // Create a reference to the transfer state provider
-    final transferProvider = Provider.of<TransferStateProvider>(context, listen: false);
-    
-    // Initialize socket service with transfer provider
-    _socketService = SocketService();
-    _socketService.connectToSocket((data) {
-      if (mounted) {
+    _loadWalletData().then((_) {
+      final transferProvider = Provider.of<TransferStateProvider>(context, listen: false);
+
+      if (userId != null) {
+        _fetchSurplusAmount(userId!); // Call API only after userId is set
+
+        _socketService = SocketService();
+        _socketService.connectToSocket(
+              (data) {
+            if (mounted) {
+              setState(() {});
+            }
+          },
+          onAvailableAmountReceived: (currentAmount) {
+            if (mounted) {
+              setState(() {
+                surplusAvail = double.parse(currentAmount.toStringAsFixed(2));
+                _isLoadingSurplus = false;
+              });
+            }
+          },
+          transferStateProvider: transferProvider,
+        );
+
+        _socketService.socket.on('transferProgress', (data) {
+          if (mounted && data is Map<String, dynamic> && data.containsKey('progress_percent')) {
+            setState(() {
+              _progressPercent = (data['progress_percent'] as num).toDouble() / 100;
+            });
+          }
+        });
+
+        _socketService.socket.on('transferComplete', (_) {
+          if (mounted) {
+            setState(() {
+              _progressPercent = 0.0;
+            });
+          }
+        });
+      } else {
         setState(() {
-          surplusAvail = data['totalSurplusAvail'] is num
-              ? double.parse((data['totalSurplusAvail'] as num).toStringAsFixed(2))
-              : 0.0;
+          _errorMessage = 'User ID not found. Please log in again.';
+          _isLoadingSurplus = false;
         });
       }
-      print("-----------------------------print(surplusAvail);---------------------------------");
-      print(surplusAvail);
-    }, transferStateProvider: transferProvider);
+    });
   }
 
   @override
@@ -238,13 +268,45 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
     _socketService.disconnect();
     super.dispose();
   }
+  Future<void> _fetchSurplusAmount(String userId) async {
+    try {
+      final uri = Uri.parse('${Const().url}/surplus/amount?userId=$userId');
+      final response = await http.get(uri);
 
-  @override
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['success'] == true && data.containsKey('data')) {
+          setState(() {
+            surplusAvail = (data['data'] as num).toDouble();
+            _isLoadingSurplus = false;
+          });
+        } else {
+          print('❌ Invalid response data: $data');
+          setState(() {
+            _errorMessage = 'Failed to load surplus amount.';
+            _isLoadingSurplus = false;
+          });
+        }
+      } else {
+        print('❌ HTTP Error: ${response.statusCode} - ${response.reasonPhrase}');
+        setState(() {
+          _errorMessage = 'Failed to fetch surplus amount: ${response.reasonPhrase}';
+          _isLoadingSurplus = false;
+        });
+      }
+    } catch (error) {
+      print('❌ Error fetching surplus amount: $error');
+      setState(() {
+        _errorMessage = 'Error fetching surplus amount: $error';
+        _isLoadingSurplus = false;
+      });
+    }
+  } @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     final themeProvider = Provider.of<ThemeProvider>(context);
     final theme = themeProvider.currentTheme ?? ThemeData.light();
-    
+
     // Listen to transfer state changes
     final transferProvider = Provider.of<TransferStateProvider>(context);
     final bool isTransferInProgress = transferProvider.state != TransferState.idle;
@@ -286,7 +348,7 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
     );
   }
 
- Widget _buildEnergyIndicator(ThemeData theme) {
+  Widget _buildEnergyIndicator(ThemeData theme) {
     return Column(
       children: [
         Text(
@@ -417,12 +479,12 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
           ),
           child: TextField(
             style: theme.textTheme.bodyLarge,
-            
+
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText:
-                  AppLocalizations.of(context).translate("enter_quantity_hint"),
+              AppLocalizations.of(context).translate("enter_quantity_hint"),
               hintStyle: theme.textTheme.bodyLarge?.copyWith(
                 fontSize: screenWidth * 0.03,
               ),
@@ -532,191 +594,199 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
     );
   }
   Widget _buildTransferOverlay(TransferStateProvider provider, ThemeData theme) {
-  String message = provider.getStateMessage();
-  String subtitle;
-  IconData statusIcon;
-  Color statusColor;
-  
-  switch (provider.state) {
-    case TransferState.transferring:
-      statusIcon = Icons.upload;
-      statusColor = Colors.blue;
-      subtitle = "Transfert d'énergie en cours.";
-      break;
-    case TransferState.receiving:
-      statusIcon = Icons.download;
-      statusColor = Colors.green;
-      subtitle = "Réception d'énergie en cours.";
-      break;
-    case TransferState.systemBusy:
-      statusIcon = Icons.access_time;
-      statusColor = Colors.orange;
-      subtitle = "Opération de transfert en cours par d'autres utilisateurs.";
-      break;
-    default:
-      statusIcon = Icons.info;
-      statusColor = theme.colorScheme.primary;
-      subtitle = "Traitement en cours...";
-  }
+    String message = provider.getStateMessage();
+    String subtitle;
+    Color statusColor;
 
-  return Container(
-    color: Colors.black.withOpacity(0.7),
-    width: double.infinity,
-    height: double.infinity,
-    child: Center(
-      child: Card(
-        margin: EdgeInsets.symmetric(horizontal: 40),
-        child: Padding(
-          padding: EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(statusIcon, size: 48, color: statusColor),
-              SizedBox(height: 16),
-              CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(statusColor)),
-              SizedBox(height: 20),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              Text(
-                subtitle,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium,
-              ),
-            ],
+    switch (provider.state) {
+      case TransferState.transferring:
+        statusColor = Colors.blue;
+        subtitle = "Transfert d'énergie en cours.";
+        break;
+      case TransferState.receiving:
+        statusColor = Colors.green;
+        subtitle = "Réception d'énergie en cours.";
+        break;
+      case TransferState.systemBusy:
+        statusColor = Colors.orange;
+        subtitle = "Opération de transfert en cours par d'autres utilisateurs.";
+        break;
+      default:
+        statusColor = theme.colorScheme.primary;
+        subtitle = "Traitement en cours...";
+    }
+
+    return Container(
+      color: Colors.black.withOpacity(0.7),
+      width: double.infinity,
+      height: double.infinity,
+      child: Center(
+        child: Card(
+          margin: EdgeInsets.symmetric(horizontal: 40),
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Cercle de progression avec pourcentage
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CustomPaint(
+                      size: Size(80, 80),
+                      painter: CircularProgressPainter(_progressPercent), // Utiliser _progressPercent
+                    ),
+                    Text(
+                      "${(_progressPercent * 100).toStringAsFixed(1)}%", // Afficher le pourcentage
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
+  Widget _buildNavigationButtons() {
+    final transferProvider = Provider.of<TransferStateProvider>(context);
+    final bool isTransferInProgress = transferProvider.state != TransferState.idle;
 
-Widget _buildNavigationButtons() {
-  final transferProvider = Provider.of<TransferStateProvider>(context);
-  final bool isTransferInProgress = transferProvider.state != TransferState.idle;
-
-  return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 30),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Opacity(
-          opacity: _currentStep == 0 ? 0 : 1.0,
-          child: ElevatedButton(
-            onPressed: isTransferInProgress ? null : (_currentStep > 0 ? () => setState(() => _currentStep--) : null),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey,
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-            ),
-            child: Text(
-              AppLocalizations.of(context).translate("back"),
-              style: TextStyle(color: Colors.white, fontSize: 16),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 30),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Opacity(
+            opacity: _currentStep == 0 ? 0 : 1.0,
+            child: ElevatedButton(
+              onPressed: isTransferInProgress ? null : (_currentStep > 0 ? () => setState(() => _currentStep--) : null),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey,
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+              ),
+              child: Text(
+                AppLocalizations.of(context).translate("back"),
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
             ),
           ),
-        ),
-        ElevatedButton(
-          onPressed: isTransferInProgress
-              ? () {
+          ElevatedButton(
+            onPressed: isTransferInProgress
+                ? () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text(AppLocalizations.of(context).translate("operation_in_progress")),
+                  content: Text(transferProvider.getStateMessage()),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(AppLocalizations.of(context).translate("ok")),
+                    ),
+                  ],
+                ),
+              );
+            }
+                : () async {
+              if (_currentStep == 0) {
+                bool hasEnough = _coin <= double.parse(_tokenBalance);
+                bool thersEnoughSur = _quantity <= surplusAvail && _quantity > 0;
+
+                if (!hasEnough || !thersEnoughSur) {
+                  String message = '';
+                  if (!hasEnough && !thersEnoughSur) {
+                    message = "Not enough coins AND not enough surplus.";
+                  } else if (!hasEnough) {
+                    message = "You don't have enough coins.";
+                  } else if (!thersEnoughSur) {
+                    message = "Not enough surplus available.";
+                  }
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Text(AppLocalizations.of(context).translate("operation_in_progress")),
-                      content: Text(transferProvider.getStateMessage()),
+                      title: Text("Validation Error"),
+                      content: Text(message),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(context).pop(),
-                          child: Text(AppLocalizations.of(context).translate("ok")),
+                          child: Text("OK"),
+                        ),
+                      ],
+                    ),
+                  );
+                  return;
+                }
+                setState(() => _currentStep++);
+              } else if (_currentStep == 1) {
+                if (await _checkPassword()) {
+                  setState(() => _currentStep++);
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text("Invalid Password"),
+                      content: Text(_errorMessage ?? "Incorrect password. Please try again."),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: Text("OK"),
                         ),
                       ],
                     ),
                   );
                 }
-              : () async {
-                  if (_currentStep == 0) {
-                    bool hasEnough = _coin <= double.parse(_tokenBalance);
-                    bool thersEnoughSur = _quantity <= surplusAvail && _quantity > 0;
-
-                    if (!hasEnough || !thersEnoughSur) {
-                      String message = '';
-                      if (!hasEnough && !thersEnoughSur) {
-                        message = "Not enough coins AND not enough surplus.";
-                      } else if (!hasEnough) {
-                        message = "You don't have enough coins.";
-                      } else if (!thersEnoughSur) {
-                        message = "Not enough surplus available.";
-                      }
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text("Validation Error"),
-                          content: Text(message),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: Text("OK"),
-                            ),
-                          ],
+              } else {
+                bool success = await handleTransferAndSendTokens(_quantity);
+                if (success) {
+                  // Wait for transferComplete before navigating (handled by provider)
+                  // Navigation will occur after transferComplete resets the state
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text("Transaction Failed", style: TextStyle(color: Colors.red)),
+                      content: Text("Something went wrong! Your coins are still in your wallet."),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: Text("OK", style: TextStyle(color: Colors.white)),
                         ),
-                      );
-                      return;
-                    }
-                    setState(() => _currentStep++);
-                  } else if (_currentStep == 1) {
-                    if (await _checkPassword()) {
-                      setState(() => _currentStep++);
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text("Invalid Password"),
-                          content: Text(_errorMessage ?? "Incorrect password. Please try again."),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: Text("OK"),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  } else {
-                    bool success = await handleTransferAndSendTokens(_quantity);
-                    if (success) {
-                      // Wait for transferComplete before navigating (handled by provider)
-                      // Navigation will occur after transferComplete resets the state
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text("Transaction Failed", style: TextStyle(color: Colors.red)),
-                          content: Text("Something went wrong! Your coins are still in your wallet."),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: Text("OK", style: TextStyle(color: Colors.white)),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  }
-                },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFF29E33C),
-            padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                      ],
+                    ),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF29E33C),
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+            ),
+            child: Text(
+              AppLocalizations.of(context).translate("next"),
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
           ),
-          child: Text(
-            AppLocalizations.of(context).translate("next"),
-            style: TextStyle(color: Colors.white, fontSize: 16),
-          ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 }// Classe pour dessiner l'indicateur circulaire
 class CircularProgressPainter extends CustomPainter {
   final double percentage;
@@ -725,24 +795,26 @@ class CircularProgressPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // Cercle de fond
     Paint backgroundPaint = Paint()
       ..color = Colors.grey.withOpacity(0.3)
-      ..strokeWidth = 10
+      ..strokeWidth = 8
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
-    canvas.drawCircle(Offset(size.width / 2, size.height / 2), size.width / 2,
-        backgroundPaint);
+    canvas.drawCircle(Offset(size.width / 2, size.height / 2), size.width / 2, backgroundPaint);
 
+    // Cercle de progression
     Paint foregroundPaint = Paint()
       ..color = Colors.green
-      ..strokeWidth = 10
+      ..strokeWidth = 8
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
-    double sweepAngle = 2 * pi * percentage;
+    double sweepAngle = 2 * pi * percentage.clamp(0.0, 1.0); // Limiter entre 0 et 1
     canvas.drawArc(
         Offset(0, 0) & size, -pi / 2, sweepAngle, false, foregroundPaint);
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
+  bool shouldRepaint(CustomPainter oldDelegate) => true; // Repaint à chaque changement
+
 }
