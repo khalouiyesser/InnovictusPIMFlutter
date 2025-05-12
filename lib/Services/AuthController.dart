@@ -161,7 +161,8 @@ class AuthController {
         
         // Get token from response (adjust field name if needed)
         final String token = responseData['accessToken'] ?? responseData['token'] ?? '';
-        
+
+
         // Save session immediately after signup
         await _sessionManager.saveSession(
           token: token,
@@ -400,6 +401,8 @@ Future<SignupResponse?> signUpWithGoogle(BuildContext context) async {
           'phoneNumber': phoneNumber,
         },
       );
+
+
 
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(

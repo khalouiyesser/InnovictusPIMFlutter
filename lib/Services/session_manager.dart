@@ -150,10 +150,12 @@ class SessionManager {
       _storage.delete(key: _keyRefreshToken),
       _storage.delete(key: _keyUserId),
       _storage.delete(key: _keyUserData),
-
+      _storage.delete(key: 'privateKey'),
+      _storage.delete(key: 'accountId'),
     ]);
     this.setIsLogged(false);
   }
+
 
   Future<User?> getCurrentUser() async {
     final userData = await getSessionData();

@@ -3,7 +3,10 @@ import 'package:piminnovictus/Models/config/Theme/AuthTheme.dart';
 import 'package:piminnovictus/Services/payment_service.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
+import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+import '../../viewmodels/profile_switcher_view_model.dart';
 
 class WebViewPageYesser extends StatefulWidget {
   final String url;
@@ -142,11 +145,20 @@ class _WebViewPageYesserState extends State<WebViewPageYesser> {
                       name: widget.name,
                       imagePath: widget.imagePath,
                     );
+
                     if (result['success'] == true) {
                       setState(() {
                         _isLoading = false;
                         _statusMessage = result['message'] ?? 'Profil créé avec succès';
                       });
+
+                      // ✅ Correction ici : on récupère le ViewModel depuis le Provider
+                      final profileSwitcherViewModel = Provider.of<ProfileSwitcherViewModel>(context, listen: false);
+
+                      // ✅ On recharge les profils
+                      await profileSwitcherViewModel.loadProfiles();
+
+                      // ✅ Navigation propre (tu peux garder la tienne sinon)
                       Navigator.of(context).pop();
                       Navigator.of(context).pop();
                       Navigator.of(context).pushReplacement(

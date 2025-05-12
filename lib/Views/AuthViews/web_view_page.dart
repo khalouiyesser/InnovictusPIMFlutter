@@ -175,6 +175,8 @@ class _WebViewPageState extends State<WebViewPage> {
 
                           await _sessionManager.saveEmail(widget.userEmail);
 
+
+                          await _sessionManager.setIsLogged(true);
                           // Navigate to the BottomNavBarExample page
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(

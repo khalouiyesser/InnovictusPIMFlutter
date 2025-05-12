@@ -20,6 +20,9 @@ import 'package:piminnovictus/viewmodels/profile_switcher_view_model.dart';
 import 'package:piminnovictus/Services/session_manager.dart';
 import 'package:piminnovictus/Views/DashboardClient/Bottom_bar.dart';
 
+import 'Providers/TransferStateProvider.dart';
+import 'Services/socket_service.dart';
+
 /*Future<Position> _determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;
@@ -56,7 +59,8 @@ void main() async {
     final themeProvider = ThemeProvider();
     final languageProvider = LanguageProvider();
     final sessionManager = SessionManager();
-    final isLoggedIn = await sessionManager.isLoggedIn();
+    final isLoggedIn = await sessionManager.isLoggedInYesser();
+
 final socketService = SocketService();
 
     await Future.wait([
@@ -93,6 +97,7 @@ final socketService = SocketService();
 
 class MyApp extends StatelessWidget {
   final bool isLoggedIn;
+
 
   const MyApp({Key? key, required this.isLoggedIn}) : super(key: key);
 

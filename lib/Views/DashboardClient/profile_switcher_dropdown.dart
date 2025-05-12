@@ -129,7 +129,7 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
             child: CircleAvatar(
               radius: widget.customRadius,
               backgroundImage: viewModel.currentProfile?.imageUrl != null
-                  ? NetworkImage(viewModel.currentProfile!.imageUrl!)
+                  ? const AssetImage('assets/user.jpg') as ImageProvider
                   : const AssetImage('assets/user.jpg') as ImageProvider,
             ),
           ),
