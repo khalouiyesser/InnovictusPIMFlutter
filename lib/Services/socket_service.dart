@@ -12,6 +12,7 @@ class SocketService {
     Function(Map<String, dynamic>) onBatteryStatsReceived, {
     Function(double)? onTransferProgressReceived, // Rendu optionnel
     TransferStateProvider? transferStateProvider,
+    Function(double)? onAvailableAmountReceived,
   }) {
     _transferStateProvider = transferStateProvider;
 
@@ -41,15 +42,49 @@ class SocketService {
       }
     });
 
-    // Écouteur pour transferProgress
     socket.on('transferProgress', (data) {
       debugPrint('📊 Transfer progress: $data');
       if (data is Map<String, dynamic> && data.containsKey('progress_percent')) {
         final progressPercent = (data['progress_percent'] as num).toDouble();
-        // Appeler le callback seulement s'il est fourni
-        onTransferProgressReceived?.call(progressPercent);
+        
+        // Appeler le callback avec juste le pourcentage comme avant
+        if (onTransferProgressReceived != null) {
+          onTransferProgressReceived(progressPercent);
+        }
+        
+        // Mettre à jour le provider avec le pourcentage et d'autres informations pertinentes
+        if (_transferStateProvider != null) {
+          // Mise à jour du pourcentage
+          _transferStateProvider!.updateTransferProgress(progressPercent);
+          
+          // Mise à jour des informations supplémentaires si votre provider les prend en charge
+          if (data.containsKey('energy_transferred') && data.containsKey('target')) {
+            final energyTransferred = (data['energy_transferred'] as num).toDouble();
+            final target = (data['target'] as num).toDouble();
+            _transferStateProvider!.updateTransferDetails(
+              energyTransferred: energyTransferred, 
+              target: target
+            );
+          }
+        }
       }
     });
+
+socket.on('availableAmount', (data) {
+  debugPrint('📈 Available amount update: $data');
+  if (data is Map && data.containsKey('currentAmount')) {
+    // Get the raw double value
+    final rawAmount = (data['currentAmount'] as num).toDouble();
+    
+    // Format to exactly two decimal places
+    final formattedAmount = double.parse(rawAmount.toStringAsFixed(2));
+    
+    // Call the callback with the formatted amount
+    if (onAvailableAmountReceived != null) {
+      onAvailableAmountReceived(formattedAmount);
+    }
+  }
+});
 
     socket.on('startTransfer', (data) {
       debugPrint('⚡ Transfer started: $data');
@@ -70,12 +105,16 @@ class SocketService {
         _transferStateProvider!.resetTransfer();
       }
     });
+    
+
+
+
 
     socket.onError((error) {
       debugPrint('⚠️ WebSocket Error: $error');
     });
+  
   }
-
   void emitResetEnergy() {
     socket.emit('message', {
       'topic': 'resetEnergy',
