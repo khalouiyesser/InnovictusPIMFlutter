@@ -129,30 +129,55 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   @override
-  void initState() {
+  Future<void> initState() async {
     super.initState();
     _loadUserData();
     _requestLocationPermission();
 
-    _socketService.connectToSocket((data) {
-      if (mounted) {
-        setState(() {
-          totalEnergy = data['totalEnergy'] is num
-              ? (data['totalEnergy'] as num).toDouble()
-              : 0.0;
-          capacity = data['capacity'] is num
-              ? (data['capacity'] as num).toDouble()
-              : 0.0;
-          co2Reduction = data['co2Reduction'] is num
-              ? (data['co2Reduction'] as num).toDouble()
-              : 0.0;
-          batteryLevel = data['batterylevel'] is int ? data['batterylevel'] : 0;
-          consumedEnergy = data['consumed'] is num
-              ? double.parse((data['consumed'] as num).toStringAsFixed(2))
-              : 0.0;
-        });
-      }
-    });
+final userId = await SessionManager().getUserId();
+
+_socketService.connectToSocket(
+  userId!, // ✅ Pass userId here
+  (data) {
+    if (mounted) {
+      setState(() {
+        totalEnergy = data['totalEnergy'] is num
+            ? (data['totalEnergy'] as num).toDouble()
+            : 0.0;
+        capacity = data['capacity'] is num
+            ? (data['capacity'] as num).toDouble()
+            : 0.0;
+        co2Reduction = data['co2Reduction'] is num
+            ? (data['co2Reduction'] as num).toDouble()
+            : 0.0;
+        batteryLevel = data['batterylevel'] is int ? data['batterylevel'] : 0;
+        consumedEnergy = data['consumed'] is num
+            ? double.parse((data['consumed'] as num).toStringAsFixed(2))
+            : 0.0;
+      });
+    }
+  },
+);
+
+    // _socketService.connectToSocket((data) {
+    //   if (mounted) {
+    //     setState(() {
+    //       totalEnergy = data['totalEnergy'] is num
+    //           ? (data['totalEnergy'] as num).toDouble()
+    //           : 0.0;
+    //       capacity = data['capacity'] is num
+    //           ? (data['capacity'] as num).toDouble()
+    //           : 0.0;
+    //       co2Reduction = data['co2Reduction'] is num
+    //           ? (data['co2Reduction'] as num).toDouble()
+    //           : 0.0;
+    //       batteryLevel = data['batterylevel'] is int ? data['batterylevel'] : 0;
+    //       consumedEnergy = data['consumed'] is num
+    //           ? double.parse((data['consumed'] as num).toStringAsFixed(2))
+    //           : 0.0;
+    //     });
+    //   }
+    // });
   }
 
   Future<void> _requestLocationPermission() async {

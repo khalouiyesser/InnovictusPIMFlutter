@@ -73,23 +73,30 @@ class _WalletPageState extends State<WalletPage> {
     });
   }
 
+  String? userId;
   
   @override
-  void initState() {
+  Future<void> initState() async {
     super.initState();
     _loadUserData();
     _loadWalletData();
+    sessionManager: SessionManager();
 
-    _socketService.connectToSocket((data) {
-      if (mounted) {
-        setState(() {
-          generatedEnergy = data['energyGenerated'] is num
-              ? double.parse((data['energyGenerated'] as num).toStringAsFixed(2))
-              : 0.0;
-          coinCounter = generatedEnergy ~/ 1000; // Compute whole numbers
-        });
-      }
-    });
+    userId = await SessionManager().getUserId();    
+_socketService.connectToSocket(
+  userId!, // Pass the userId here
+  (data) {
+    if (mounted) {
+      setState(() {
+        generatedEnergy = data['energyGenerated'] is num
+            ? double.parse((data['energyGenerated'] as num).toStringAsFixed(2))
+            : 0.0;
+        coinCounter = generatedEnergy ~/ 1000; // Compute whole numbers
+      });
+    }
+  },
+);
+
 
   }
 

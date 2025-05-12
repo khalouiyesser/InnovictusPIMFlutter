@@ -222,22 +222,42 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
         _fetchSurplusAmount(userId!); // Call API only after userId is set
 
         _socketService = SocketService();
-        _socketService.connectToSocket(
-          (data) {
-            if (mounted) {
-              setState(() {});
-            }
-          },
-          onAvailableAmountReceived: (currentAmount) {
-            if (mounted) {
-              setState(() {
-                surplusAvail = double.parse(currentAmount.toStringAsFixed(2));
-      _isLoadingSurplus = false;
-              });
-            }
-          },
-          transferStateProvider: transferProvider,
-        );
+      _socketService.connectToSocket(
+  userId!, // Pass userId as the first argument
+  (data) {
+    if (mounted) {
+      setState(() {
+        // You can update state here if needed for battery stats
+      });
+    }
+  },
+  onAvailableAmountReceived: (currentAmount) {
+    if (mounted) {
+      setState(() {
+        surplusAvail = double.parse(currentAmount.toStringAsFixed(2));
+        _isLoadingSurplus = false;
+      });
+    }
+  },
+  transferStateProvider: transferProvider,
+);
+
+      //   _socketService.connectToSocket(
+      //     (data) {
+      //       if (mounted) {
+      //         setState(() {});
+      //       }
+      //     },
+      //     onAvailableAmountReceived: (currentAmount) {
+      //       if (mounted) {
+      //         setState(() {
+      //           surplusAvail = double.parse(currentAmount.toStringAsFixed(2));
+      // _isLoadingSurplus = false;
+      //         });
+      //       }
+      //     },
+      //     transferStateProvider: transferProvider,
+      //   );
 
         _socketService.socket.on('transferProgress', (data) {
           if (mounted && data is Map<String, dynamic> && data.containsKey('progress_percent')) {

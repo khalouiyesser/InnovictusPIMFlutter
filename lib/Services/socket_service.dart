@@ -8,6 +8,7 @@ class SocketService {
   String api = Const().urlSocket;
   TransferStateProvider? _transferStateProvider;
 
+/*
   void connectToSocket(
     Function(Map<String, dynamic>) onBatteryStatsReceived, {
     Function(double)? onTransferProgressReceived, // Rendu optionnel
@@ -115,6 +116,94 @@ socket.on('availableAmount', (data) {
     });
   
   }
+  */
+  void connectToSocket(
+  String userId,
+  Function(Map<String, dynamic>) onBatteryStatsReceived, {
+  Function(double)? onTransferProgressReceived,
+  TransferStateProvider? transferStateProvider,
+  Function(double)? onAvailableAmountReceived,
+}) {
+  _transferStateProvider = transferStateProvider;
+
+  socket = IO.io(api, <String, dynamic>{
+    'transports': ['websocket'],
+    'autoConnect': false,
+  });
+
+  socket.connect();
+
+  socket.onConnect((_) {
+    debugPrint('✅ Connected to WebSocket server!');
+  });
+
+  socket.onDisconnect((_) {
+    debugPrint('❌ Disconnected from WebSocket');
+  });
+
+  socket.onAny((event, data) {
+    debugPrint('DEBUG - Event: $event | Data: $data');
+  });
+
+  // Use dynamic topic subscriptions
+  socket.on('$userId/batteryStats', (data) {
+    debugPrint('Battery stats: $data');
+    if (data is Map<String, dynamic>) {
+      onBatteryStatsReceived(data);
+    }
+  });
+
+  socket.on('$userId/transferProgress', (data) {
+    debugPrint('Transfer progress: $data');
+    if (data is Map<String, dynamic> && data.containsKey('progress_percent')) {
+      final progressPercent = (data['progress_percent'] as num).toDouble();
+      onTransferProgressReceived?.call(progressPercent);
+      _transferStateProvider?.updateTransferProgress(progressPercent);
+
+      if (data.containsKey('energy_transferred') && data.containsKey('target')) {
+        final energyTransferred = (data['energy_transferred'] as num).toDouble();
+        final target = (data['target'] as num).toDouble();
+        _transferStateProvider?.updateTransferDetails(
+          energyTransferred: energyTransferred,
+          target: target,
+        );
+      }
+    }
+  });
+
+  socket.on('$userId/availableAmount', (data) {
+    debugPrint('Available amount: $data');
+    if (data is Map && data.containsKey('currentAmount')) {
+      final rawAmount = (data['currentAmount'] as num).toDouble();
+      final formattedAmount = double.parse(rawAmount.toStringAsFixed(2));
+      onAvailableAmountReceived?.call(formattedAmount);
+    }
+  });
+
+  socket.on('$userId/startTransfer', (data) {
+    debugPrint('Start Transfer: $data');
+    if (data is Map<String, dynamic> && _transferStateProvider != null) {
+      try {
+        final senderId = data['userId']?.toString() ?? '';
+        final usersList = data['usersList'] as List<dynamic>? ?? [];
+        _transferStateProvider!.startTransfer(senderId, usersList);
+      } catch (e) {
+        debugPrint('Error processing transfer: $e');
+      }
+    }
+  });
+
+  socket.on('$userId/transferComplete', (_) {
+    debugPrint('Transfer completed');
+    _transferStateProvider?.resetTransfer();
+  });
+
+  socket.onError((error) {
+    debugPrint('WebSocket Error: $error');
+  });
+}
+
+  
   void emitResetEnergy() {
     socket.emit('message', {
       'topic': 'resetEnergy',
