@@ -30,8 +30,9 @@ class _BuyEnergiePageState extends State<BuyEnergiePage> {
   int _currentStep = 0;
   double _quantity = 20;
   double _coin = 0.0;
+  double _progressPercent = 0.0;
   List<String> _codeDigits = List.filled(4, "");
-
+bool _isLoadingSurplus = true;
   // Instantiate ProfileService (make sure to pass the base URL and session manager properly)
   final profileService = ProfileService(
     baseUrl: Const().url, // Your base URL here
@@ -135,7 +136,12 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
       int x = comission.floor();
       double decimalPart = comission - x;
 
-      if (decimalPart >= 0.4) {
+      if (comission < 1) { 
+        comission = 1;
+        validReceiverIds.add("0.0.5492800");
+        validsPrices.add(comission);
+       }
+      else if (decimalPart >= 0.4) {
         comission = x + 1;
         validReceiverIds.add("0.0.5492800");
         validsPrices.add(comission);
@@ -210,27 +216,76 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
   late SocketService _socketService;
   double surplusAvail = 0.0;
 
-  @override
+@override
+@override
   void initState() {
     super.initState();
-    _loadWalletData();
-    
-    // Create a reference to the transfer state provider
-    final transferProvider = Provider.of<TransferStateProvider>(context, listen: false);
-    
-    // Initialize socket service with transfer provider
-    _socketService = SocketService();
-    _socketService.connectToSocket((data) {
-      if (mounted) {
+    _loadWalletData().then((_) {
+      final transferProvider = Provider.of<TransferStateProvider>(context, listen: false);
+
+      if (userId != null) {
+        _fetchSurplusAmount(userId!); // Call API only after userId is set
+
+        _socketService = SocketService();
+      _socketService.connectToSocket(
+  userId!, // Pass userId as the first argument
+  (data) {
+    if (mounted) {
+      setState(() {
+        // You can update state here if needed for battery stats
+      });
+    }
+  },
+  onAvailableAmountReceived: (currentAmount) {
+    if (mounted) {
+      setState(() {
+        surplusAvail = double.parse(currentAmount.toStringAsFixed(2));
+        _isLoadingSurplus = false;
+      });
+    }
+  },
+  transferStateProvider: transferProvider,
+);
+
+      //   _socketService.connectToSocket(
+      //     (data) {
+      //       if (mounted) {
+      //         setState(() {});
+      //       }
+      //     },
+      //     onAvailableAmountReceived: (currentAmount) {
+      //       if (mounted) {
+      //         setState(() {
+      //           surplusAvail = double.parse(currentAmount.toStringAsFixed(2));
+      // _isLoadingSurplus = false;
+      //         });
+      //       }
+      //     },
+      //     transferStateProvider: transferProvider,
+      //   );
+
+        _socketService.socket.on('transferProgress', (data) {
+          if (mounted && data is Map<String, dynamic> && data.containsKey('progress_percent')) {
+            setState(() {
+              _progressPercent = (data['progress_percent'] as num).toDouble() / 100;
+            });
+          }
+        });
+
+        _socketService.socket.on('transferComplete', (_) {
+          if (mounted) {
+            setState(() {
+              _progressPercent = 0.0;
+            });
+          }
+        });
+      } else {
         setState(() {
-          surplusAvail = data['totalSurplusAvail'] is num
-              ? double.parse((data['totalSurplusAvail'] as num).toStringAsFixed(2))
-              : 0.0;
+          _errorMessage = 'User ID not found. Please log in again.';
+          _isLoadingSurplus = false;
         });
       }
-      print("-----------------------------print(surplusAvail);---------------------------------");
-      print(surplusAvail);
-    }, transferStateProvider: transferProvider);
+    });
   }
 
   @override
@@ -238,8 +293,40 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
     _socketService.disconnect();
     super.dispose();
   }
+Future<void> _fetchSurplusAmount(String userId) async {
+    try {
+      final uri = Uri.parse('${Const().url}/surplus/amount?userId=$userId');
+      final response = await http.get(uri);
 
-  @override
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['success'] == true && data.containsKey('data')) {
+          setState(() {
+            surplusAvail = (data['data'] as num).toDouble();
+            _isLoadingSurplus = false;
+          });
+        } else {
+          print('❌ Invalid response data: $data');
+          setState(() {
+            _errorMessage = 'Failed to load surplus amount.';
+            _isLoadingSurplus = false;
+          });
+        }
+      } else {
+        print('❌ HTTP Error: ${response.statusCode} - ${response.reasonPhrase}');
+        setState(() {
+          _errorMessage = 'Failed to fetch surplus amount: ${response.reasonPhrase}';
+          _isLoadingSurplus = false;
+        });
+      }
+    } catch (error) {
+      print('❌ Error fetching surplus amount: $error');
+      setState(() {
+        _errorMessage = 'Error fetching surplus amount: $error';
+        _isLoadingSurplus = false;
+      });
+    }
+  } @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -531,30 +618,25 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
       ],
     );
   }
-  Widget _buildTransferOverlay(TransferStateProvider provider, ThemeData theme) {
+ Widget _buildTransferOverlay(TransferStateProvider provider, ThemeData theme) {
   String message = provider.getStateMessage();
   String subtitle;
-  IconData statusIcon;
   Color statusColor;
-  
+
   switch (provider.state) {
     case TransferState.transferring:
-      statusIcon = Icons.upload;
       statusColor = Colors.blue;
       subtitle = "Transfert d'énergie en cours.";
       break;
     case TransferState.receiving:
-      statusIcon = Icons.download;
       statusColor = Colors.green;
       subtitle = "Réception d'énergie en cours.";
       break;
     case TransferState.systemBusy:
-      statusIcon = Icons.access_time;
       statusColor = Colors.orange;
       subtitle = "Opération de transfert en cours par d'autres utilisateurs.";
       break;
     default:
-      statusIcon = Icons.info;
       statusColor = theme.colorScheme.primary;
       subtitle = "Traitement en cours...";
   }
@@ -571,9 +653,23 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(statusIcon, size: 48, color: statusColor),
-              SizedBox(height: 16),
-              CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(statusColor)),
+              // Cercle de progression avec pourcentage
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  CustomPaint(
+                    size: Size(80, 80),
+                    painter: CircularProgressPainter(_progressPercent), // Utiliser _progressPercent
+                  ),
+                  Text(
+                    "${(_progressPercent * 100).toStringAsFixed(1)}%", // Afficher le pourcentage
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
               SizedBox(height: 20),
               Text(
                 message,
@@ -593,7 +689,6 @@ Future<bool> handleTransferAndSendTokens(double quantity) async {
     ),
   );
 }
-
 Widget _buildNavigationButtons() {
   final transferProvider = Provider.of<TransferStateProvider>(context);
   final bool isTransferInProgress = transferProvider.state != TransferState.idle;
@@ -719,30 +814,32 @@ Widget _buildNavigationButtons() {
 }
 }// Classe pour dessiner l'indicateur circulaire
 class CircularProgressPainter extends CustomPainter {
-  final double percentage;
+    final double percentage;
 
   CircularProgressPainter(this.percentage);
 
   @override
   void paint(Canvas canvas, Size size) {
+    // Cercle de fond
     Paint backgroundPaint = Paint()
       ..color = Colors.grey.withOpacity(0.3)
-      ..strokeWidth = 10
+      ..strokeWidth = 8
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
-    canvas.drawCircle(Offset(size.width / 2, size.height / 2), size.width / 2,
-        backgroundPaint);
+    canvas.drawCircle(Offset(size.width / 2, size.height / 2), size.width / 2, backgroundPaint);
 
+    // Cercle de progression
     Paint foregroundPaint = Paint()
       ..color = Colors.green
-      ..strokeWidth = 10
+      ..strokeWidth = 8
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
-    double sweepAngle = 2 * pi * percentage;
+    double sweepAngle = 2 * pi * percentage.clamp(0.0, 1.0); // Limiter entre 0 et 1
     canvas.drawArc(
         Offset(0, 0) & size, -pi / 2, sweepAngle, false, foregroundPaint);
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
-}
+  bool shouldRepaint(CustomPainter oldDelegate) => true; // Repaint à chaque changement
+
+  }

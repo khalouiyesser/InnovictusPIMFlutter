@@ -121,8 +121,6 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
               ),
             ),
 
-
-
             //lahneee tetsala7 pdp
 
             ////////////////////////////////////////////// hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
@@ -177,8 +175,8 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
         children: [
           CircleAvatar(
             radius: 20,
-             backgroundImage: AssetImage('assets/user.jpg'),
-),
+            backgroundImage: AssetImage('assets/user.jpg'),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -228,8 +226,7 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
           children: [
             CircleAvatar(
               radius: 20,
-                           backgroundImage: AssetImage('assets/user.jpg'),
-
+              backgroundImage: AssetImage('assets/user.jpg'),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -262,7 +259,7 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
   }
 
   Widget _buildViewAllProfilesButton(BuildContext context, bool isDark) {
-      final languageProvider =
+    final languageProvider =
         Provider.of<LanguageProvider>(context, listen: false);
 
     return Column(
@@ -287,7 +284,7 @@ class _ProfileSwitcherDropdownState extends State<ProfileSwitcherDropdown> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Text(
-AppLocalizations.of(context).translate('viewAllProfiles'),
+              AppLocalizations.of(context).translate('viewAllProfiles'),
               style: TextStyle(
                 fontSize: 16,
                 color: MyThemes.primaryColor,
