@@ -25,7 +25,7 @@ class TeamSection extends StatelessWidget {
 
         final List<TeamMember> teamMembers = [
           TeamMember(
-            name: "Shayma Ouertani",
+            name: "Shayma Ouerhani",
             email: "shayma.ouerhani@esprit.tn",
             phone: "+216 28 160 626",
             image: "assets/shayma.jpeg",
@@ -80,7 +80,7 @@ class TeamSection extends StatelessWidget {
             name: "Yassine Ajbouni",
             email: "yassine.ajbouni@esprit.tn",
             phone: "+216 23 990 938",
-            image: "assets/user.jpg",
+            image: "assets/yassine.jpg",
             linkedinUrl:
                 "https://www.linkedin.com/in/yassine-ajbouni-1616b01a0/",
             nameFontSize: teamMemberNameSize,

@@ -400,9 +400,9 @@ Future<void> _fetchSurplusAmount(String userId) async {
                   ),
                 ),
                 Text(
-                  '${this.surplusAvail} ${AppLocalizations.of(context).translate('KW')}',
+                  '${this.surplusAvail.toStringAsFixed(2)} ${AppLocalizations.of(context).translate('KW')}',
                   style: theme.textTheme.headlineLarge?.copyWith(
-                    fontSize: screenWidth * 0.1,
+                    fontSize: screenWidth * 0.08,
                     fontWeight: FontWeight.normal,
                   ),
                 ),
