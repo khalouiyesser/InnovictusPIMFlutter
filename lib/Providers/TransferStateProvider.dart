@@ -50,21 +50,20 @@ bool isRecipient(List<dynamic> usersList) {
 
 
   // Start a transfer operation and update state accordingly
-  void startTransfer(String senderId, List<dynamic> usersList) {
-    if (isSender(senderId)) {
-      _state = TransferState.transferring;
-      debugPrint('📤 User is the sender, setting state to TRANSFERRING');
-    } else if (isRecipient(usersList)) {
-      _state = TransferState.receiving;
-      debugPrint('📥 User is a recipient, setting state to RECEIVING');
-    } else {
-      _state = TransferState.systemBusy;
-      debugPrint('⌛ Other users are transacting, setting state to SYSTEM_BUSY');
-    }
-   
-    _usersList = usersList;
-    notifyListeners();
+ void startTransfer(String senderId, List<dynamic> usersList) {
+  if (isSender(senderId)) {
+    _state = TransferState.transferring;
+    debugPrint('📤 User is the sender, setting state to TRANSFERRING');
+  } else if (isRecipient(usersList)) {
+    _state = TransferState.receiving;
+    debugPrint('📥 User is a recipient, setting state to RECEIVING');
+  } else {
+    _state = TransferState.systemBusy;
+    debugPrint('⌛ Other users are transacting, setting state to SYSTEM_BUSY');
   }
+  _usersList = usersList;
+  notifyListeners();
+}
   void updateTransferDetails({
     double? energyTransferred,
     double? target,

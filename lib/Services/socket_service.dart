@@ -155,7 +155,7 @@ socket.on('availableAmount', (data) {
       }
     });
 
-    socket.on('$userId/transferProgress', (data) {
+    socket.on('transferProgress', (data) {
       debugPrint('Transfer progress: $data');
       if (data is Map<String, dynamic> &&
           data.containsKey('progress_percent')) {
@@ -208,27 +208,27 @@ socket.on('availableAmount', (data) {
       }
     });
 
-    socket.on('$userId/test', (data) {
+    socket.on('test', (data) {
       debugPrint('Test message: $data');
       if (data is String) {
         onTestMessageReceived?.call(data);
       }
     });
+socket.on('startTransfer', (data){
+  debugPrint('Start Transfer: $data');
+  if (data is Map<String, dynamic> && _transferStateProvider != null) {
+    try {
+      final senderId = data['userId']?.toString() ?? '';
+      final usersList = data['usersList'] as List<dynamic>? ?? [];
+      _transferStateProvider!.startTransfer(senderId, usersList);
+      print('////////////////////////////////////////////////////////////////////////////////////////Start Transfer for userId: $userId, Data: $data');
+    } catch (e) {
+      debugPrint('Error processing transfer: $e');
+    }
+  }
+});
 
-    socket.on('$userId/startTransfer', (data) {
-      debugPrint('Start Transfer: $data');
-      if (data is Map<String, dynamic> && _transferStateProvider != null) {
-        try {
-          final senderId = data['userId']?.toString() ?? '';
-          final usersList = data['usersList'] as List<dynamic>? ?? [];
-          _transferStateProvider!.startTransfer(senderId, usersList);
-        } catch (e) {
-          debugPrint('Error processing transfer: $e');
-        }
-      }
-    });
-
-    socket.on('$userId/transferComplete', (_) {
+    socket.on('transferComplete', (_) {
       debugPrint('Transfer completed');
       _transferStateProvider?.resetTransfer();
     });
