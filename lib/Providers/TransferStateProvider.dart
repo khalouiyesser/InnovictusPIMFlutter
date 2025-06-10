@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:piminnovictus/Models/config/language/translations.dart';
 
 // Define enum for transfer states
 enum TransferState {
@@ -9,6 +11,7 @@ enum TransferState {
 }
 
 class TransferStateProvider with ChangeNotifier {
+
   TransferState _state = TransferState.idle;
   String _userId = '';
   List<dynamic> _usersList = [];
@@ -88,14 +91,14 @@ bool isRecipient(List<dynamic> usersList) {
     notifyListeners();
   }
 
-String getStateMessage() {
+String getStateMessage(BuildContext context) {
   switch (_state) {
     case TransferState.transferring:
-      return "Vous êtes en train de recevoir de l'énergie, merci de patienter jusqu'à la fin de l'opération";
+        return AppLocalizations.of(context).translate("transfer_sending_message");
     case TransferState.receiving:
-      return "Vous êtes en train de transférer l'énergie, merci de patienter jusqu'à la fin de l'opération";
+        return AppLocalizations.of(context).translate("transfer_receiving_message");
     case TransferState.systemBusy:
-      return "Il y a une opération de transfert en cours, vous pouvez acheter de l'énergie après la finalisation de l'opération en cours !!";
+        return AppLocalizations.of(context).translate("transfer_system_busy_message");
     default:
       return "";
   }

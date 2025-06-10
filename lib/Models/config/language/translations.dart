@@ -322,6 +322,13 @@ By using GreenEnergyChain, you acknowledge that you have read, understood, and a
 'transfer_in_progress': 'Transfer in Progress',
       'wait_for_transfer': 'Please wait until the transfer is complete to proceed with your energy purchase.',
       'navigate_freely': 'You can still navigate to other sections using the bottom bar.',
+"transfer_receiving_message": "You are receiving energy, please wait until the operation is complete",
+      "transfer_sending_message": "You are transferring energy, please wait until the operation is complete",
+      "transfer_system_busy_message": "There is a transfer operation in progress, you can buy energy after the current operation is finalized!",
+       "transfer_in_progress1": "Energy transfer in progress.",
+    "receiving_in_progress": "Energy reception in progress.",
+    "transfer_busy_other_users": "Transfer operation in progress by other users.",
+    "processing_in_progress": "Processing in progress..."
 
 
 
@@ -651,6 +658,14 @@ En utilisant GreenEnergyChain, vous reconnaissez avoir lu, compris et accepté c
 'transfer_in_progress': 'Transfert en cours',
       'wait_for_transfer': "Veuillez attendre la fin du transfert pour procéder à votre achat d'énergie.",
       'navigate_freely': 'Vous pouvez toujours naviguer vers d\'autres sections en utilisant la barre inférieure.',
+       "transfer_receiving_message": "Vous êtes en train de recevoir de l'énergie, merci de patienter jusqu'à la fin de l'opération",
+      "transfer_sending_message": "Vous êtes en train de transférer l'énergie, merci de patienter jusqu'à la fin de l'opération",
+      "transfer_system_busy_message": "Il y a une opération de transfert en cours, vous pouvez acheter de l'énergie après la finalisation de l'opération en cours !!",
+      "transfer_in_progress1": "Transfert d'énergie en cours.",
+    "receiving_in_progress": "Réception d'énergie en cours.",
+    "transfer_busy_other_users": "Opération de transfert en cours par d'autres utilisateurs.",
+    "processing_in_progress": "Traitement en cours..."
+ 
 },
 };
 

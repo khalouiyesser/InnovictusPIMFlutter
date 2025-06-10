@@ -619,26 +619,26 @@ Future<void> _fetchSurplusAmount(String userId) async {
     );
   }
  Widget _buildTransferOverlay(TransferStateProvider provider, ThemeData theme) {
-  String message = provider.getStateMessage();
+  String message = provider.getStateMessage(context);
   String subtitle;
   Color statusColor;
 
   switch (provider.state) {
     case TransferState.transferring:
       statusColor = Colors.blue;
-      subtitle = "Transfert d'énergie en cours.";
+    subtitle = AppLocalizations.of(context).translate("transfer_in_progress1");
       break;
     case TransferState.receiving:
       statusColor = Colors.green;
-      subtitle = "Réception d'énergie en cours.";
+    subtitle = AppLocalizations.of(context).translate("receiving_in_progress");
       break;
     case TransferState.systemBusy:
       statusColor = Colors.orange;
-      subtitle = "Opération de transfert en cours par d'autres utilisateurs.";
+    subtitle = AppLocalizations.of(context).translate("transfer_busy_other_users");
       break;
     default:
       statusColor = theme.colorScheme.primary;
-      subtitle = "Traitement en cours...";
+    subtitle = AppLocalizations.of(context).translate("processing_in_progress");
   }
 
   return Container(
@@ -719,7 +719,7 @@ Widget _buildNavigationButtons() {
                     context: context,
                     builder: (context) => AlertDialog(
                       title: Text(AppLocalizations.of(context).translate("operation_in_progress")),
-                      content: Text(transferProvider.getStateMessage()),
+                      content: Text(transferProvider.getStateMessage(context)),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(context).pop(),
